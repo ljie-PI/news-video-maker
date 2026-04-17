@@ -1,0 +1,23 @@
+export const theme = {
+  background_primary: "#ffffff",
+  background_secondary: "#f6f8fa",
+  background_tertiary: "#eaeef2",
+  text_primary: "#1f2328",
+  text_secondary: "#656d76",
+  text_muted: "#8c959f",
+  border: "#d0d7de",
+  brand_primary: "#0969da",
+  brand_highlight: "#8250df",
+  status_success: "#1a7f37",
+  status_warning: "#9a6700",
+  status_danger: "#cf222e",
+  dark_bg_from: "#f0f3f6",
+  dark_bg_mid: "#e8ecf1",
+  dark_bg_to: "#dde3ea",
+  text_on_bg: "#1f2328",
+  text_on_bg_muted: "#656d76",
+  card_bg: "rgba(255,255,255,0.65)",
+  card_border: "rgba(0,0,0,0.08)",
+  overlay_subtle: "rgba(0,0,0,0.03)",
+};
+export const fontFamily = "'Inter', 'Noto Sans SC', sans-serif";

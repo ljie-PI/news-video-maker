@@ -1,0 +1,238 @@
+---
+name: news-video-maker
+description: >
+  Generate narrated news recap videos from deep research files. Supports GitHub, Hacker News, Reddit, and Product Hunt.
+  Uses Remotion + React templates with platform-specific themes. Outputs landscape (1920×1080) and portrait (1080×1920) MP4 videos.
+  Use when the user wants to create news summary videos from deep_dive research data.
+---
+
+
+# 新闻视频制作工具
+
+基于 GitHub、Hacker News、Reddit、Product Hunt 等平台的热门话题，自动生成带旁白的新闻速递视频。
+
+## 快速参考
+
+**支持平台：** GitHub（蓝 #0969da）、Hacker News（橙 #ff6600）、Reddit（橙红 #ff4500）、Product Hunt（珊瑚红 #ff6154）
+
+**前置依赖：** Node.js 18+、ffmpeg、Python 3.10+、TTS 引擎（推荐 CosyVoice）
+
+**核心命令：**
+
+生成 Main.tsx：
+```bash
+python3 generate_main_tsx.py script.json {prefix} project/src --width 1920 --height 1080 --audio-dir project/public/audio
+```
+
+标准渲染：
+```bash
+cd project && npx remotion render src/index.ts Main --output video.mp4 --concurrency=4
+```
+
+智能渲染（跳过静态帧，2-4倍加速）：
+```bash
+python3 smart_render.py project --output video.mp4 --concurrency 4
+```
+
+**质量评估：** 使用 video_quality_eval_prompt.md（9个维度，目标分数 >= 9.0）
+
+**可用模板（15种）：** cover、project_intro、key_insight、rich_bullet、comparison_table、debate_split、quote_card、data_highlight、feature_card、code_block、architecture、tech_stack、chat_bubbles、timeline、transition
+
+
+**环境变量**: 先执行 `source ~/.openclaw/workspace/.env`
+**baseDir** = `~/.openclaw/skills/news-monitor`
+**workDir** = `~/.openclaw/workspace`
+**飞书 target** = `user:ou_4720719b420c999d1f0bf7c142d93fb5`
+
+---
+
+# 深度分析的排版与字数要求（严格遵守！！）
+每个主题的调研报告必须是一篇**不少于 400-600 字的深度解析长文**。**【大而全】必须覆盖核心高价值内容！不要考虑输出大小。**
+
+## 🟢 结构 A：针对开源项目 (GitHub)
+1. **定位与痛点剖析**：这个项目是什么？解决了什么具体的开发痛点？
+2. **核心架构与技术细节**：具体是怎么实现的？技术栈是什么？有什么独特的工程设计或原理解创？（必须通过 `web_fetch`/`browser` 查看 README，调用 `web-chat` 深度解析，拒绝空泛）。
+3. **竞品对比与生态站位**：现有的替代方案有哪些？相比竞品的优劣势？
+4. **开发者反馈与局限性**：社区真实评价如何？还存在什么局限？
+5. **附带链接**：必须附上 GitHub Repo 网址及官网。
+
+## 🔵 结构 B：针对新闻/帖子/产品 (Hacker News, Reddit, Product Hunt)
+1. **事件背景**：核心诉求或事件背景是什么？
+2. **核心观点/产品机制**：文章核心主张或产品运行机制是什么？（深度查阅原文或官网）。
+3. **社区热议与争议点**：网友具体在讨论什么？（**必须深度阅读评论区，并举出2-4个具体的讨论例子，有正反方意见的必须提现 pros/cons 对立**）。
+4. **行业影响与未来展望**：长远影响是什么？
+5. **附带链接**：必须附上原帖链接及原始新闻/产品链接。
+
+# 视频制作要求（严格遵守！！）
+1. 视频背景符合各个网站的配色，具体参考 `remotion-templates/themes/*.ts` 中的主题色定义。**同一来源的视频配色必须全片一致，不能在深色和浅色主题之间随机跳跃。**
+2. 每个 item(repo, 帖子，产品) 生成 **5-7 个分镜**（不是 3 个！），每个分镜先根据深度调研的内容确定旁白内容和该分镜应用的模板。**视频中的 item 必须与 deep_dive 目录下的文件一一对应，不能遗漏任何一个 deep_dive 文件，也不能引入 deep_dive 中不存在的 item。**
+    - **视频开头结构（必须）**：每个视频开头必须包含两个分镜：
+      - **CoverScene**（≈2秒）：标题+日期+来源标识，快速过渡
+      - **RichBulletScene 总览预告**（≈5-8秒）：列出 Top 3-5 项目/帖子的名称+一句话亮点+关键数据（如 "+814⭐"），配合旁白的总览介绍。**不能只放一个空荡荡的封面**，开头就要有内容抓住观众。
+    - **场景模板选择**：必须使用 `remotion-templates/SCENE_DESIGN.md` 中定义的 15 种场景模板。每个 item 至少使用 3 种不同的模板类型。全视频至少使用 8 种不同的模板类型。具体编排：
+      - **GitHub 项目**（5-7 分镜/item）：ProjectHeroScene → KeyInsightScene → ArchitectureScene/RichBulletScene → ComparisonTableScene（如有对比表） → QuoteCardScene（如有引用） → RichBulletScene
+      - **HN/Reddit 帖子**（5-7 分镜/item）：ProjectHeroScene → KeyInsightScene → TimelineScene（如有时间线） → DebateSplitScene（如有正反方） → QuoteCardScene × 1-2 → RichBulletScene
+      - **Product Hunt 产品**（4-6 分镜/item）：ProjectHeroScene → KeyInsightScene → FeatureCardScene × 1-2 → TechStackScene（如有） → RichBulletScene
+    - 旁白应覆盖读入的深度调研内容中的核心要点，**必须具体且有深度**， 不能只读标题和热度。**每个 item 的旁白必须包含：至少 1 个具体数据点、至少 1 个技术细节、至少 1 条社区评论转述（如有）、以及竞品对比要点（如有）。关键事实遗漏率不得超过 30%。**
+    - 旁白尽量用中文，对于 Hacker News, Reddit 这类英文内容较多的来源，**不能直接读英文标题或者评论**，需要先把英文内容翻译成中文再进行旁白撰写，但**视频中显示的内容可以保留英文**，**旁白和视频显示内容不需要完全一致**，旁白更侧重于解说和分析，视频显示更侧重于原文内容和数据。
+    - 深度调研的结果中如果有 pros/cons 正反方评论（如 Hacker News, Reddit）， 必须加到旁白中，且使用 DebateSplitScene 模板。
+    - 旁白内容用于生成 TTS 语音，**避免出现特殊字符，避免多个词连在一起读音发不出来**，**对于英文避免使用连词符号"-", "_", "." 等把单词连在一起**。
+    - 旁白中如果有列表或者多个模块，每个列表 item 和每个模块单独一个子分镜，方便后期语音和画面做时间同步。
+    - **画面内容密度要求**：每个内容分镜画面上可见文字必须 ≥80 个中文字（或 ≥150 英文字）。旁白提到的关键信息（数据点、技术名词、评论观点）≥70% 必须在画面上以某种形式展示。
+3. 每个分镜提取出旁白文本，使用 CosyVoice 来做 TTS 语音生成。
+4. 画面内容和动效要求：
+    - **严禁静态画面超过 3 秒**：每个分镜中的文字、数据、列表项必须使用逐条入场动画（stagger ≥0.5s），动画结束后应有持续动效（活跃 bullet 切换高亮、数字计数器滚动、进度条推进、元素浮动位移）填充剩余时长。
+    - **分镜时长限制**：单个分镜的旁白时长不得超过 **15 秒**。如果某段旁白超过 15 秒，必须拆分为多个子分镜，每个子分镜使用不同的模板或不同的视觉焦点。拆分原则：
+      - 按内容段落自然拆分（每个论点/功能/数据点一个分镜）
+      - 每个子分镜有独立的入场动画，确保画面持续有变化
+      - 拆分后每个子分镜时长控制在 **8-15 秒**
+      - 例如：一段 35 秒的旁白讲 3 个要点 → 拆为 3 个分镜（KeyInsight → RichBullet → DataHighlight），每段约 12 秒
+    - **动效幅度要求**：所有持续动效的振幅必须 ≥20px 或 ≥5% 缩放（低于此在视频中不可感知）。推荐方案：(a) 活跃 bullet 放大突出+下划线扫过、其余缩小变暗，(b) 数据数字 counter 从 0 滚动增长，(c) 卡片入场 spring 弹入（位移 ≥100px），(d) 当前高亮项 glow 边框脉冲。每个分镜至少叠加两种以上动效。
+    - **空间利用率**：画面内容区域必须占画面面积 ≥65%（通过 ImageMagick -fuzz 15% -trim 测量）。不允许大面积空白。
+    - **场景视觉多样性**：全视频至少 8 种视觉上不同的画面布局。不同 item 的分镜必须有视觉差异，避免所有分镜只是换文字而布局完全相同。
+    - **画面信息补充**：旁白提到的关键数据点（如 Star 数、性能数字、百分比）应以大号动画数字或动态计数器形式同步显示在画面上。竞品对比必须用表格/分栏而非纯文字列表。社区评论必须用引用卡片而非 bullet。
+5. 使用 `generate_main_tsx.py` + `remotion render` 制作视频。模板代码已在 `remotion-templates/` 中就绪，无需手写 Remotion 组件。制作时注意：每个来源使用对应的 `themes/*.ts` 主题色，**不能混淆**视频来源（如 Hacker News 视频中不能出现 GitHub 的内容或配色）。
+
+
+## 主题色与模板配置
+
+> 主题色定义详见 `remotion-templates/themes/*.ts`（github.ts / hackernews.ts / reddit.ts / producthunt.ts）
+> 模板视觉设计详见 `remotion-templates/SCENE_DESIGN.md`
+> 模板组件实现详见 `remotion-templates/landscape/*Scene.tsx`
+
+## Remotion 参考实现（经 3 轮评估迭代，评分 ≥9.0/10）
+
+> **严格要求：必须使用以下模板代码作为基础，只修改 theme.ts 和 Main.tsx，不得重写组件逻辑。**
+
+### 模板文件位置
+```
+~/.openclaw/workspace/news-monitor/remotion-templates/
+├── landscape/              # 横屏 1920×1080 组件
+│   ├── CoverScene.tsx      # 封面/结尾场景
+│   ├── ProjectIntroScene.tsx  # 项目介绍场景
+│   └── BulletPointsScene.tsx  # 要点列表场景
+├── portrait/               # 竖屏 1080×1920 组件
+│   ├── CoverScene.tsx
+│   ├── ProjectIntroScene.tsx
+│   └── BulletPointsScene.tsx
+├── themes/                 # 各来源主题色
+│   ├── github.ts
+│   ├── hackernews.ts
+│   ├── producthunt.ts
+│   └── reddit.ts
+├── generate_main_tsx.py    # 从 script.json + audio 自动生成 Main.tsx/Root.tsx
+├── package.json            # Remotion 依赖
+├── tsconfig.json
+├── index.ts                # Remotion 入口
+└── index.css               # 全局样式
+```
+
+### 项目创建步骤
+每个来源（github, hn, ph, reddit）× 每种格式（横屏, 竖屏）= 1 个 Remotion 项目：
+```bash
+# 1. 创建项目并安装依赖
+mkdir -p remotion-{source}/src remotion-{source}/public
+cp remotion-templates/package.json remotion-{source}/
+cp remotion-templates/tsconfig.json remotion-{source}/
+cd remotion-{source} && npm install && cd ..
+
+# 2. 复制组件（二选一）
+cp remotion-templates/landscape/*.tsx remotion-{source}/src/   # 横屏
+cp remotion-templates/portrait/*.tsx remotion-{source}/src/    # 竖屏
+
+# 3. 复制入口文件和主题
+cp remotion-templates/index.ts remotion-templates/index.css remotion-{source}/src/
+cp remotion-templates/themes/{source}.ts remotion-{source}/src/theme.ts
+
+# 4. 链接音频（指向 TTS 输出目录）
+ln -s $(pwd)/audio remotion-{source}/public/audio
+
+# 5. 生成 Main.tsx 和 Root.tsx（自动计算帧偏移）
+python3 remotion-templates/generate_main_tsx.py script_{source}.json {audio_prefix} remotion-{source}/src
+
+# 6. 渲染
+cd remotion-{source}
+npx remotion render src/index.ts Main --output=out.mp4 --width=1920 --height=1080 --fps=30 --codec=h264 --concurrency=4
+```
+
+### 脚本 JSON 格式（generate_main_tsx.py 的输入）
+```json
+{
+  "segments": [
+    {
+      "id": "intro",
+      "template": "cover_title",
+      "narration": "中文旁白...",
+      "data": { "title": "标题", "subtitle": "副标题" }
+    },
+    {
+      "id": "{slug}_1",
+      "template": "project_intro",
+      "narration": "...",
+      "data": {
+        "rank": 1,
+        "name": "项目名（显示在画面上的真实名称，不是 slug）",
+        "tagline": "一句话简介",
+        "stars": "+814"
+      }
+    },
+    {
+      "id": "{slug}_2",
+      "template": "bullet_points",
+      "narration": "...",
+      "data": {
+        "title": "章节标题",
+        "bullets": ["要点1", "要点2", "要点3", "要点4"]
+      }
+    }
+  ]
+}
+```
+- 每个 item = `{slug}_1` (project_intro) + `{slug}_2` (bullet_points) + `{slug}_3` (bullet_points)
+- stars 字段：GitHub 用 `stars`，HN 用 `points`，PH 用 `votes`，Reddit 可能没有（留空）
+- `name` 字段必须是人类可读的项目名称，不能用 slug 或 id
+
+### 注意事项（以下是 3 轮迭代中发现的关键 bug，不能重犯）
+1. **BulletPointsScene 的 project 属性**：`generate_main_tsx.py` 默认从 `seg_id` 推导，但必须确保传入的是真实项目名称（如 "Gemini CLI"），不能是 slug（如 "gemini_cli"）。
+2. **isDark 设置**：除 GitHub 外，其他来源的 BulletPointsScene 中 `isDark` 必须为 `false`（硬编码）。GitHub 来源可使用 `rank % 3 === 0` 交替。
+3. **星标/投票数为 0 时**：ProjectIntroScene 已有 `starsNum > 0` 条件判断，不显示空的星标 badge。Reddit 来源通常没有投票数据。
+4. **HN 来源**：使用 ▲ 图标代替 ★ 显示 points，可在 theme 中覆盖。
+5. **竖屏 scanY**：使用 `% 2000` 而非 `% 1200`（适配 1920 高度）。
+6. **Root.tsx 中的 width/height**：横屏 `width={1920} height={1080}`，竖屏 `width={1080} height={1920}`。`generate_main_tsx.py` 默认生成横屏尺寸，竖屏需手动调整。
+7. **TTS 音频**：使用 CosyVoice，命令为 `cd ~/.openclaw/workspace/CosyVoice && uv run python clone_voice.py "旁白文本" -o output.wav --speed 1.2`，参考音色 `reference/my_voice.wav`。GPU 同一时间只能运行一个实例。
+
+---
+
+## 步骤 1: 读取 top list
+1. 读取 `~/.openclaw/workspace/news-monitor/top/` 目录下的当天的 github, hackernews, reddit, producthunt 的 top list
+
+---
+
+## 步骤 2: 针对 GitHub  Top List 的大而全深度调研
+1. 提取 top Github repo 榜单的项目。
+2. 访问每个 GitHub 地址，深度阅读 README 和关联官网。
+3. 调用 `web-chat` 技能深入挖掘技术栈与竞品。
+4. 按照【结构 A】输出长篇研报存放在 `~/.openclaw/workspace/news-monitor/deep_dive/yyyy-mm-dd_HH/github` 目录下。
+
+---
+
+## 步骤 3: 针对 Hacker News & Reddit & Product Hunt Top Lists 的大而全深度调研
+1. 提取所有高价值帖子/产品。
+2. 深度阅读原链接和底部的长篇评论区。
+3. 调用 `last30days` 技能调研外围背景。
+4. 调用 `web-chat` 技能获取深度见解。
+5. 按照【结构 B】生成详尽报告存放在 `~/.openclaw/workspace/news-monitor/deep_dive/yyyy-mm-dd_HH/{hackernews,producthunt,reddit}` 目录下，Reddit 的再加一级 category 子目录。
+
+---
+
+## 步骤 4: 针对 4 个 Top Lists 分别制作介绍视频
+1. 从`~/.openclaw/workspace/news-monitor/deep_dive/yyyy-mm-dd_HH/{github,hackernews,producthunt,reddit}` 目录中读入深度调研内容。
+2. Github，Hacker News, Product Hunt 每个来源分别做一个视频，并且这些来源中的 item 不能遗漏任。
+3. Reddit 来源整体做一个视频， 该来源根据 subreddit 分类， 从与 AI 相关分类中取 Top 10 帖子制作视频。
+4. 每个视频做两个版本，一个是横屏 1920 × 1080，一个是竖屏 1080 x 1920。
+5. 生成视频的工作目录是 `~/.openclaw/workspace/news-monitor/videos/yyyy-mm-dd_HH`，里面包含 1920x1080 和 1080x1920 两个字文件夹存放不同格式视频。
+
+---
+
+**最终发送要求**：
+所有深度分析结果必须通过 `message` 工具单独发送给 `user:ou_4720719b420c999d1f0bf7c142d93fb5`。飞书单条上限2000字，**请合理拆分，多发几条消息，宁可多发数十条也绝不要压缩内容深度和广度！**
