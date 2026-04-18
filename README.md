@@ -175,8 +175,8 @@ news-video-maker/
 
 | Skill | 仓库 | 作用 |
 |---|---|---|
-| **news-monitor** | [ljie-PI/news-monitor](https://github.com/ljie-PI/news-monitor) | 监控 GitHub / Hacker News / Reddit / Product Hunt 当日热榜，输出 top list |
 | **last30days-skill** | [mvanhorn/last30days-skill](https://github.com/mvanhorn/last30days-skill) | 跨 Reddit/X/YouTube/HN/Polymarket/Web 调研近期话题，生成有据可查的综合摘要 |
+| **news-monitor** | [ljie-PI/news-monitor](https://github.com/ljie-PI/news-monitor) | 监控 GitHub / Hacker News / Reddit / Product Hunt 当日热榜，输出 top list |
 | **web-chat** | [ljie-PI/web-chat](https://github.com/ljie-PI/web-chat) | 通过 Playwright 浏览器自动化与 Gemini / ChatGPT 对话，获取深度见解 |
 
 典型管线：`news-monitor` 拉榜 → `last30days` + `web-chat` 做深度调研 → 本 skill 把 deep_dive 报告做成视频。
