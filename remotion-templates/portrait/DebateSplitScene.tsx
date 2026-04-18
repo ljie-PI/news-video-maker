@@ -94,7 +94,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
           <span
             style={{
               fontFamily,
-              fontSize: 28,
+              fontSize: 36,
               fontWeight: 700,
               color: color,
               letterSpacing: 0.5,
@@ -104,14 +104,14 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
           </span>
         </div>
 
-        {/* Point cards — fill available space evenly */}
+        {/* Point cards — natural height with comfortable breathing room */}
         <div
           style={{
             flex: 1,
             display: "flex",
             flexDirection: "column",
-            gap: 12,
-            justifyContent: "space-evenly",
+            gap: 16,
+            justifyContent: "flex-start",
             minHeight: 0,
           }}
         >
@@ -135,8 +135,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                   overflow: "hidden",
                   opacity,
                   transform: `translateX(${slideOffset}px)`,
-                  flex: 1,
-                  minHeight: 0,
+                  minHeight: 115,
                 }}
               >
                 {/* Left color accent stripe */}
@@ -150,7 +149,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                 <div
                   style={{
                     flex: 1,
-                    padding: "16px 20px",
+                    padding: "26px 32px",
                     display: "flex",
                     alignItems: "center",
                   }}
@@ -158,7 +157,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                   <span
                     style={{
                       fontFamily,
-                      fontSize: 28,
+                      fontSize: 36,
                       fontWeight: 400,
                       color: theme.text_primary,
                       lineHeight: 1.55,
@@ -192,12 +191,12 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
         <div
           style={{
             fontFamily,
-            fontSize: 36,
+            fontSize: 48,
             fontWeight: 700,
             color: theme.text_primary,
             textAlign: "center",
             lineHeight: 1.3,
-            marginBottom: 20,
+            marginBottom: 24,
             opacity: fadeIn(frame, TITLE_START, 15),
             transform: `translateY(${interpolate(
               frame,
