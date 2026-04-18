@@ -434,13 +434,13 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            inset: 0,
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "space-evenly",
-            paddingTop: 40,
-            paddingBottom: 40,
+            justifyContent: "center",
           }}
         >
           {/* Main number */}
@@ -464,10 +464,10 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: 36,
+              fontSize: 48,
               fontWeight: 500,
               color: theme.text_secondary,
-              marginTop: 16,
+              marginTop: 20,
               opacity: unitOpacity,
               transform: `translateY(${unitY}px)`,
               letterSpacing: "2px",
@@ -520,7 +520,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: 28,
+              fontSize: 32,
               fontWeight: 400,
               color: theme.text_muted,
               background: theme.overlay_subtle,
