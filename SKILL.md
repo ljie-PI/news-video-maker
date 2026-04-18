@@ -89,7 +89,7 @@ python3 smart_render.py project --output video.mp4 --concurrency 4
       - DataHighlight: `unit`, `context`
       - DebateSplit: `topic`, `proSide.label / points`, `conSide.label / points`
       - Architecture: `title`, `layers[].name`, `layers[].description`
-      - Timeline: `title`, `events[].title`, `events[].description`
+      - Timeline: `title`, `events[].label`（注：`events[].date` 是日期字符串如 `2026-04-04`，无需翻译）
       - FeatureCard: `title`, `description`, `highlight`
       - ChatBubbles: `topic`, `messages[].text`（英文原文**必须翻译成中文**）
       - Transition: `text`, `subtitle`
@@ -155,7 +155,7 @@ python3 smart_render.py project --output video.mp4 --concurrency 4
 ```
 
 ### 项目创建步骤
-每个来源（github, hn, ph, reddit）× 每种格式（横屏, 竖屏）= 1 个 Remotion 项目：
+每个来源（github, hackernews, producthunt, reddit）× 每种格式（横屏, 竖屏）= 1 个 Remotion 项目：
 ```bash
 # 1. 创建项目并安装依赖
 mkdir -p remotion-{source}/src remotion-{source}/public
