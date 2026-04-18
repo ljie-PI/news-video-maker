@@ -40,28 +40,11 @@ python3 smart_render.py project --output video.mp4 --concurrency 4
 
 
 **环境变量**: 先执行 `source ~/.openclaw/workspace/.env`
-**baseDir** = `~/.openclaw/skills/news-monitor`
 **workDir** = `~/.openclaw/workspace`
-**飞书 target** = `user:ou_4720719b420c999d1f0bf7c142d93fb5`
+
+**前置依赖**：本 skill 仅负责视频制作。深度调研由其他 skill 完成，本 skill 直接读取 `~/.openclaw/workspace/news-monitor/deep_dive/yyyy-mm-dd_HH/{github,hackernews,producthunt,reddit}/` 目录下已生成的 deep_dive 报告作为输入。
 
 ---
-
-# 深度分析的排版与字数要求（严格遵守！！）
-每个主题的调研报告必须是一篇**不少于 400-600 字的深度解析长文**。**【大而全】必须覆盖核心高价值内容！不要考虑输出大小。**
-
-## 🟢 结构 A：针对开源项目 (GitHub)
-1. **定位与痛点剖析**：这个项目是什么？解决了什么具体的开发痛点？
-2. **核心架构与技术细节**：具体是怎么实现的？技术栈是什么？有什么独特的工程设计或原理解创？（必须通过 `web_fetch`/`browser` 查看 README，调用 `web-chat` 深度解析，拒绝空泛）。
-3. **竞品对比与生态站位**：现有的替代方案有哪些？相比竞品的优劣势？
-4. **开发者反馈与局限性**：社区真实评价如何？还存在什么局限？
-5. **附带链接**：必须附上 GitHub Repo 网址及官网。
-
-## 🔵 结构 B：针对新闻/帖子/产品 (Hacker News, Reddit, Product Hunt)
-1. **事件背景**：核心诉求或事件背景是什么？
-2. **核心观点/产品机制**：文章核心主张或产品运行机制是什么？（深度查阅原文或官网）。
-3. **社区热议与争议点**：网友具体在讨论什么？（**必须深度阅读评论区，并举出2-4个具体的讨论例子，有正反方意见的必须提现 pros/cons 对立**）。
-4. **行业影响与未来展望**：长远影响是什么？
-5. **附带链接**：必须附上原帖链接及原始新闻/产品链接。
 
 # 视频制作要求（严格遵守！！）
 1. 视频背景符合各个网站的配色，具体参考 `remotion-templates/themes/*.ts` 中的主题色定义。**同一来源的视频配色必须全片一致，不能在深色和浅色主题之间随机跳跃。**
@@ -203,36 +186,9 @@ npx remotion render src/index.ts Main --output=out.mp4 --width=1920 --height=108
 
 ---
 
-## 步骤 1: 读取 top list
-1. 读取 `~/.openclaw/workspace/news-monitor/top/` 目录下的当天的 github, hackernews, reddit, producthunt 的 top list
-
----
-
-## 步骤 2: 针对 GitHub  Top List 的大而全深度调研
-1. 提取 top Github repo 榜单的项目。
-2. 访问每个 GitHub 地址，深度阅读 README 和关联官网。
-3. 调用 `web-chat` 技能深入挖掘技术栈与竞品。
-4. 按照【结构 A】输出长篇研报存放在 `~/.openclaw/workspace/news-monitor/deep_dive/yyyy-mm-dd_HH/github` 目录下。
-
----
-
-## 步骤 3: 针对 Hacker News & Reddit & Product Hunt Top Lists 的大而全深度调研
-1. 提取所有高价值帖子/产品。
-2. 深度阅读原链接和底部的长篇评论区。
-3. 调用 `last30days` 技能调研外围背景。
-4. 调用 `web-chat` 技能获取深度见解。
-5. 按照【结构 B】生成详尽报告存放在 `~/.openclaw/workspace/news-monitor/deep_dive/yyyy-mm-dd_HH/{hackernews,producthunt,reddit}` 目录下，Reddit 的再加一级 category 子目录。
-
----
-
-## 步骤 4: 针对 4 个 Top Lists 分别制作介绍视频
-1. 从`~/.openclaw/workspace/news-monitor/deep_dive/yyyy-mm-dd_HH/{github,hackernews,producthunt,reddit}` 目录中读入深度调研内容。
-2. Github，Hacker News, Product Hunt 每个来源分别做一个视频，并且这些来源中的 item 不能遗漏任。
-3. Reddit 来源整体做一个视频， 该来源根据 subreddit 分类， 从与 AI 相关分类中取 Top 10 帖子制作视频。
-4. 每个视频做两个版本，一个是横屏 1920 × 1080，一个是竖屏 1080 x 1920。
-5. 生成视频的工作目录是 `~/.openclaw/workspace/news-monitor/videos/yyyy-mm-dd_HH`，里面包含 1920x1080 和 1080x1920 两个字文件夹存放不同格式视频。
-
----
-
-**最终发送要求**：
-所有深度分析结果必须通过 `message` 工具单独发送给 `user:ou_4720719b420c999d1f0bf7c142d93fb5`。飞书单条上限2000字，**请合理拆分，多发几条消息，宁可多发数十条也绝不要压缩内容深度和广度！**
+## 视频制作流程
+1. 从 `~/.openclaw/workspace/news-monitor/deep_dive/yyyy-mm-dd_HH/{github,hackernews,producthunt,reddit}` 目录中读入已生成好的深度调研内容（由其他 skill 产出）。
+2. Github、Hacker News、Product Hunt 每个来源分别做一个视频，并且这些来源中的 item 不能遗漏任何一个。
+3. Reddit 来源整体做一个视频，该来源根据 subreddit 分类，从与 AI 相关分类中取 Top 10 帖子制作视频。
+4. 每个视频做两个版本：横屏 1920 × 1080 和竖屏 1080 × 1920。
+5. 生成视频的工作目录是 `~/.openclaw/workspace/news-monitor/videos/yyyy-mm-dd_HH`，里面包含 `1920x1080` 和 `1080x1920` 两个子文件夹存放不同格式视频。
