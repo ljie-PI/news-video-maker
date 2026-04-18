@@ -44,6 +44,17 @@ python3 smart_render.py project --output video.mp4 --concurrency 4
 
 **前置依赖**：本 skill 仅负责视频制作。深度调研由其他 skill 完成，本 skill 直接读取 `~/.openclaw/workspace/news-monitor/deep_dive/yyyy-mm-dd_HH/{github,hackernews,producthunt,reddit}/` 目录下已生成的 deep_dive 报告作为输入。
 
+**来源选择：** 用户可在请求中指定只生成某些来源的视频（如"只做 github 的"、"github 和 hn"、"除了 reddit 都做"）。
+- 支持的来源 ID：`github` / `hackernews` / `producthunt` / `reddit`
+- 别名容忍：`hn` ≡ `hackernews`、`ph` ≡ `producthunt`
+- **未指定时默认生成全部 4 个来源**（向后兼容）
+- 仅对**被选中的来源**读入 deep_dive、生成 script.json、调用 TTS、渲染视频；其它来源完全跳过（不读文件、不输出）
+- 用户请求示例与对应行为：
+  - "做今天的视频" → 4 个来源全做
+  - "只做 GitHub 和 Hacker News" → 仅 `github` 和 `hackernews`
+  - "做 ph 的视频" → 仅 `producthunt`
+  - "除了 reddit 都做" → `github` + `hackernews` + `producthunt`
+
 ---
 
 # 视频制作要求（严格遵守！！）
@@ -220,8 +231,10 @@ npx remotion render src/index.ts Main --output=out.mp4 --width=1920 --height=108
 ---
 
 ## 视频制作流程
-1. 从 `~/.openclaw/workspace/news-monitor/deep_dive/yyyy-mm-dd_HH/{github,hackernews,producthunt,reddit}` 目录中读入已生成好的深度调研内容（由其他 skill 产出）。
-2. Github、Hacker News、Product Hunt 每个来源分别做一个视频，并且这些来源中的 item 不能遗漏任何一个。
-3. Reddit 来源整体做一个视频，该来源根据 subreddit 分类，从与 AI 相关分类中取 Top 10 帖子制作视频。
+> 以下流程对**用户选中的每个来源**执行。来源选择规则见上方"快速参考 → 来源选择"。未指定时默认全部 4 个来源。
+
+1. 从 `~/.openclaw/workspace/news-monitor/deep_dive/yyyy-mm-dd_HH/{source}` 目录中读入已生成好的深度调研内容（由其他 skill 产出）。**只读取被选中来源对应的子目录**，未选中的来源不读、不处理。
+2. 对**每个被选中的**来源（Github、Hacker News、Product Hunt）分别做一个视频，并且这些来源中的 item 不能遗漏任何一个。
+3. 如果 Reddit 被选中，整体做一个视频，该来源根据 subreddit 分类，从与 AI 相关分类中取 Top 10 帖子制作视频。
 4. 每个视频做两个版本：横屏 1920 × 1080 和竖屏 1080 × 1920。
-5. 生成视频的工作目录是 `~/.openclaw/workspace/news-monitor/videos/yyyy-mm-dd_HH`，里面包含 `1920x1080` 和 `1080x1920` 两个子文件夹存放不同格式视频。
+5. 生成视频的工作目录是 `~/.openclaw/workspace/news-monitor/videos/yyyy-mm-dd_HH`，里面包含 `1920x1080` 和 `1080x1920` 两个子文件夹存放不同格式视频。**只输出被选中来源的视频文件**，未选中来源不会出现在该目录中。
