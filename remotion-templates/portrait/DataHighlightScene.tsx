@@ -436,13 +436,13 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            inset: 0,
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "space-evenly",
-            paddingTop: Math.round(40 * vScale),
-            paddingBottom: Math.round(40 * vScale),
+            justifyContent: "center",
           }}
         >
           {/* Main number */}
@@ -466,10 +466,10 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: Math.round(36 * fScale),
+              fontSize: Math.round(48 * fScale),
               fontWeight: 500,
               color: theme.text_secondary,
-              marginTop: Math.round(16 * vScale),
+              marginTop: Math.round(20 * vScale),
               opacity: unitOpacity,
               transform: `translateY(${unitY}px)`,
               letterSpacing: "2px",
@@ -522,7 +522,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: Math.round(28 * fScale),
+              fontSize: Math.round(32 * fScale),
               fontWeight: 400,
               color: theme.text_muted,
               background: theme.overlay_subtle,
