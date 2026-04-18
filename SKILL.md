@@ -57,7 +57,40 @@ python3 smart_render.py project --output video.mp4 --concurrency 4
       - **HN/Reddit 帖子**（5-7 分镜/item）：ProjectHeroScene → KeyInsightScene → TimelineScene（如有时间线） → DebateSplitScene（如有正反方） → QuoteCardScene × 1-2 → RichBulletScene
       - **Product Hunt 产品**（4-6 分镜/item）：ProjectHeroScene → KeyInsightScene → FeatureCardScene × 1-2 → TechStackScene（如有） → RichBulletScene
     - 旁白应覆盖读入的深度调研内容中的核心要点，**必须具体且有深度**， 不能只读标题和热度。**每个 item 的旁白必须包含：至少 1 个具体数据点、至少 1 个技术细节、至少 1 条社区评论转述（如有）、以及竞品对比要点（如有）。关键事实遗漏率不得超过 30%。**
-    - 旁白尽量用中文，对于 Hacker News, Reddit 这类英文内容较多的来源，**不能直接读英文标题或者评论**，需要先把英文内容翻译成中文再进行旁白撰写，但**视频中显示的内容可以保留英文**，**旁白和视频显示内容不需要完全一致**，旁白更侧重于解说和分析，视频显示更侧重于原文内容和数据。
+    - 旁白**一律用中文**，对于 Hacker News, Reddit 这类英文内容较多的来源，**不能直接读英文标题或者评论**，需要先把英文内容翻译成中文再进行旁白撰写。旁白更侧重于解说和分析，画面显示更侧重于原文要点和数据，两者**不需要完全一致**。
+    - **画面显示语言规则（严格遵守）**：`script.json` 中所有用于画面展示的文本字段**默认使用中文**，仅以下情况保留原文英文：
+      1. **item 身份标识**（各项目的"标题"，保持与原平台一致便于搜索识别）：
+         - `ProjectHero.name`（GitHub 仓库名如 `owner/repo`、Hacker News / Reddit 帖子标题、Product Hunt 产品名）
+         - `RichBullet.project`、`TechStack.project`（跟随所属 item 名称，保持一致）
+         - 总览预告型 `RichBullet.bullets[].title` —— 当列表就是各 item 名称时，title 用英文原名，`detail` 用中文亮点
+      2. **品牌 / 平台标识**：`source`、`QuoteCard.platform`（如 `GitHub` / `Hacker News` / `Reddit` / `Product Hunt`）
+      3. **作者 handle**：`QuoteCard.author`、`ChatBubbles.messages[].author`
+      4. **URL、版本号、技术栈专有名词**（React / PyTorch / CUDA / Next.js / 等）
+      5. **代码本身**：`code_block.code`（含语言标识 `language`）
+
+      除上述情况外，以下字段必须翻译为中文：
+      - Cover: `title`, `subtitle`（视频整体标题，非 item 标题）
+      - ProjectHero: `tagline`
+      - KeyInsight: `headline`, `explanation`
+      - RichBullet: `sectionTitle`；非 item 列表时的 `bullets[].title` 与 `bullets[].detail`
+      - QuoteCard: `quote`（英文评论**必须翻译成中文**），`context`
+      - ComparisonTable: `title`, `columns`, `rows`（单元格若为专有名词/数字/版本号可保留原文）
+      - DataHighlight: `unit`, `context`
+      - DebateSplit: `topic`, `proSide.label / points`, `conSide.label / points`
+      - Architecture: `title`, `layers[].name`, `layers[].description`
+      - Timeline: `title`, `events[].title`, `events[].description`
+      - FeatureCard: `title`, `description`, `highlight`
+      - ChatBubbles: `topic`, `messages[].text`（英文原文**必须翻译成中文**）
+      - Transition: `text`, `subtitle`
+
+      示例（GitHub 项目的 ProjectHero）：
+      ```json
+      { "name": "microsoft/vscode", "tagline": "微软开源的跨平台代码编辑器", "source": "GitHub" }
+      ```
+      示例（Hacker News 帖子的 QuoteCard）：
+      ```json
+      { "quote": "这个方案比 Redis 快 3 倍，但内存占用翻倍", "author": "pcwalton", "platform": "Hacker News" }
+      ```
     - 深度调研的结果中如果有 pros/cons 正反方评论（如 Hacker News, Reddit）， 必须加到旁白中，且使用 DebateSplitScene 模板。
     - 旁白内容用于生成 TTS 语音，**避免出现特殊字符，避免多个词连在一起读音发不出来**，**对于英文避免使用连词符号"-", "_", "." 等把单词连在一起**。
     - 旁白中如果有列表或者多个模块，每个列表 item 和每个模块单独一个子分镜，方便后期语音和画面做时间同步。
