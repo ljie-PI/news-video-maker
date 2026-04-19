@@ -42,7 +42,7 @@ ANIM_ESTIMATES = {
     "ArchitectureScene":    120,   # layer entrance then static
     "TimelineScene":        "continuous",  # timeline progression
     "TransitionScene":      60,    # quick transition
-    "ProjectIntroScene":    100,   # similar to ProjectHero
+    "ProjectIntroScene":    "continuous",  # rankFloat/rankPulse/rankRotate + scan line + progress bar
     "BulletPointsScene":    "continuous",  # activeBullet cycling
 }
 

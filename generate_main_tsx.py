@@ -66,6 +66,24 @@ def _project_hero_props(data, audio_ref, **_):
         props.append(f'narration="{escape(data["narration"])}"')
     return props
 
+def _project_intro_props(data, audio_ref, **_):
+    # ProjectIntroScene takes a single `stars` string regardless of source —
+    # it strips non-digits at runtime so any of the source-specific count
+    # fields (stars, votes, upvotes, points) can be funneled through.
+    stars = data.get("stars", data.get("votes",
+            data.get("upvotes", data.get("points",
+            data.get("stats", "")))))
+    props = [
+        f'rank={{{data.get("rank", 0)}}}',
+        f'name="{escape(data.get("name", ""))}"',
+        f'tagline="{escape(data.get("tagline", ""))}"',
+        f'stars="{escape(str(stars))}"',
+        f'audioFile="{audio_ref}"',
+    ]
+    if data.get("narration"):
+        props.append(f'narration="{escape(data["narration"])}"')
+    return props
+
 def _key_insight_props(data, audio_ref, **_):
     props = [
         f'headline="{escape(data.get("headline", ""))}"',
@@ -89,6 +107,28 @@ def _rich_bullet_props(data, audio_ref, seq_count=0, **_):
             bullets.append({"title": b, "detail": ""})
         else:
             bullets.append(b)
+    return [
+        f'project="{escape(data.get("project", ""))}"',
+        f'sectionTitle="{escape(data.get("sectionTitle", data.get("title", "")))}"',
+        f'bullets={{{json_prop(bullets)}}}',
+        f'variant={{{seq_count % 3}}}',
+        f'audioFile="{audio_ref}"',
+    ]
+
+def _bullet_points_props(data, audio_ref, seq_count=0, **_):
+    # BulletPointsScene takes plain strings only — flatten {title, detail}
+    # objects back to "title — detail" strings if needed.
+    raw_bullets = data.get("bullets", [])
+    bullets = []
+    for b in raw_bullets:
+        if isinstance(b, str):
+            bullets.append(b)
+        elif isinstance(b, dict):
+            title = b.get("title", "")
+            detail = b.get("detail", "")
+            bullets.append(f"{title} — {detail}" if detail else title)
+        else:
+            bullets.append(str(b))
     return [
         f'project="{escape(data.get("project", ""))}"',
         f'sectionTitle="{escape(data.get("sectionTitle", data.get("title", "")))}"',
@@ -235,10 +275,10 @@ TEMPLATE_REGISTRY = {
     "cover":             ("CoverScene",           _cover_props),
     "cover_title":       ("CoverScene",           _cover_props),
     "project_hero":      ("ProjectHeroScene",     _project_hero_props),
-    "project_intro":     ("ProjectHeroScene",     _project_hero_props),
+    "project_intro":     ("ProjectIntroScene",    _project_intro_props),
     "key_insight":       ("KeyInsightScene",      _key_insight_props),
     "rich_bullet":       ("RichBulletScene",      _rich_bullet_props),
-    "bullet_points":     ("RichBulletScene",      _rich_bullet_props),
+    "bullet_points":     ("BulletPointsScene",    _bullet_points_props),
     "comparison_table":  ("ComparisonTableScene", _comparison_table_props),
     "quote_card":        ("QuoteCardScene",       _quote_card_props),
     "data_highlight":    ("DataHighlightScene",   _data_highlight_props),
