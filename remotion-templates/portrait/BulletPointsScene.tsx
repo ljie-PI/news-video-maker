@@ -33,12 +33,16 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
 
   const bulletCount = bullets.length;
   const entranceDone = 12 + bulletCount * 10;
-  const activeBulletRaw = interpolate(
-    frame,
-    [entranceDone, durationInFrames - 10],
-    [0, bulletCount - 0.01],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  // Guard against degenerate inputRange (entranceDone >= durationInFrames - 10)
+  // which would cause interpolate to throw.
+  const activeBulletRaw = entranceDone >= durationInFrames - 10
+    ? bulletCount - 0.01
+    : interpolate(
+        frame,
+        [entranceDone, durationInFrames - 10],
+        [0, bulletCount - 0.01],
+        { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+      );
   const activeBullet = Math.floor(activeBulletRaw);
 
   const bgAngle = 135 + (frame / durationInFrames) * 60;

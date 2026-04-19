@@ -41,12 +41,16 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
   const bulletBaseDelay = 5;
   const bulletGap = Math.max(3, Math.floor(45 / Math.max(bulletCount, 1)));
   const entranceDone = bulletBaseDelay + bulletCount * bulletGap + 10;
-  const activeBulletRaw = interpolate(
-    frame,
-    [entranceDone, durationInFrames - 10],
-    [0, bulletCount - 0.01],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  // Guard against degenerate inputRange (entranceDone >= durationInFrames - 10)
+  // which would cause interpolate to throw.
+  const activeBulletRaw = entranceDone >= durationInFrames - 10
+    ? bulletCount - 0.01
+    : interpolate(
+        frame,
+        [entranceDone, durationInFrames - 10],
+        [0, bulletCount - 0.01],
+        { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+      );
   const activeBullet = Math.floor(activeBulletRaw);
 
   // Background gradient rotation
