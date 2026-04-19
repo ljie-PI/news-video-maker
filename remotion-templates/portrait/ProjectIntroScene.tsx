@@ -71,9 +71,6 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
   });
   const displayedStars = Math.floor(starsNum * counterProgress);
 
-  const scanY = (frame * 4) % 2000;
-  const progress = frame / durationInFrames;
-
   return (
     <AbsoluteFill>
       <Audio src={staticFile(audioFile)} />
@@ -89,18 +86,6 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
           overflow: "hidden",
         }}
       >
-        {/* Scanning line */}
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: scanY,
-            width: "100%",
-            height: 2,
-            background: `linear-gradient(90deg, transparent, ${accentColor}40, transparent)`,
-          }}
-        />
-
         {/* Rank number — centered top */}
         <div
           style={{
@@ -199,26 +184,6 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
               </div>
             </div>
           )}
-        </div>
-
-        {/* Progress bar */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            width: "100%",
-            height: 4,
-            backgroundColor: "rgba(0,0,0,0.05)",
-          }}
-        >
-          <div
-            style={{
-              height: "100%",
-              width: `${progress * 100}%`,
-              background: `linear-gradient(90deg, ${accentColor}, ${theme.status_success})`,
-            }}
-          />
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
