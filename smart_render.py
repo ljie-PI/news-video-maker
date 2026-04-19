@@ -35,14 +35,14 @@ ANIM_ESTIMATES = {
     "FeatureCardScene":     100,   # icon + title + desc entrance then static
     "DebateSplitScene":     120,   # card entrance then static
     "QuoteCardScene":       100,   # quote word entrance then static
-    "DataHighlightScene":   180,   # counter animation then static
+    "DataHighlightScene":   "continuous",  # gauge ring, HudCorner, gradient all rotate continuously
     "CodeBlockScene":       120,   # code lines appear then static
     "ChatBubblesScene":     "continuous",  # activeIndex bubble cycling
     "TechStackScene":       120,   # badge stagger then static
     "ArchitectureScene":    120,   # layer entrance then static
     "TimelineScene":        "continuous",  # timeline progression
     "TransitionScene":      60,    # quick transition (glitch active throughout)
-    "ProjectIntroScene":    120,   # rank/badge entrance + star counter (ends ~90), then static
+    "ProjectIntroScene":    "continuous",  # bgGradientAngle keeps rotating across the segment
     "BulletPointsScene":    "continuous",  # activeBullet cycling
 }
 

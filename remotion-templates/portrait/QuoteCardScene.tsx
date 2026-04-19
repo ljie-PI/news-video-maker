@@ -72,7 +72,7 @@ export const QuoteCardScene: React.FC<QuoteCardSceneProps> = ({
   });
   const cardOpacity = fadeIn(frame, CARD_ENTRANCE_START, 10);
 
-  // Quotation mark animation: scale 2→1 + continuous pulse after entrance
+  // Quotation mark entrance: scale 2→1
   const quoteMarkOpacity = fadeIn(frame, QUOTE_MARK_START, 20);
   const quoteMarkEntrance = interpolate(
     spring({ frame: Math.max(0, frame - QUOTE_MARK_START), fps, config: { damping: 14, mass: 0.6 } }),
