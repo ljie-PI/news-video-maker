@@ -286,7 +286,7 @@
 ```
 **必填**：`title`、`code`。
 **特殊**：**竖屏渲染时，本模板会被自动降级为 `key_insight`**
-（headline=`title`、explanation=`narration` 或 `annotation`）。如果
+（headline=`title`、explanation=`annotation` 或顶层 `narration`）。如果
 内容必须以代码形式呈现，请只在横屏视频里用本模板。
 
 ---

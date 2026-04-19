@@ -371,11 +371,12 @@ def main():
         # Portrait mode: replace code_block with key_insight
         if height > width and template == "code_block":
             template = "key_insight"
+            narration = seg.get("narration", "")
             data = {
                 "icon": "💻",
                 "headline": data.get("title", ""),
-                "explanation": data.get("narration", data.get("annotation", "")),
-                "narration": data.get("narration", ""),
+                "explanation": data.get("annotation") or narration,
+                "narration": narration,
             }
 
         wav_file = f"{audio_prefix}_{seg_id}.wav"
