@@ -123,11 +123,13 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
 
     const segmentDuration = (durationInFrames - entranceDone - 10) / count;
     const sweepStart = entranceDone + segmentDuration * globalIndex;
-    const sweepWidth = isActive
-      ? (segmentDuration > 0 ? underlineSweep(frame, sweepStart, segmentDuration) : 100)
-      : isNarrated
-        ? 100
-        : 0;
+    const sweepWidth = !audioDriven
+      ? (frame >= entranceDone ? 100 : 0)
+      : isActive
+        ? (segmentDuration > 0 ? underlineSweep(frame, sweepStart, segmentDuration) : 100)
+        : isNarrated
+          ? 100
+          : 0;
 
     return (
       <div
@@ -306,7 +308,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
               whiteSpace: "nowrap",
             }}
           >
-            {frame >= entranceDone ? `${active + 1} / ${count}` : ""}
+            {audioDriven && frame >= entranceDone ? `${active + 1} / ${count}` : ""}
           </div>
         </div>
 
