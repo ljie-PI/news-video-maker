@@ -118,25 +118,25 @@ videos/yyyy-mm-dd_HH/
 
 | 模板 ID | 一句话用途 | 适用关键词 / 同义概念 |
 |---|---|---|
-| `cover` | 视频封面 / 片尾，标题 + 副标题 + 来源标识 | 封面、cover_title、credit_roll（片尾用此） |
-| `project_intro` | **GitHub 专用**项目身份卡：rank + 名称 + tagline + ⭐ 数（图标硬编码 ★） | GitHub 项目介绍、ProjectIntro |
-| `project_hero` | **跨来源通用**身份卡：rank + 名称 + tagline + 任意前缀 stats（▲ points / votes / ⭐ 等，自动解析前缀） | HN / PH / Reddit 身份卡、leaderboard 单条 |
+| `cover` | 视频封面 / 片尾，标题 + 副标题 + 来源标识 | 封面、片尾 |
+| `project_intro` | **GitHub 专用**项目身份卡：rank + 名称 + tagline + ⭐ 数（图标硬编码 ★） | GitHub 项目介绍 |
+| `project_hero` | **跨来源通用**身份卡：rank + 名称 + tagline + 任意前缀 stats（▲ points / votes / ⭐ 等，自动解析前缀） | HN / PH / Reddit 身份卡、排行榜单条 |
 | `key_insight` | 核心洞察 / 痛点：一句大字 + 一段解释 | 核心观点、insight、痛点、hook |
-| `rich_bullet` | 详细要点列表（活跃 bullet 高亮切换，每条带 title + detail 子结构） | 要点列表、leaderboard 总览预告、step_breakdown |
+| `rich_bullet` | 详细要点列表（活跃 bullet 高亮切换，每条带 title + detail 子结构） | 要点列表、排行榜总览预告、步骤拆解 |
 | `bullet_points` | 简洁要点列表（纯字符串 bullets，顶部带项目名称栏） | 项目子要点、章节分要点 |
-| `comparison_table` | 竞品 / 方案对比表格 | 对比、split_compare、versus |
-| `debate_split` | 正反方辩论：左右两侧支持 / 反对论点（pros/cons 必用） | 辩论、pros vs cons、debate_arena、debate_clash |
-| `quote_card` | 单条社区评论引用：大字引文 + 作者 + 平台 | 引用、评论、immersive_quote、单条精选评论 |
+| `comparison_table` | 竞品 / 方案对比表格 | 对比、并排比较 |
+| `debate_split` | 正反方辩论：左右两侧支持 / 反对论点（pros/cons 必用） | 辩论、pros vs cons |
+| `quote_card` | 单条社区评论引用：大字引文 + 作者 + 平台 | 引用、单条精选评论 |
 | `data_highlight` | 数据仪表盘：超大动画数字 + HUD 圆环 / 进度 | star 数、性能数据、百分比、KPI 仪表盘 |
-| `feature_card` | 单点功能特色卡：图标 + 标题 + 描述 | 单点亮点、产品功能、three_column 用三个并列 |
+| `feature_card` | 单点功能特色卡：图标 + 标题 + 描述 | 单点亮点、产品功能（多列并排可重复使用） |
 | `code_block` | 代码片段 / 命令行展示 | 代码、安装命令、CLI、shell |
 | `architecture` | 架构分层图：纵向多层（前端 / 后端 / 数据） | 系统架构、技术栈分层、流程图 |
 | `tech_stack` | 技术栈徽章列表 | 使用的技术、stack badges、依赖列表 |
-| `chat_bubbles` | 多人讨论气泡（左右交替弹入） | 多条评论、社区讨论、comment_feed、danmaku_wall（用此替代） |
+| `chat_bubbles` | 多人讨论气泡（左右交替弹入） | 多条评论、社区讨论、弹幕风格留言流 |
 | `timeline` | 时间线（事件 / 版本历史，按日期点亮） | 时间线、版本历史、roadmap |
 | `transition` | 章节过渡 / 来源切换大标题 | 转场、章节标题 |
 
-**注意**：上表 17 个模板 ID + 1 个向后兼容别名 `cover_title` ≡ `cover` 是 `generate_main_tsx.py` 当前接受的全部 `template` 取值。其它 backup 时代的概念名（`debate_arena` / `leaderboard` / `immersive_quote` / `cinematic_lower_third` / `card_stack_swipe` / `social_feed` 等）**不在 registry**，写错会被跳过并打印 `WARNING: Unknown template`——遇到这些概念请按第 3 列同义词映射到现有模板，不要凭名称生造。
+**注意**：上表 17 个模板 ID + 1 个向后兼容别名 `cover_title` ≡ `cover` 是 `generate_main_tsx.py` 当前接受的全部 `template` 取值。其它名字一律不接受，写错会被跳过并打印 `WARNING: Unknown template`——遇到上表未覆盖的展示需求，请从现有模板中挑最贴近的一个，不要凭概念名生造。
 
 > `remotion-templates/SCENE_DESIGN.md` 是更早版本的视觉规范，仅包含其中 15 个场景，未含 `project_intro` 与 `bullet_points`；这两个组件请直接参考 `landscape/` 下的 `ProjectIntroScene.tsx` / `BulletPointsScene.tsx` 源码。
 
