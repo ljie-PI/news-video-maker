@@ -36,14 +36,16 @@ python3 smart_render.py project --output video.mp4 --concurrency 4
 
 **质量评估：** 使用 video_quality_eval_prompt.md（9个维度，目标分数 >= 9.0）
 
-**可用模板（15 种，详细规范见 `remotion-templates/SCENE_DESIGN.md`）：**
+**可用模板（16 种 + 1 别名，详细规范见 `remotion-templates/SCENE_DESIGN.md`）：**
 
 | 模板 ID | 一句话用途 | 适用关键词 / 同义概念 |
 |---|---|---|
 | `cover` | 视频封面 / 片尾，标题 + 副标题 + 来源标识 | 封面、cover_title、credit_roll（片尾用此） |
-| `project_intro` | 项目 / 帖子 / 产品身份卡：rank + 名称 + tagline + star/votes | 项目介绍、ProjectHero、leaderboard 单条 |
+| `project_intro` | **GitHub 专用**项目身份卡：rank + 名称 + tagline + ⭐ 数（图标硬编码 ★） | GitHub 项目介绍、ProjectIntro |
+| `project_hero` | **跨来源通用**身份卡：rank + 名称 + tagline + 任意前缀 stats（▲points / votes / ⭐ 等，自动解析前缀） | HN / PH / Reddit 身份卡、leaderboard 单条 |
 | `key_insight` | 核心洞察 / 痛点：一句大字 + 一段解释 | 核心观点、insight、痛点、hook |
-| `rich_bullet` | 详细要点列表（活跃 bullet 高亮切换） | 要点列表、bullets、leaderboard 总览预告、step_breakdown |
+| `rich_bullet` | 详细要点列表（活跃 bullet 高亮切换，每条带 title + detail 子结构） | 要点列表、leaderboard 总览预告、step_breakdown |
+| `bullet_points` | 简洁要点列表（纯字符串 bullets，顶部带项目名称栏） | 项目子要点、章节分要点 |
 | `comparison_table` | 竞品 / 方案对比表格 | 对比、split_compare、versus |
 | `debate_split` | 正反方辩论：左右两侧支持 / 反对论点（必须用于 pros/cons 内容） | 辩论、pros vs cons、debate_arena、debate_clash |
 | `quote_card` | 单条社区评论引用：大字引文 + 作者 + 平台 | 引用、评论、immersive_quote、单条精选评论 |
@@ -61,13 +63,13 @@ python3 smart_render.py project --output video.mp4 --concurrency 4
 - "对比 / split_compare / versus" → `comparison_table`（数据型）或 `debate_split`（观点型）
 - "辩论 / debate_arena / debate_clash / pros vs cons" → `debate_split`
 - "引用 / immersive_quote / 大字金句" → `quote_card`
-- "leaderboard / 排行榜" → 总览预告用 `rich_bullet`，单条详情用 `project_intro`
+- "leaderboard / 排行榜" → 总览预告用 `rich_bullet`，单条详情用 `project_hero`（跨来源）或 `project_intro`（仅 GitHub）
 - "弹幕墙 / danmaku_wall / 评论流 / comment_feed / notification_center" → `chat_bubbles`
 - "step_breakdown / 步骤引导" → `rich_bullet`（活跃 bullet 表示当前步）
 - "three_column / 三栏并列" → 三个 `feature_card` 串联（每个一栏）
 - "cinematic_lower_third / 字幕条 overlay / card_stack_swipe / social_feed" → 无独立实现，按场景拆分到现有模板，**不要凭名称生造**
 
-**注意**：上表 15 个 ID 是 `generate_main_tsx.py` 唯一识别的 `template` 取值。任何 backup 时代的旧名称（如 `cover_title`、`debate_arena`、`leaderboard`）都不能直接写入 `script.json` 的 `template` 字段，必须按上方映射换成对应 ID。
+**注意**：上表 16 个模板 ID（含 `project_hero` / `bullet_points` 两个独立组件）是 `generate_main_tsx.py` 当前正式支持的 `template` 取值。另有 1 个**向后兼容别名**：`cover_title` ≡ `cover`。其余 backup 时代的概念名（`debate_arena` / `leaderboard` / `immersive_quote` / `split_compare` / `danmaku_wall` 等）**不在 registry 中**，必须按上方映射换成对应 ID，否则 `generate_main_tsx.py` 会跳过该 segment 并打印 `WARNING: Unknown template`。
 
 
 **环境变量**: 先执行 `source ~/.openclaw/workspace/.env`
