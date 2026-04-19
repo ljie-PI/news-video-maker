@@ -22,7 +22,7 @@ description: >
 ```bash
 source ~/.openclaw/workspace/.env
 ```
-`workDir = ~/.openclaw/workspace`。
+`workDir = ~/.openclaw/workspace/news-monitor/videos`。
 
 ### 1.2 前置依赖
 - 系统：Node.js 18+、ffmpeg、Python 3.10+
@@ -173,7 +173,7 @@ videos/yyyy-mm-dd_HH/
 4. 撰写每个分镜的 `narration`（中文，遵循二.6/7 与 1.2 的语言规则）
 5. 写入 `script.json`：顶层是 `{"segments": [...]}`，每个 segment 包含 `id`（唯一标识，用于 audio 文件名）、`template`（取 1.1 表中 17 个模板 ID 之一）、`narration`（旁白文本）、`data`（模板需要的字段，字段集随模板不同而不同；详见 `remotion-templates/SCENE_DESIGN.md` 中各 Scene 的 Props 定义）
 
-#### 1.4 关键字段约束（不写到 example，避免 LLM 照抄）
+#### 1.4 关键字段约束
 
 - 每个 segment 的 `id` 必须全局唯一（用作 audio 文件名前缀）
 - `data.name`（项目名）必须是人类可读的真实名称，**不能用 slug 或 id**
@@ -188,7 +188,7 @@ videos/yyyy-mm-dd_HH/
 
 **输出**：`videos/yyyy-mm-dd_HH/{source}/audio/{seg_id}.wav`
 
-**命令**（CosyVoice，**GPU 同一时间只能运行一个实例**）：
+**命令**（CosyVoice）：
 ```bash
 cd ~/.openclaw/workspace/CosyVoice && \
   uv run python clone_voice.py "旁白文本" \
@@ -200,9 +200,10 @@ cd ~/.openclaw/workspace/CosyVoice && \
 **做法**：
 1. 遍历 script.json 的所有 segments，按 `id` 顺序串行调用 CosyVoice
 2. 跳过已存在的 wav 文件（支持断点续跑）
-3. 失败的 segment 记录原始旁白和报错堆栈到日志，便于人工修复后重跑
+3. 每生成完一条 wav，用 `ffprobe -v quiet -show_entries format=duration -of csv=p=0 {wav}` 读取**音频实际时长（秒）**，作为后续帧偏移和 §二.9「单分镜旁白时长 ≤ 15 秒」校验依据；超过 15 秒的分镜必须在日志中标红，回到步骤 1 拆分该 segment 后重跑
+4. 失败的 segment 记录原始旁白和报错堆栈到日志，便于人工修复后重跑
 
-**日志**：`logs/{source}_02_tts.log`，记录每条 wav 的 id / 字数 / 生成耗时 / 文件大小，以及任何失败堆栈。
+**日志**：`logs/{source}_02_tts.log`，**每条 wav 一行**记录 `id / 字数 / 音频时长(秒) / 生成耗时(秒) / 文件大小`，超时分镜额外用 `WARN` 前缀标出；末尾追加汇总（总分镜数 / 总时长 / 失败数 / 超时数）。
 
 ---
 
@@ -237,7 +238,7 @@ python3 generate_main_tsx.py script.json {audio_prefix} \
   --audio-dir remotion-{source}-{orientation}/public/audio
 ```
 
-**注意事项（历史踩坑）**：
+**注意事项**：
 1. **isDark**：除 GitHub 外，其他来源的 BulletPointsScene 中 `isDark` 必须为 `false`（硬编码）。GitHub 来源可使用 `rank % 3 === 0` 交替。
 2. **HN 来源**：用 ▲ 替代 ★ 显示 points，可在 theme 中覆盖；或直接选 `project_hero` 模板（前缀自动解析）。
 3. **竖屏 scanY**：使用 `% 2000` 而非 `% 1200`（适配 1920 高度）。
