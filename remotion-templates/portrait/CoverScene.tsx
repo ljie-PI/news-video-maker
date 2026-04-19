@@ -16,17 +16,6 @@ interface CoverSceneProps {
   narration?: string;
 }
 
-// Hex (#rrggbb) → {r,g,b}; falls back to white on parse failure.
-const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
-  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex.trim());
-  if (!m) return { r: 255, g: 255, b: 255 };
-  return {
-    r: parseInt(m[1], 16),
-    g: parseInt(m[2], 16),
-    b: parseInt(m[3], 16),
-  };
-};
-
 export const CoverScene: React.FC<CoverSceneProps> = ({
   title,
   subtitle,
@@ -37,16 +26,18 @@ export const CoverScene: React.FC<CoverSceneProps> = ({
   const { durationInFrames } = useVideoConfig();
 
   const gradientAngle = 135 + (frame / durationInFrames) * 120;
-  const breathe = 1 + Math.sin(frame / 25) * 0.015;
+  // Static: no breathing scale to avoid visible content wobble (matches landscape)
+  const breathe = 1;
 
+  // Static circle positions/opacities (no per-frame sin/cos drift)
   const circles = [0, 1, 2, 3, 4].map((i) => {
     const cx = [150, 900, 540, 100, 800][i];
     const cy = [300, 1400, 800, 1100, 500][i];
     return {
-      x: Math.sin(frame / (30 + i * 7) + i * 1.5) * 120 + cx,
-      y: Math.cos(frame / (25 + i * 5) + i * 2) * 200 + cy,
-      size: 100 + i * 50 + Math.sin(frame / 20 + i) * 25,
-      opacity: 0.06 + Math.sin(frame / 30 + i * 1.2) * 0.03,
+      x: cx,
+      y: cy,
+      size: 100 + i * 50,
+      opacity: 0.06,
     };
   });
 
@@ -62,10 +53,8 @@ export const CoverScene: React.FC<CoverSceneProps> = ({
 
   const progress = frame / durationInFrames;
 
-  // Per-character wave is interpolated between brand_primary and brand_highlight
-  // so each theme keeps its own identity rather than a hard-coded yellow tint.
-  const baseColor = hexToRgb(theme.brand_primary);
-  const accentColor = hexToRgb(theme.brand_highlight);
+  // Static title color (no per-frame interpolation between brand colors).
+  const titleColor = theme.brand_primary;
 
   return (
     <AbsoluteFill>
@@ -116,22 +105,6 @@ export const CoverScene: React.FC<CoverSceneProps> = ({
               [0, 1],
               { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
             );
-            const waveY = Math.sin(frame * 0.08 + i * 0.4) * 10;
-            const waveT = interpolate(
-              Math.sin(frame * 0.05 + i * 0.3),
-              [-1, 1],
-              [0, 1]
-            );
-            const r = Math.round(
-              baseColor.r + (accentColor.r - baseColor.r) * waveT
-            );
-            const g = Math.round(
-              baseColor.g + (accentColor.g - baseColor.g) * waveT
-            );
-            const b = Math.round(
-              baseColor.b + (accentColor.b - baseColor.b) * waveT
-            );
-            const color = `rgb(${r}, ${g}, ${b})`;
 
             return (
               <span
@@ -140,9 +113,8 @@ export const CoverScene: React.FC<CoverSceneProps> = ({
                   fontFamily,
                   fontSize: 110,
                   fontWeight: 700,
-                  color,
+                  color: titleColor,
                   opacity: charOpacity,
-                  transform: `translateY(${waveY}px)`,
                   lineHeight: 1.15,
                   whiteSpace: "pre",
                 }}
@@ -160,7 +132,7 @@ export const CoverScene: React.FC<CoverSceneProps> = ({
             color: theme.text_secondary,
             marginTop: 50,
             opacity: subtitleOpacity,
-            transform: `scale(${subtitleScale + Math.sin(frame / 30) * 0.02})`,
+            transform: `scale(${subtitleScale})`,
             fontWeight: 400,
             textAlign: "center",
             padding: "0 40px",
