@@ -12,7 +12,6 @@
 - **平台主题色**：GitHub（蓝紫 `#0969da`）、Hacker News（橙 `#ff6600`）、Reddit（橙红 `#ff4500`）、Product Hunt（珊瑚红 `#ff6154`）。
 - **横竖屏双版本**：每个组件都有 `landscape/` 与 `portrait/` 两套实现，针对 1920×1080 与 1080×1920 分别优化布局。
 - **音频驱动的自动排版**：`generate_main_tsx.py` 根据每段 TTS 音频时长自动计算帧偏移，生成 Remotion `Main.tsx` / `Root.tsx`。
-- **智能渲染加速**：`smart_render.py` 解析 `Main.tsx`，只渲染有动效的帧，静态部分用 ffmpeg freeze frame 填充，**2–4× 加速**。
 - **质量评估 prompt**：`video_quality_eval_prompt.md` 提供 9 维度（P0/P1）量化评估，目标分数 ≥9.0。
 
 ---
@@ -22,8 +21,8 @@
 | 依赖 | 用途 |
 |---|---|
 | Node.js 18+ | 运行 Remotion |
-| Python 3.10+ | 运行 `generate_main_tsx.py` 和 `smart_render.py` |
-| ffmpeg / ffprobe | 音频时长解析、smart render 拼接 |
+| Python 3.10+ | 运行 `generate_main_tsx.py` |
+| ffmpeg / ffprobe | 音频时长解析 |
 | ImageMagick（可选） | 视频质量评估时量化空间利用率 |
 | TTS 引擎 | 推荐 [CosyVoice](https://github.com/FunAudioLLM/CosyVoice) |
 
@@ -124,20 +123,10 @@ python3 generate_main_tsx.py \
 
 ### 6. 渲染视频
 
-**标准渲染：**
-
 ```bash
 cd $PROJ
 npx remotion render src/index.ts Main \
     --output=out.mp4 --fps=30 --codec=h264 --concurrency=4
-```
-
-**智能渲染（推荐，2–4× 加速）：**
-
-```bash
-python3 smart_render.py $PROJ --output out.mp4 --concurrency 4
-# 干跑查看渲染计划：
-python3 smart_render.py $PROJ --output out.mp4 --dry-run
 ```
 
 ### 7. 质量评估
@@ -154,7 +143,6 @@ news-video-maker/
 ├── README.md                     # 本文件
 ├── _meta.json                    # skill 元信息
 ├── generate_main_tsx.py          # 脚本+音频 → Main.tsx/Root.tsx
-├── smart_render.py               # 智能渲染（跳过静态帧）
 ├── video_quality_eval_prompt.md  # LLM 视频质量评估 prompt（9 维度）
 └── remotion-templates/
     ├── README.md
