@@ -88,40 +88,16 @@ videos/yyyy-mm-dd_HH/
 
 7. **TTS 友好**：旁白文本避免特殊字符；英文避免使用 `-` `_` `.` 把单词连在一起（CosyVoice 会读不出来）；旁白中的每个 bullet 和每个模块单独一个子分镜，方便后期音画对齐。
 
-8. **画面显示语言规则（严格遵守）**：`script.json` 中所有用于画面展示的文本字段**默认中文**，仅以下情况保留原文：
-   1. **item 身份标识**（保持与原平台一致便于搜索识别）：
-      - `ProjectHero.name` / `ProjectIntro.name`（GitHub 仓库名 `owner/repo`、HN/Reddit 帖子标题、PH 产品名）
-      - `RichBullet.project`、`TechStack.project`（跟随所属 item 名称）
-      - 总览预告型 `RichBullet.bullets[].title`（列表就是各 item 名称时，title 用英文原名，`detail` 用中文亮点）
-   2. **品牌 / 平台标识**：`source`、`QuoteCard.platform`
-   3. **作者 handle**：`QuoteCard.author`、`ChatBubbles.messages[].author`
-   4. **URL、版本号、技术栈专有名词**（React / PyTorch / CUDA 等）
-   5. **代码本身**：`code_block.code`（含 `language`）
+8. **画面密度**：每个内容分镜画面上可见文字 ≥ **80 中文字 / 150 英文字**。旁白提到的关键信息（数据点、技术名词、评论观点）≥ **70%** 必须在画面上展示。旁白提到的数据点（Star 数、性能数字、百分比）应以**大号动画数字 / 动态计数器**形式同步显示；竞品对比必须用表格 / 分栏（不要纯文字列表）；社区评论必须用引用卡片（不要 bullet）。
 
-   **必须翻译为中文的字段**：
-   - `Cover.title/subtitle`、`ProjectHero.tagline`、`ProjectIntro.tagline`
-   - `KeyInsight.headline/explanation`
-   - `RichBullet.sectionTitle`；非 item 列表时的 `bullets[].title`/`detail`
-   - `QuoteCard.quote`（英文评论必须翻译）、`QuoteCard.context`
-   - `ComparisonTable.title/columns/rows`（专有名词、版本号、数字可保留）
-   - `DataHighlight.unit/context`
-   - `DebateSplit.topic/proSide.label|points/conSide.label|points`
-   - `Architecture.title/layers[].name|description`
-   - `Timeline.title/events[].label`（`events[].date` 是日期字符串，不译）
-   - `FeatureCard.title/description/highlight`
-   - `ChatBubbles.topic/messages[].text`（英文必须翻译）
-   - `Transition.text/subtitle`
-
-9. **画面密度**：每个内容分镜画面上可见文字 ≥ **80 中文字 / 150 英文字**。旁白提到的关键信息（数据点、技术名词、评论观点）≥ **70%** 必须在画面上展示。旁白提到的数据点（Star 数、性能数字、百分比）应以**大号动画数字 / 动态计数器**形式同步显示；竞品对比必须用表格 / 分栏（不要纯文字列表）；社区评论必须用引用卡片（不要 bullet）。
-
-10. **动效与时长**：
+9. **动效与时长**：
     - **严禁静态画面超过 3 秒**：必须使用逐条入场（stagger ≥ 0.5s），动画结束后用持续动效（活跃 bullet 切换高亮 / 数字 counter / 进度条 / 元素浮动）填充剩余时长
     - **单分镜旁白时长 ≤ 15 秒**。超时必须拆分（按论点拆，每子分镜 8-15 秒，使用不同模板或视觉焦点）。例：35 秒讲 3 个要点 → 拆为 3 个分镜（KeyInsight → RichBullet → DataHighlight），每段约 12 秒
     - **动效幅度** ≥ 20px 或 ≥ 5% 缩放（更小的幅度在视频中不可感知）。每分镜至少叠加 ≥ 2 种动效
 
-11. **空间利用率** ≥ 65%（可用 ImageMagick `-fuzz 15% -trim` 测量），不允许大面积空白。
+10. **空间利用率** ≥ 65%（可用 ImageMagick `-fuzz 15% -trim` 测量），不允许大面积空白。
 
-12. **不得修改组件源码**：模板代码已在 `remotion-templates/` 中评估迭代到位，**只允许修改 `theme.ts` 和 `Main.tsx`**，不得重写 Scene 组件逻辑。
+11. **不得修改组件源码**：模板代码已在 `remotion-templates/` 中评估迭代到位，**只允许修改 `theme.ts` 和 `Main.tsx`**，不得重写 Scene 组件逻辑。
 
 ---
 
@@ -136,14 +112,7 @@ videos/yyyy-mm-dd_HH/
 
 **输出**：`videos/yyyy-mm-dd_HH/{source}/script.json`
 
-**做法**：
-1. 读入该来源所有 deep_dive 文件
-2. 为每个 item 规划 5-10 个分镜：先决定每个分镜要讲什么内容（结合二.5 旁白深度要求），再选合适模板
-3. 第 1 分镜固定 `cover`，第 2 分镜固定 `rich_bullet`（总览预告，列出**所有** items）
-4. 撰写每个分镜的 `narration`（中文，遵循二.6/7/8 的语言规则）
-5. 写入 `script.json`：顶层是 `{"segments": [...]}`，每个 segment 包含 `id`（唯一标识，用于 audio 文件名）、`template`（取下方 16 模板 ID 之一）、`narration`（旁白文本）、`data`（模板需要的字段，字段集随模板不同而不同；详见 `remotion-templates/SCENE_DESIGN.md` 中各 Scene 的 Props 定义）
-
-**16 个可用模板（详细规范见 `remotion-templates/SCENE_DESIGN.md`）：**
+#### 1.1 可用模板（16 个，详细规范见 `remotion-templates/SCENE_DESIGN.md`）
 
 | 模板 ID | 一句话用途 | 适用关键词 / 同义概念 |
 |---|---|---|
@@ -178,15 +147,49 @@ videos/yyyy-mm-dd_HH/
 
 **注意**：上表 16 个 ID（含 `project_hero` / `bullet_points` 两个独立组件）+ 1 个向后兼容别名 `cover_title` ≡ `cover` 是 `generate_main_tsx.py` 当前接受的全部 `template` 取值。其它 backup 时代的概念名（`debate_arena` / `leaderboard` / `immersive_quote` 等）**不在 registry**，写错会被跳过并打印 `WARNING: Unknown template`。
 
-**关键字段约束**（不写到 example，避免 LLM 照抄）：
+#### 1.2 画面显示语言规则（严格遵守）
+
+`script.json` 中所有用于画面展示的文本字段**默认中文**，仅以下情况保留原文：
+
+1. **item 身份标识**（保持与原平台一致便于搜索识别）：
+   - `ProjectHero.name` / `ProjectIntro.name`（GitHub 仓库名 `owner/repo`、HN/Reddit 帖子标题、PH 产品名）
+   - `RichBullet.project`、`TechStack.project`（跟随所属 item 名称）
+   - 总览预告型 `RichBullet.bullets[].title`（列表就是各 item 名称时，title 用英文原名，`detail` 用中文亮点）
+2. **品牌 / 平台标识**：`source`、`QuoteCard.platform`
+3. **作者 handle**：`QuoteCard.author`、`ChatBubbles.messages[].author`
+4. **URL、版本号、技术栈专有名词**（React / PyTorch / CUDA 等）
+5. **代码本身**：`code_block.code`（含 `language`）
+
+**必须翻译为中文的字段**：
+- `Cover.title/subtitle`、`ProjectHero.tagline`、`ProjectIntro.tagline`
+- `KeyInsight.headline/explanation`
+- `RichBullet.sectionTitle`；非 item 列表时的 `bullets[].title`/`detail`
+- `QuoteCard.quote`（英文评论必须翻译）、`QuoteCard.context`
+- `ComparisonTable.title/columns/rows`（专有名词、版本号、数字可保留）
+- `DataHighlight.unit/context`
+- `DebateSplit.topic/proSide.label|points/conSide.label|points`
+- `Architecture.title/layers[].name|description`
+- `Timeline.title/events[].label`（`events[].date` 是日期字符串，不译）
+- `FeatureCard.title/description/highlight`
+- `ChatBubbles.topic/messages[].text`（英文必须翻译）
+- `Transition.text/subtitle`
+
+#### 1.3 做法
+
+1. 读入该来源所有 deep_dive 文件
+2. 为每个 item 规划 5-10 个分镜：先决定每个分镜要讲什么内容（结合二.5 旁白深度要求），再选合适模板
+3. 第 1 分镜固定 `cover`，第 2 分镜固定 `rich_bullet`（总览预告，列出**所有** items）
+4. 撰写每个分镜的 `narration`（中文，遵循二.6/7 与 1.2 的语言规则）
+5. 写入 `script.json`：顶层是 `{"segments": [...]}`，每个 segment 包含 `id`（唯一标识，用于 audio 文件名）、`template`（取 1.1 表中 16 个模板 ID 之一）、`narration`（旁白文本）、`data`（模板需要的字段，字段集随模板不同而不同；详见 `remotion-templates/SCENE_DESIGN.md` 中各 Scene 的 Props 定义）
+
+#### 1.4 关键字段约束（不写到 example，避免 LLM 照抄）
+
 - 每个 segment 的 `id` 必须全局唯一（用作 audio 文件名前缀）
 - `data.name`（项目名）必须是人类可读的真实名称，**不能用 slug 或 id**
 - `bullet_points.data.project` 必须**显式传入真实项目名**（如 "Gemini CLI"），不能是 slug，且应与同一 item 的 `project_intro.data.name` 一致；缺省会导致顶部标题为空
 - 数值字段：GitHub 用 `stars`，HN 用 `points`，PH 用 `votes`，Reddit 通常没有（留空或省略）
 
 **日志**：把读入的 deep_dive 文件清单、为每个 item 规划的 segment 数 / 模板分布、最终 script.json 路径写入 `logs/{source}_01_script.log`。
-
----
 
 ### 步骤 2：生成 TTS 语音
 
