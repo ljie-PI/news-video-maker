@@ -57,10 +57,11 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
     extrapolateRight: "clamp",
   });
 
-  const rankFloat = Math.sin(frame / 18) * 25;
-  const rankPulse = 1 + Math.sin(frame / 12) * 0.08;
-  const rankRotate = Math.sin(frame / 40) * 3;
-  const nameGlow = Math.sin(frame / 25) * 0.3 + 0.7;
+  // Static: no continuous sin-driven motion — matches landscape behavior.
+  const rankFloat = 0;
+  const rankPulse = 1;
+  const rankRotate = 0;
+  const nameGlow = 1;
   const bgGradientAngle = (frame / durationInFrames) * 80;
 
   const starsNum = parseInt(stars.replace(/[^0-9]/g, "")) || 0;
@@ -165,7 +166,7 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
               fontWeight: 400,
               color: theme.text_secondary,
               opacity: taglineOpacity,
-              transform: `translateY(${taglineY + Math.sin(frame / 35) * 5}px)`,
+              transform: `translateY(${taglineY}px)`,
               lineHeight: 1.4,
               textAlign: "center",
               maxWidth: "90%",
@@ -179,19 +180,19 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
             <div
               style={{
                 opacity: badgeOpacity,
-                transform: `scale(${1 + Math.sin(frame / 18) * 0.04})`,
+                transform: "none",
               }}
             >
               <div
                 style={{
                   fontFamily,
-                  fontSize: 28,
+                  fontSize: 32,
                   fontWeight: 600,
                   color: "#ffffff",
                   backgroundColor: theme.status_success,
-                  padding: "8px 28px",
+                  padding: "10px 28px",
                   borderRadius: 24,
-                  boxShadow: `0 0 ${10 + Math.sin(frame / 12) * 8}px ${theme.status_success}60`,
+                  boxShadow: `0 0 16px ${theme.status_success}90`,
                 }}
               >
                 ★ +{displayedStars}
