@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate Main.tsx and Root.tsx from a script JSON + audio durations.
 
-Supports all 15 scene types defined in SCENE_DESIGN.md.
+Supports all 17 scene templates + 1 alias (cover_title ≡ cover); see TEMPLATE_REGISTRY.
 Registry-driven: each template maps to a component name and prop builder.
 """
 import json
@@ -321,7 +321,7 @@ def build_sequence(template, data, audio_ref, frame_offset, dur, seq_count):
 
 def main():
     if len(sys.argv) < 4:
-        print("Usage: generate_main_tsx.py <script.json> <audio_prefix> <output_dir> [--width W] [--height H]")
+        print("Usage: generate_main_tsx.py <script.json> <audio_prefix> <output_dir> [--width W] [--height H] [--audio-dir DIR]")
         sys.exit(1)
 
     script_path = sys.argv[1]
