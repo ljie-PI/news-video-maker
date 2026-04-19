@@ -73,8 +73,13 @@ def _run_cosyvoice(cosyvoice_dir, input_json, raw_dir, speed):
         "uv", "run", "python", "clone_voice_batch.py",
         str(input_json), str(raw_dir), "--speed", str(speed),
     ]
-    print(f"$ (cd {cosyvoice_dir} && {' '.join(cmd)})")
-    subprocess.run(cmd, cwd=cosyvoice_dir, check=True)
+    env = os.environ.copy()
+    env_prefix = ""
+    if sys.platform == "darwin" and "PYTORCH_ENABLE_MPS_FALLBACK" not in env:
+        env["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
+        env_prefix = "PYTORCH_ENABLE_MPS_FALLBACK=1 "
+    print(f"$ (cd {cosyvoice_dir} && {env_prefix}{' '.join(cmd)})")
+    subprocess.run(cmd, cwd=cosyvoice_dir, check=True, env=env)
 
 
 def _ffmpeg_concat(wavs, out_path):
