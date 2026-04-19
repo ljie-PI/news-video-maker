@@ -12,8 +12,6 @@ import {
   fadeIn,
   slideIn,
   staggerDelay,
-  activeIndex,
-  breathe,
   float,
   rotatingGradient,
 } from "./animationHelpers";
@@ -52,7 +50,10 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
   // --- Derived animations ---
   const titleOpacity = fadeIn(frame, TITLE_START, 18);
   const titleSlide = slideIn(frame, fps, TITLE_START, 40, { damping: 16, mass: 0.7 });
-  const active = activeIndex(frame, entranceDone, durationInFrames, count);
+  // Architecture intentionally renders all layers in the "neutral" state
+  // (post-entrance). The narration sync is unreliable for diagrams, so we
+  // skip per-frame active highlighting and let the entrance stagger carry
+  // the visual rhythm.
   const bgAngle = rotatingGradient(frame, durationInFrames, 135, 120);
   const accentColor = theme.brand_primary;
 
@@ -139,22 +140,20 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
             });
             const opacity = fadeIn(frame, layerStart, 15);
 
-            const isActive = i === active && frame >= entranceDone;
-            const isNarrated = i <= active && frame >= entranceDone;
-            const layerOpacity = isActive ? 1 : isNarrated ? 0.7 : 0.5;
-            const scale = isActive ? 1.06 : 1;
-            const iconScale = isActive ? breathe(frame, 14, 0.12) : 1;
+            // No per-frame active highlight in ArchitectureScene; all layers
+            // settle into a uniform "all visible" state after entrance.
+            const isActive = false;
+            const isNarrated = frame >= entranceDone;
+            const layerOpacity = isNarrated ? 1 : 1;
+            const scale = 1;
+            const iconScale = 1;
 
-            // Continuous float per layer
-            const layerFloat = float(frame, 18 + i * 3, isActive ? 25 : 14, i);
-            const layerFloatX = isActive ? float(frame, 22, 18, i + 3) : float(frame, 30, 6, i + 5);
+            // Continuous float per layer (kept subtle, no active boost)
+            const layerFloat = float(frame, 18 + i * 3, 14, i);
+            const layerFloatX = float(frame, 30, 6, i + 5);
 
-            const glowIntensity = isActive
-              ? 20
-              : 0;
-            const borderColor = isActive
-              ? accentColor
-              : theme.card_border;
+            const glowIntensity = 0;
+            const borderColor = theme.card_border;
 
             // Arrow connector (between layers, not after last)
             const arrowStart = staggerDelay(LAYER_BASE_DELAY, i, LAYER_GAP) + 8;
@@ -296,21 +295,6 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
               </React.Fragment>
             );
           })}
-        </div>
-
-        {/* Layer counter */}
-        <div
-          style={{
-            position: "absolute",
-            top: 40,
-            right: 50,
-            fontFamily,
-            fontSize: 20,
-            fontWeight: 600,
-            color: theme.text_muted,
-          }}
-        >
-          {frame >= entranceDone ? `${active + 1}/${count}` : ""}
         </div>
 
       </AbsoluteFill>

@@ -98,7 +98,7 @@ def _key_insight_props(data, audio_ref, **_):
         props.append(f'narration="{escape(data["narration"])}"')
     return props
 
-def _rich_bullet_props(data, audio_ref, seq_count=0, **_):
+def _rich_bullet_props(data, audio_ref, seq_count=0, audio_dir=None, seg_id=None, **_):
     raw_bullets = data.get("bullets", [])
     # Normalize: plain strings become {title: str, detail: ""}
     bullets = []
@@ -107,13 +107,28 @@ def _rich_bullet_props(data, audio_ref, seq_count=0, **_):
             bullets.append({"title": b, "detail": ""})
         else:
             bullets.append(b)
-    return [
+    props = [
         f'project="{escape(data.get("project", ""))}"',
         f'sectionTitle="{escape(data.get("sectionTitle", data.get("title", "")))}"',
         f'bullets={{{json_prop(bullets)}}}',
         f'variant={{{seq_count % 3}}}',
         f'audioFile="{audio_ref}"',
     ]
+    # If a per-bullet duration manifest exists alongside the audio,
+    # convert seconds → frames (30fps) and pass as bulletDurations.
+    if audio_dir and seg_id:
+        manifest_path = os.path.join(audio_dir, f"{seg_id}.bullets.json")
+        if os.path.exists(manifest_path):
+            try:
+                with open(manifest_path) as f:
+                    manifest = json.load(f)
+                durations_sec = manifest.get("durations", [])
+                if isinstance(durations_sec, list) and len(durations_sec) == len(bullets):
+                    durations_frames = [max(1, math.ceil(float(s) * 30)) for s in durations_sec]
+                    props.append(f'bulletDurations={{{json_prop(durations_frames)}}}')
+            except (ValueError, OSError) as e:
+                print(f"WARNING: failed to read {manifest_path}: {e}")
+    return props
 
 def _bullet_points_props(data, audio_ref, seq_count=0, **_):
     # BulletPointsScene takes plain strings only — flatten {title, detail}
@@ -293,14 +308,14 @@ TEMPLATE_REGISTRY = {
 }
 
 
-def build_sequence(template, data, audio_ref, frame_offset, dur, seq_count):
+def build_sequence(template, data, audio_ref, frame_offset, dur, seq_count, audio_dir=None, seg_id=None):
     """Build a <Sequence> JSX block for a given template."""
     if template not in TEMPLATE_REGISTRY:
         print(f"WARNING: Unknown template '{template}', skipping")
         return ""
 
     component_name, prop_builder = TEMPLATE_REGISTRY[template]
-    props = prop_builder(data, audio_ref, seq_count=seq_count)
+    props = prop_builder(data, audio_ref, seq_count=seq_count, audio_dir=audio_dir, seg_id=seg_id)
 
     # Add narration to ALL templates if available and not already included
     narration = data.get("narration", "")
@@ -378,7 +393,7 @@ def main():
         template_counts[template] = template_counts.get(template, 0) + 1
         seq_count = template_counts[template]
 
-        seq = build_sequence(template, data, audio_ref, frame_offset, dur, seq_count)
+        seq = build_sequence(template, data, audio_ref, frame_offset, dur, seq_count, audio_dir=audio_dir, seg_id=seg_id)
         if seq:
             sequences.append(seq)
             if template in TEMPLATE_REGISTRY:
