@@ -262,7 +262,7 @@ python3 smart_render.py remotion-{source}-{orientation} \
 
 `smart_render.py` 会读 `ANIM_ESTIMATES`，对静态尾段直接复用最后一帧，相比标准渲染有 2-4× 加速。任一新增模板若包含连续动效，必须在 `smart_render.py` 的 `ANIM_ESTIMATES` 中标注 `"continuous"`，否则尾段会被错误地用 freeze frame 填充。
 
-仅当 `smart_render.py` 报错且需要排查时，才临时回退到 `npx remotion render src/index.ts Main --output ... --fps=30 --codec=h264 --concurrency=4`；问题修复后必须切回 `smart_render.py`。
+仅当 `smart_render.py` 报错且需要排查时，才临时回退到 `cd remotion-{source}-{orientation} && npx remotion render src/index.ts Main --output ... --fps=30 --codec=h264 --concurrency=4`；问题修复后必须切回 `smart_render.py`。
 
 **日志**：`logs/{source}_04_render.log`，记录命令、总耗时、输出文件大小、ffmpeg 报错（如有）。
 
