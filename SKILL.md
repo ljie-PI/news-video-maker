@@ -65,7 +65,7 @@ videos/yyyy-mm-dd_HH/
 
 ## 二、视频制作要求（指导性原则，必须遵守）
 
-1. **使用 coding agent 执行 + 单视频独立 session**：本 skill 必须由 coding agent 驱动执行（GitHub Copilot CLI / Claude Code / Cursor agent / Codex CLI 等任意一种），以保证 ffprobe 测时、断点续跑、文件检查这类工程化步骤稳定可重复。**每个来源的视频开一个全新 session**，不要复用上一个来源的会话上下文，避免 agent 把 GitHub 的项目串到 Hacker News 视频里（典型错例：在 HN 视频里说"欢迎来到 GitHub 开源项目"）。session 启动时必须明确告知当前是哪个来源、对应的工作目录与 deep_dive 输入路径。如使用 GitHub Copilot CLI，建议用 `--yolo` 放开命令权限以避免逐步确认打断流水线。
+1. **使用 coding agent 执行 + 单视频独立 session**：本 skill 必须由 coding agent 驱动执行（GitHub Copilot CLI / Claude Code 等任意一种），以保证 ffprobe 测时、断点续跑、文件检查这类工程化步骤稳定可重复。**每个来源的视频开一个全新 session**，不要复用上一个来源的会话上下文。session 启动时必须明确告知当前是哪个来源、对应的工作目录与 deep_dive 输入路径。如使用 GitHub Copilot CLI，建议用 `--yolo` 放开命令权限；使用 Claude Code 则用 `--dangerously-skip-permissions`，避免逐步确认打断流水线。
 
 2. **配色一致性**：视频背景符合各个网站的配色，主题色定义在 `remotion-templates/themes/*.ts`。**同一来源的视频配色必须全片一致**，不能在深色和浅色主题之间随机跳跃。绝不能混淆来源（HN 视频里不能出现 GitHub 配色或内容）。
 
