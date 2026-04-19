@@ -114,7 +114,13 @@ videos/yyyy-mm-dd_HH/
 
 **输出**：`videos/yyyy-mm-dd_HH/{source}/script.json`
 
-#### 1.1 可用模板（17 个，详细规范见 `remotion-templates/SCENE_DESIGN.md`）
+#### 1.1 可用模板（17 个，字段 schema 见 `remotion-templates/SCENE_DESIGN.md`）
+
+> ⚠️ **每段 `data` 必须严格匹配 SCENE_DESIGN.md 里对应模板的 Props 接口**。
+> 字段名拼错（含大小写）会被生成器静默忽略走默认值，画面上表现为该
+> 字段空白或归零——例如 `data_highlight` 的主数字字段必须是
+> `mainNumber`，写成 `value` 会让超大计数器从 0 滚到 0。下表只列每个
+> 模板的用途，**字段契约请以 SCENE_DESIGN.md 为准**。
 
 | 模板 ID | 一句话用途 | 适用关键词 / 同义概念 |
 |---|---|---|
@@ -137,8 +143,6 @@ videos/yyyy-mm-dd_HH/
 | `transition` | 章节过渡 / 来源切换大标题 | 转场、章节标题 |
 
 **注意**：上表 17 个模板 ID + 1 个向后兼容别名 `cover_title` ≡ `cover` 是 `generate_main_tsx.py` 当前接受的全部 `template` 取值。其它名字一律不接受，写错会被跳过并打印 `WARNING: Unknown template`——遇到上表未覆盖的展示需求，请从现有模板中挑最贴近的一个，不要凭概念名生造。
-
-> `remotion-templates/SCENE_DESIGN.md` 是更早版本的视觉规范，仅包含其中 15 个场景，未含 `project_intro` 与 `bullet_points`；这两个组件请直接参考 `landscape/` 下的 `ProjectIntroScene.tsx` / `BulletPointsScene.tsx` 源码。
 
 #### 1.2 画面显示语言规则（严格遵守）
 
