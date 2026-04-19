@@ -39,7 +39,7 @@
 
 ---
 
-## 1. `cover`
+## 1. `cover` — CoverScene（视频封面 / 片尾）
 
 ```typescript
 {
@@ -51,7 +51,7 @@
 
 ---
 
-## 2. `project_hero`
+## 2. `project_hero` — ProjectHeroScene（跨来源项目英雄卡）
 
 ```typescript
 {
@@ -69,7 +69,7 @@
 
 ---
 
-## 3. `project_intro`
+## 3. `project_intro` — ProjectIntroScene（GitHub 项目身份卡）
 
 ```typescript
 {
@@ -86,7 +86,7 @@
 
 ---
 
-## 4. `key_insight`
+## 4. `key_insight` — KeyInsightScene（核心洞察 / 痛点）
 
 ```typescript
 {
@@ -100,7 +100,7 @@
 
 ---
 
-## 5. `rich_bullet`
+## 5. `rich_bullet` — RichBulletScene（详细要点列表，每条 title + detail）
 
 ```typescript
 {
@@ -120,7 +120,7 @@
 
 ---
 
-## 6. `bullet_points`
+## 6. `bullet_points` — BulletPointsScene（简洁要点列表，纯字符串）
 
 ```typescript
 {
@@ -135,7 +135,7 @@
 
 ---
 
-## 7. `comparison_table`
+## 7. `comparison_table` — ComparisonTableScene（竞品 / 方案对比表格）
 
 ```typescript
 {
@@ -153,7 +153,7 @@
 
 ---
 
-## 8. `quote_card`
+## 8. `quote_card` — QuoteCardScene（社区评论引用卡）
 
 ```typescript
 {
@@ -169,7 +169,7 @@
 
 ---
 
-## 9. `data_highlight`
+## 9. `data_highlight` — DataHighlightScene（数据仪表盘 / 大字数字）
 
 ```typescript
 {
@@ -191,7 +191,7 @@
 
 ---
 
-## 10. `debate_split`
+## 10. `debate_split` — DebateSplitScene（正反方辩论）
 
 ```typescript
 {
@@ -212,7 +212,7 @@
 
 ---
 
-## 11. `architecture`
+## 11. `architecture` — ArchitectureScene（架构分层图）
 
 ```typescript
 {
@@ -229,7 +229,7 @@
 
 ---
 
-## 12. `tech_stack`
+## 12. `tech_stack` — TechStackScene（技术栈徽章列表）
 
 ```typescript
 {
@@ -245,7 +245,7 @@
 
 ---
 
-## 13. `timeline`
+## 13. `timeline` — TimelineScene（时间线 / 版本历史）
 
 ```typescript
 {
@@ -260,7 +260,7 @@
 
 ---
 
-## 14. `feature_card`
+## 14. `feature_card` — FeatureCardScene（单点功能特色卡）
 
 ```typescript
 {
@@ -274,7 +274,7 @@
 
 ---
 
-## 15. `code_block`
+## 15. `code_block` — CodeBlockScene（代码片段 / 命令行）
 
 ```typescript
 {
@@ -291,7 +291,7 @@
 
 ---
 
-## 16. `chat_bubbles`
+## 16. `chat_bubbles` — ChatBubblesScene（多人讨论气泡）
 
 ```typescript
 {
@@ -309,7 +309,7 @@
 
 ---
 
-## 17. `transition`
+## 17. `transition` — TransitionScene（章节过渡 / 转场）
 
 ```typescript
 {
