@@ -188,35 +188,37 @@ videos/yyyy-mm-dd_HH/
 
 **输入**：步骤 1 的 `script.json`
 
-**输出**：`videos/yyyy-mm-dd_HH/{source}/audio/{seg_id}.wav`
+**输出**：`videos/yyyy-mm-dd_HH/{source}/audio/{seg_id}.wav`（rich_bullet 还有 `{seg_id}.bullets.json`）
 
-**命令**（CosyVoice）：
+**核心命令**（CosyVoice 批量脚本，模型只加载一次）：
 ```bash
 cd ~/.openclaw/workspace/CosyVoice && \
-  uv run python clone_voice.py "旁白文本" \
-    -o /path/to/audio/{seg_id}.wav \
-    --speed 1.2 \
-    --stream
+  uv run python clone_voice_batch.py \
+    /path/to/audio_raw/input.json \
+    /path/to/audio_raw/ \
+    --speed 1.3
 ```
-参考音色：`reference/my_voice.wav`（默认）。
-
-> ⚠️ **必须加 `--stream`**：`clone_voice.py` 非 stream 模式存在已知 bug——长文本被 CosyVoice 内部切成多段时只会保留最后一段，导致音频缺失大半内容。`--stream` 走的是分片拼接分支，能得到完整音频。无论旁白长短一律加上，避免短文本临时不切分而长文本被截断的混淆。
+参考音色：`reference/my_voice.wav`（默认）。批量脚本内部已使用 `stream=True` 拼接，**不会发生**长文本被截断的旧 bug。
 
 **做法**：
-1. 遍历 script.json 的所有 segments，按 `id` 顺序串行调用 CosyVoice
-2. 跳过已存在的 wav 文件（支持断点续跑）
-3. 每生成完一条 wav，用 `ffprobe -v quiet -show_entries format=duration -of csv=p=0 {wav}` 读取**音频实际时长（秒）**，作为后续帧偏移和 §二.10「单分镜旁白时长 ≤ 15 秒」校验依据；超过 15 秒的分镜必须在日志中标红，回到步骤 1 拆分该 segment 后重跑
-4. 失败的 segment 记录原始旁白和报错堆栈到日志，便于人工修复后重跑
+1. **预处理旁白**：所有 `narration` 文本必须先经过 `tts_preprocess.preprocess_narration()`（仓库根目录 `tts_preprocess.py`），规则：
+   - 英文单词中间的 `-` 替换为空格（`state-of-the-art` → `state of the art`）
+   - 中文与英文/数字之间插入空格（`MarkItDown是microsoft` → `MarkItDown 是 microsoft`）
+2. **构建 `audio_raw/input.json`**（纯字符串数组，按出现顺序）+ 维护一份 in-memory 索引映射 `index → (seg_id, bullet_index|None)`：
+   - 普通 segment：贡献 1 个条目，记录 `(seg_id, None)`
+   - `rich_bullet` segment：把 `narration` 按 `\n\n` 切分为 `bullets.length` 段，每段贡献 1 个条目，记录 `(seg_id, i)`（i 从 0 起）
+3. **一次调用** `clone_voice_batch.py`：模型只加载一次，输出 `audio_raw/000.wav` / `001.wav` / ...，并写 `audio_raw/timings.json`（含每项 `duration` 与累计 `start`/`end`）
+4. **整理产物**到最终 `audio/`：
+   - 普通 segment：`cp audio_raw/NNN.wav audio/{seg_id}.wav`
+   - `rich_bullet` segment：把所有属于该 seg 的连续条目按 bullet 顺序：
+     - 写 `audio/{seg_id}.bullets.json`：`{"durations": [秒, 秒, ...]}`（顺序与 bullets 一致，长度等于 `bullets.length`）
+     - 用 `ffmpeg -f concat` 合并所有 bullet wav 为 `audio/{seg_id}.wav`
+5. **校验**：从 `timings.json` 累加每个 segment 总时长，超过 15 秒的分镜必须在日志中标红 WARN，回到步骤 1 拆分该 segment 后重跑
+6. **断点续跑**：`clone_voice_batch.py` 自动跳过已存在的 wav；删 `audio_raw/` 即可全量重跑
 
-**`rich_bullet` 特殊流程（让 bullet 高亮与旁白同步）**：
-- 该模板的 `narration` 在 §三.1.1 已要求用 `\n\n` 切分为 `bullets.length` 段
-- TTS 阶段对每段单独调用 `clone_voice.py --stream` 生成 `audio/{seg_id}_b{i}.wav`（i 从 1 起）
-- 用 ffprobe 读取每段时长（秒），写入清单 `audio/{seg_id}.bullets.json`：`{"durations": [秒, 秒, ...]}`（顺序与 bullets 一致，长度必须等于 `bullets.length`）
-- 用 `ffmpeg -f concat` 合并子 wav 为最终 `audio/{seg_id}.wav`（渲染时仍只播放一个文件）
-- 渲染端：`generate_main_tsx.py` 读到该清单时会把秒转为帧（×30），作为 `bulletDurations` prop 传给 `RichBulletScene`，组件按累计时间高亮当前 bullet；清单缺失或长度不匹配则退化为均分时长
-- 总时长（合并后整段 wav）仍受 §二.10 ≤ 15s 限制
+**渲染端契约**（无需手工干预）：`generate_main_tsx.py` 读到 `audio/{seg_id}.bullets.json` 时把秒转为帧（×30），作为 `bulletDurations` prop 传给 `RichBulletScene`，组件按累计时间高亮当前 bullet；清单缺失或长度不匹配则退化为均分时长。
 
-**日志**：`logs/{source}_02_tts.log`，**每条 wav 一行**记录 `id / 字数 / 音频时长(秒) / 生成耗时(秒) / 文件大小`，超时分镜额外用 `WARN` 前缀标出；末尾追加汇总（总分镜数 / 总时长 / 失败数 / 超时数）。
+**日志**：`logs/{source}_02_tts.log`，**每条 wav 一行**记录 `index / seg_id[/bullet_i] / 字数 / 音频时长(秒) / 文件大小`，超时分镜额外用 `WARN` 前缀标出；末尾追加汇总（总条目数 / 总时长 / 失败数 / 超时分镜数）。
 
 ---
 
