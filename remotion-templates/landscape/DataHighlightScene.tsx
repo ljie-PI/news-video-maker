@@ -44,19 +44,12 @@ function parseMainNumber(str: string): {
   decimals: number;
 } {
   const cleaned = (str ?? "").trim().replace(/,/g, "");
-  // Capture: leading non-numeric, optional sign + digits + optional fractional,
-  // optional unit char (k/m/b/%), then any trailing text.
   const match = cleaned.match(/^([^\d+\-]*)([+-]?\d+(?:\.\d+)?)([kmbKMB%]?)(.*)$/);
   if (!match) {
     return { value: null, prefix: "", suffix: "", decimals: 0 };
   }
   const [, leading, num, unit, trailing] = match;
   const decimals = num.includes(".") ? num.split(".")[1].length : 0;
-  // Keep the parsed value as-is (e.g. "47k" -> 47, "1.2M" -> 1.2). The unit
-  // character is preserved in the display suffix and rendered after the
-  // rolling counter, so multiplying here would produce nonsense like
-  // "47,000k". Only the magnitude character is preserved alongside any
-  // trailing text (e.g. "+47k stars" -> prefix:"+", value:47, suffix:"k stars").
   const value = parseFloat(num);
   const displaySuffix = unit + trailing;
   return { value, prefix: leading, suffix: displaySuffix, decimals };
@@ -281,7 +274,6 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
   // Counter animation: roll from 0 → target over 70% of segment
   const COUNTER_START = 10;
   const COUNTER_END = Math.floor(durationInFrames * 0.7);
-  // Counter rolls float-precision so decimals (e.g. "3.9") animate cleanly.
   const currentValueRaw = interpolate(
     frame,
     [COUNTER_START, COUNTER_END],

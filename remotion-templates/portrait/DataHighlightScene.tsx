@@ -50,11 +50,6 @@ function parseMainNumber(str: string): {
   }
   const [, leading, num, unit, trailing] = match;
   const decimals = num.includes(".") ? num.split(".")[1].length : 0;
-  // Keep the parsed value as-is (e.g. "47k" -> 47, "1.2M" -> 1.2). The unit
-  // character is preserved in the display suffix and rendered after the
-  // rolling counter, so multiplying here would produce nonsense like
-  // "47,000k". Only the magnitude character is preserved alongside any
-  // trailing text (e.g. "+47k stars" -> prefix:"+", value:47, suffix:"k stars").
   const value = parseFloat(num);
   const displaySuffix = unit + trailing;
   return { value, prefix: leading, suffix: displaySuffix, decimals };
