@@ -198,11 +198,9 @@ python tts_batch.py \
   --speed 1.3
 ```
 
-`tts_batch.py`（仓库根目录）封装了：narration 预处理（中英/数字之间加空格、英文单词中间的 `-` 替换为空格）、调用 CosyVoice 批量脚本（模型只加载一次）、按 segment 切分输出最终 wav，并自动生成渲染端所需的辅助清单。中间产物落在 `audio/_raw/`，删除即可全量重跑；已存在的 wav 会被自动跳过支持断点续跑。
+**校验**：脚本退出码 `2` 表示存在 segment 总时长 > 15 秒，必须回到步骤 1 拆分该 segment 后重跑。
 
-**校验**：脚本退出码 `2` 表示存在 segment 总时长 > 15 秒，必须回到步骤 1 拆分该 segment 后重跑（`audio/_raw/` 内已生成的 wav 会被复用，只重算受影响的部分）。
-
-**日志**：`logs/{source}_02_tts.log`，记录 `tts_batch.py` 的全部 stdout（每条 wav 一行 `OK`/`WARN` + 时长，末尾汇总）。
+**日志**：`logs/{source}_02_tts.log`，记录 `tts_batch.py` 全部 stdout。
 
 ---
 
