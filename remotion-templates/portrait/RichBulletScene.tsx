@@ -29,11 +29,6 @@ interface RichBulletSceneProps {
   variant?: number;
   audioFile: string;
   narration?: string;
-  /**
-   * Optional per-bullet durations in frames matching bullets.length;
-   * when provided the active bullet advances by cumulative timestamps
-   * synced to the narration audio.
-   */
   bulletDurations?: number[];
 }
 
