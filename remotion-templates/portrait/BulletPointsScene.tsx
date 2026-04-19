@@ -15,6 +15,7 @@ interface BulletPointsSceneProps {
   sectionTitle?: string;
   bullets: string[];
   audioFile: string;
+  narration?: string;
   variant?: number;
 }
 
@@ -27,19 +28,12 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
 }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
-  const vScale = 2.0;
-  const fScale = 1.25;
 
-  // Use light mode consistently for Reddit theme
   const isDark = false;
   const accentColor = variant % 2 === 0 ? theme.brand_primary : theme.brand_highlight;
 
-  // Determine which bullet is "active" based on frame progress
   const bulletCount = bullets.length;
-  // Fast entrance — all bullets visible within ~1.5s
-  const bulletBaseDelay = 5;
-  const bulletGap = Math.max(3, Math.floor(45 / Math.max(bulletCount, 1)));
-  const entranceDone = bulletBaseDelay + bulletCount * bulletGap + 10;
+  const entranceDone = 12 + bulletCount * 10;
   const activeBulletRaw = interpolate(
     frame,
     [entranceDone, durationInFrames - 10],
@@ -48,16 +42,9 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
   );
   const activeBullet = Math.floor(activeBulletRaw);
 
-  // Background gradient rotation
   const bgAngle = 135 + (frame / durationInFrames) * 60;
-
-  // Progress bar
-
-  // Scanning line (faster)
-
-  // Active bullet indicator Y position (tracks which bullet is highlighted)
-  const bulletItemHeight = 68; // approximate height per bullet row
-  const indicatorY = activeBullet * bulletItemHeight;
+  const progress = frame / durationInFrames;
+  const scanY = (frame * 4) % 2000;
 
   const titleOpacity = interpolate(frame, [0, 18], [0, 1], {
     extrapolateLeft: "clamp",
@@ -69,47 +56,55 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
       <Audio src={staticFile(audioFile)} />
       <AbsoluteFill
         style={{
-          background: isDark
-            ? `linear-gradient(${bgAngle}deg, ${theme.dark_bg_from} 0%, ${theme.dark_bg_mid} 100%)`
-            : `linear-gradient(${bgAngle}deg, #ffffff 0%, ${theme.background_secondary} 100%)`,
+          background: `linear-gradient(${bgAngle}deg, #ffffff 0%, ${theme.background_secondary} 100%)`,
           display: "flex",
           flexDirection: "column",
-          justifyContent: "flex-start",
-          padding: `${Math.round(50 * vScale)}px 80px`,
-          paddingTop: Math.round(60 * vScale),
-          gap: Math.round(24 * vScale),
+          justifyContent: "center",
+          padding: "80px 60px",
+          gap: 36,
           overflow: "hidden",
         }}
       >
+        {/* Scan line */}
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: scanY,
+            width: "100%",
+            height: 1,
+            background: `linear-gradient(90deg, transparent, ${accentColor}25, transparent)`,
+          }}
+        />
 
-        {/* Card panel */}
-        <div style={{
-          position: "absolute",
-          top: 30,
-          left: 40,
-          right: 40,
-          bottom: 30,
-          borderRadius: 24,
-          background: theme.card_bg,
-          border: `1px solid ${theme.card_border}`,
-          pointerEvents: "none",
-        }} />
+        {/* Left accent bar */}
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: 6,
+            height: "100%",
+            background: `linear-gradient(180deg, ${accentColor}00, ${accentColor}, ${accentColor}00)`,
+            transform: `translateY(${Math.sin(frame / 30) * 150}px)`,
+          }}
+        />
 
-        {/* Project title + section subtitle */}
+        {/* Project title */}
         <div
           style={{
             opacity: titleOpacity,
-            borderBottom: `3px solid ${isDark ? "rgba(255,255,255,0.15)" : theme.border}`,
-            paddingBottom: 14,
-            transform: "none",
+            borderBottom: `3px solid ${theme.border}`,
+            paddingBottom: 18,
+            transform: `translateX(${Math.sin(frame / 60) * 5}px)`,
           }}
         >
           <div
             style={{
               fontFamily,
-              fontSize: Math.round(42 * fScale),
+              fontSize: 48,
               fontWeight: 700,
-              color: isDark ? "#ffffff" : accentColor,
+              color: accentColor,
               lineHeight: 1.2,
             }}
           >
@@ -119,10 +114,10 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
             <div
               style={{
                 fontFamily,
-                fontSize: Math.round(26 * fScale),
+                fontSize: 30,
                 fontWeight: 500,
-                color: isDark ? "#8b949e" : theme.text_secondary,
-                marginTop: 6,
+                color: theme.text_secondary,
+                marginTop: 8,
               }}
             >
               {sectionTitle}
@@ -135,17 +130,19 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: Math.round(20 * vScale),
+            gap: 32,
+            flex: 1,
+            justifyContent: "center",
           }}
         >
           {bullets.map((bullet, i) => {
-            const bulletDelay = bulletBaseDelay + i * bulletGap;
-            const bulletXSpring = spring({
+            const bulletDelay = 12 + i * 10;
+            const bulletYSpring = spring({
               frame: Math.max(0, frame - bulletDelay),
               fps,
               config: { damping: 14, stiffness: 60 },
             });
-            const bulletX = interpolate(bulletXSpring, [0, 1], [150, 0]);
+            const bulletY = interpolate(bulletYSpring, [0, 1], [80, 0]);
             const bulletOpacity = interpolate(
               frame,
               [bulletDelay, bulletDelay + 15],
@@ -153,15 +150,11 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
               { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
             );
 
-            // Is this bullet currently being narrated?
             const isActive = i === activeBullet && frame > entranceDone;
             const isNarrated = i <= activeBullet && frame > entranceDone;
-
-            // Active bullet highlight: scale up, glow, others dim
-            const activeScale = isActive ? 1.03 : (isNarrated ? 1.0 : 0.95);
+            const activeScale = isActive ? 1.02 + Math.sin(frame / 12) * 0.01 : (isNarrated ? 1.0 : 0.95);
             const activeOpacity = isActive ? 1 : (isNarrated ? 0.7 : 0.5);
 
-            // Underline sweep for active bullet
             const underlineWidth = isActive
               ? interpolate(
                   (frame - entranceDone) % (durationInFrames / bulletCount),
@@ -177,24 +170,22 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
                 style={{
                   display: "flex",
                   alignItems: "flex-start",
-                  gap: Math.round(18 * vScale),
+                  gap: 20,
                   opacity: bulletOpacity * activeOpacity,
-                  transform: `translateX(${bulletX}px) scale(${activeScale})`,
+                  transform: `translateY(${bulletY}px) scale(${activeScale})`,
                   transformOrigin: "left center",
-                  transition: "opacity 0.3s",
                   position: "relative",
                 }}
               >
-                {/* Number badge */}
                 <div
                   style={{
                     fontFamily,
-                    fontSize: Math.round(26 * fScale),
+                    fontSize: 30,
                     fontWeight: 700,
                     color: isActive ? "#ffffff" : accentColor,
-                    minWidth: 40,
-                    height: 40,
-                    borderRadius: 10,
+                    minWidth: 48,
+                    height: 48,
+                    borderRadius: 12,
                     backgroundColor: isActive ? accentColor : `${accentColor}18`,
                     display: "flex",
                     alignItems: "center",
@@ -206,29 +197,24 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
                 >
                   {i + 1}
                 </div>
-                <div style={{ flex: 1, position: "relative", minWidth: 0 }}>
+                <div style={{ flex: 1, position: "relative" }}>
                   <div
                     style={{
                       fontFamily,
-                      fontSize: Math.round(28 * fScale),
+                      fontSize: 32,
                       fontWeight: isActive ? 600 : 500,
-                      color: isDark
-                        ? (isActive ? "#ffffff" : "#b0b8c4")
-                        : (isActive ? theme.text_primary : theme.text_secondary),
-                      lineHeight: 1.45,
-                      wordBreak: "break-word",
-                      whiteSpace: "normal",
+                      color: isActive ? theme.text_primary : theme.text_secondary,
+                      lineHeight: 1.5,
                     }}
                   >
                     {bullet}
                   </div>
-                  {/* Underline sweep indicator */}
                   <div
                     style={{
                       position: "absolute",
                       bottom: -4,
                       left: 0,
-                      height: 2,
+                      height: 3,
                       width: `${underlineWidth}%`,
                       backgroundColor: accentColor,
                       borderRadius: 1,
@@ -241,16 +227,36 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
           })}
         </div>
 
-        {/* Bullet counter in corner */}
+        {/* Progress bar */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            width: "100%",
+            height: 4,
+            backgroundColor: "rgba(0,0,0,0.05)",
+          }}
+        >
+          <div
+            style={{
+              height: "100%",
+              width: `${progress * 100}%`,
+              background: `linear-gradient(90deg, ${accentColor}, ${theme.status_success})`,
+            }}
+          />
+        </div>
+
+        {/* Counter */}
         <div
           style={{
             position: "absolute",
             top: 30,
             right: 40,
             fontFamily,
-            fontSize: 20,
+            fontSize: 22,
             fontWeight: 600,
-            color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.15)",
+            color: "rgba(0,0,0,0.15)",
           }}
         >
           {frame > entranceDone ? `${activeBullet + 1}/${bulletCount}` : ""}

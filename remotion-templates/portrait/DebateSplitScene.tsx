@@ -110,8 +110,8 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
             flex: 1,
             display: "flex",
             flexDirection: "column",
-            gap: 16,
-            justifyContent: "flex-start",
+            gap: 36,
+            justifyContent: "center",
             minHeight: 0,
           }}
         >
@@ -135,7 +135,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                   overflow: "hidden",
                   opacity,
                   transform: `translateX(${slideOffset}px)`,
-                  minHeight: 115,
+                  minHeight: 150,
                 }}
               >
                 {/* Left color accent stripe */}
@@ -149,7 +149,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                 <div
                   style={{
                     flex: 1,
-                    padding: "26px 32px",
+                    padding: "32px 36px",
                     display: "flex",
                     alignItems: "center",
                   }}
@@ -157,7 +157,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                   <span
                     style={{
                       fontFamily,
-                      fontSize: 36,
+                      fontSize: 42,
                       fontWeight: 400,
                       color: theme.text_primary,
                       lineHeight: 1.55,

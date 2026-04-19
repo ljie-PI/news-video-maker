@@ -16,6 +16,7 @@ interface ProjectIntroSceneProps {
   tagline: string;
   stars: string;
   audioFile: string;
+  narration?: string;
 }
 
 export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
