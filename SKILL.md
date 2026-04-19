@@ -195,9 +195,12 @@ videos/yyyy-mm-dd_HH/
 cd ~/.openclaw/workspace/CosyVoice && \
   uv run python clone_voice.py "旁白文本" \
     -o /path/to/audio/{seg_id}.wav \
-    --speed 1.2
+    --speed 1.2 \
+    --stream
 ```
 参考音色：`reference/my_voice.wav`（默认）。
+
+> ⚠️ **必须加 `--stream`**：`clone_voice.py` 非 stream 模式存在已知 bug——长文本被 CosyVoice 内部切成多段时只会保留最后一段，导致音频缺失大半内容。`--stream` 走的是分片拼接分支，能得到完整音频。无论旁白长短一律加上，避免短文本临时不切分而长文本被截断的混淆。
 
 **做法**：
 1. 遍历 script.json 的所有 segments，按 `id` 顺序串行调用 CosyVoice
