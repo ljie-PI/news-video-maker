@@ -13,7 +13,6 @@ import {
   fadeIn,
   slideIn,
   staggerDelay,
-  counterValue,
   rotatingGradient,
 } from "./animationHelpers";
 
@@ -30,22 +29,42 @@ interface DataHighlightSceneProps {
 }
 
 /**
- * Parse a human-readable number string into a numeric value.
- * Supports plain integers ("814"), decimals ("3.5"), and k/m/b suffixes ("14.2k" → 14200).
+ * Parse a human-readable number string into structured parts.
+ *
+ * Supports: plain integers ("814"), decimals ("3.5"), k/m/b suffixes ("14.2k"),
+ * percent ("3.9%"), prefix/suffix text ("$1.2k", "+47k stars", "Top 10").
+ *
+ * Returns `value: null` when no numeric portion is present, in which case the
+ * caller should render the raw string and skip counter animation.
  */
-function parseNumericValue(str: string): number {
-  const cleaned = str.trim().toLowerCase().replace(/,/g, "");
-  const match = cleaned.match(/^([+-]?\d+(?:\.\d+)?)\s*([kmb]?)$/);
-  if (!match) return 0;
-  const num = parseFloat(match[1]);
-  const suffix = match[2];
-  const multipliers: Record<string, number> = { k: 1_000, m: 1_000_000, b: 1_000_000_000 };
-  return Math.round(num * (multipliers[suffix] ?? 1));
+function parseMainNumber(str: string): {
+  value: number | null;
+  prefix: string;
+  suffix: string;
+  decimals: number;
+} {
+  const cleaned = (str ?? "").trim().replace(/,/g, "");
+  const match = cleaned.match(/^([^\d+\-]*)([+-]?\d+(?:\.\d+)?)([kmbKMB%]?)(.*)$/);
+  if (!match) {
+    return { value: null, prefix: "", suffix: "", decimals: 0 };
+  }
+  const [, leading, num, unit, trailing] = match;
+  const decimals = num.includes(".") ? num.split(".")[1].length : 0;
+  const value = parseFloat(num);
+  const displaySuffix = unit + trailing;
+  return { value, prefix: leading, suffix: displaySuffix, decimals };
 }
 
-/** Format large numbers with commas. */
-function formatNumber(n: number): string {
-  return n.toLocaleString("en-US");
+/** Format counter value preserving prefix/suffix and decimal precision. */
+function formatCounter(
+  current: number,
+  parsed: { prefix: string; suffix: string; decimals: number },
+): string {
+  const fmt = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: parsed.decimals,
+    maximumFractionDigits: parsed.decimals,
+  });
+  return `${parsed.prefix}${fmt.format(current)}${parsed.suffix}`;
 }
 
 const CLAMP = {
@@ -247,13 +266,20 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
 
-  const targetValue = parseNumericValue(mainNumber);
+  const parsedNumber = parseMainNumber(mainNumber);
+  const targetValue = parsedNumber.value ?? 0;
+  const hasNumeric = parsedNumber.value !== null;
   const bgAngle = rotatingGradient(frame, durationInFrames, 135, 120);
 
   // Counter animation: roll from 0 → target over 70% of segment
   const COUNTER_START = 10;
   const COUNTER_END = Math.floor(durationInFrames * 0.7);
-  const currentCount = counterValue(frame, COUNTER_START, COUNTER_END, targetValue);
+  const currentValueRaw = interpolate(
+    frame,
+    [COUNTER_START, COUNTER_END],
+    [0, targetValue],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+  );
 
   // Main number entrance
   const numberOpacity = fadeIn(frame, 5, 20);
@@ -457,7 +483,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
               letterSpacing: "-2px",
             }}
           >
-            {formatNumber(currentCount)}
+            {hasNumeric ? formatCounter(currentValueRaw, parsedNumber) : mainNumber}
           </div>
 
           {/* Unit text */}
@@ -482,7 +508,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
           <div
             style={{
               position: "absolute",
-              bottom: 130,
+              bottom: 200,
               left: 0,
               right: 0,
               display: "flex",
@@ -526,10 +552,14 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
               background: theme.overlay_subtle,
               border: `1px solid ${theme.card_border}`,
               borderRadius: 12,
-              padding: "14px 48px",
-              maxWidth: 1400,
+              padding: "12px 36px",
+              maxWidth: 1200,
               textAlign: "center",
               lineHeight: 1.5,
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
             }}
           >
             {context}
