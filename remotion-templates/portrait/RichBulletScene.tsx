@@ -29,6 +29,7 @@ interface RichBulletSceneProps {
   variant?: number;
   audioFile: string;
   narration?: string;
+  bulletDurations?: number[];
 }
 
 export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
@@ -38,6 +39,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   audioFile,
   narration,
   variant = 0,
+  bulletDurations,
 }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames, height } = useVideoConfig();
@@ -64,7 +66,18 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   const staggerGap = Math.max(4, Math.floor(45 / Math.max(count, 1)));
   const entranceDone = staggerDelay(baseDelay, count - 1, staggerGap) + 12;
 
-  const active = activeIndex(frame, entranceDone, durationInFrames, count);
+  let active: number;
+  if (bulletDurations && bulletDurations.length === count) {
+    let acc = 0;
+    let computed = 0;
+    for (let i = 0; i < count; i++) {
+      if (frame >= acc) computed = i;
+      acc += bulletDurations[i];
+    }
+    active = computed;
+  } else {
+    active = activeIndex(frame, entranceDone, durationInFrames, count);
+  }
   const bgAngle = rotatingGradient(frame, durationInFrames, 135, 120);
 
   // Scan line - more visible

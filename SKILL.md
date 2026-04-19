@@ -122,7 +122,7 @@ videos/yyyy-mm-dd_HH/
 | `project_intro` | **GitHub 专用**项目身份卡：rank + 名称 + tagline + ⭐ 数（图标硬编码 ★） | GitHub 项目介绍 |
 | `project_hero` | **跨来源通用**身份卡：rank + 名称 + tagline + 任意前缀 stats（▲ points / votes / ⭐ 等，自动解析前缀） | HN / PH / Reddit 身份卡、排行榜单条 |
 | `key_insight` | 核心洞察 / 痛点：一句大字 + 一段解释 | 核心观点、insight、痛点、hook |
-| `rich_bullet` | 详细要点列表（活跃 bullet 高亮切换，每条带 title + detail 子结构） | 要点列表、排行榜总览预告、步骤拆解 |
+| `rich_bullet` | 详细要点列表（活跃 bullet 高亮切换，每条带 title + detail 子结构）<br/>**旁白格式**：`narration` 必须用连续两个换行 `\n\n` 分隔成 `bullets.length` 段，每段对应一条 bullet 的旁白，确保画面高亮与语音同步 | 要点列表、排行榜总览预告、步骤拆解 |
 | `bullet_points` | 简洁要点列表（纯字符串 bullets，顶部带项目名称栏） | 项目子要点、章节分要点 |
 | `comparison_table` | 竞品 / 方案对比表格 | 对比、并排比较 |
 | `debate_split` | 正反方辩论：左右两侧支持 / 反对论点（pros/cons 必用） | 辩论、pros vs cons |
@@ -207,6 +207,14 @@ cd ~/.openclaw/workspace/CosyVoice && \
 2. 跳过已存在的 wav 文件（支持断点续跑）
 3. 每生成完一条 wav，用 `ffprobe -v quiet -show_entries format=duration -of csv=p=0 {wav}` 读取**音频实际时长（秒）**，作为后续帧偏移和 §二.10「单分镜旁白时长 ≤ 15 秒」校验依据；超过 15 秒的分镜必须在日志中标红，回到步骤 1 拆分该 segment 后重跑
 4. 失败的 segment 记录原始旁白和报错堆栈到日志，便于人工修复后重跑
+
+**`rich_bullet` 特殊流程（让 bullet 高亮与旁白同步）**：
+- 该模板的 `narration` 在 §三.1.1 已要求用 `\n\n` 切分为 `bullets.length` 段
+- TTS 阶段对每段单独调用 `clone_voice.py --stream` 生成 `audio/{seg_id}_b{i}.wav`（i 从 1 起）
+- 用 ffprobe 读取每段时长（秒），写入清单 `audio/{seg_id}.bullets.json`：`{"durations": [秒, 秒, ...]}`（顺序与 bullets 一致，长度必须等于 `bullets.length`）
+- 用 `ffmpeg -f concat` 合并子 wav 为最终 `audio/{seg_id}.wav`（渲染时仍只播放一个文件）
+- 渲染端：`generate_main_tsx.py` 读到该清单时会把秒转为帧（×30），作为 `bulletDurations` prop 传给 `RichBulletScene`，组件按累计时间高亮当前 bullet；清单缺失或长度不匹配则退化为均分时长
+- 总时长（合并后整段 wav）仍受 §二.10 ≤ 15s 限制
 
 **日志**：`logs/{source}_02_tts.log`，**每条 wav 一行**记录 `id / 字数 / 音频时长(秒) / 生成耗时(秒) / 文件大小`，超时分镜额外用 `WARN` 前缀标出；末尾追加汇总（总分镜数 / 总时长 / 失败数 / 超时数）。
 
