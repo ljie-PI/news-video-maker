@@ -54,16 +54,12 @@ export function activeIndex(
   return Math.floor(Math.max(0, Math.min(progress, count - 1)));
 }
 
-/** Breathing/pulse animation — DISABLED. Always returns 1 (no scale variation).
- *  Kept as a no-op so existing call sites compile; visual breathing was removed
- *  so smart_render's freeze-frame matches a full render exactly. */
+/** No-op kept for backward compatibility — always returns 1. */
 export function breathe(_frame: number, _period = 20, _amplitude = 0.12): number {
   return 1;
 }
 
-/** Float animation — DISABLED. Always returns 0 (no pixel offset).
- *  Kept as a no-op so existing call sites compile; visual floating was removed
- *  so smart_render's freeze-frame matches a full render exactly. */
+/** No-op kept for backward compatibility — always returns 0. */
 export function float(
   _frame: number,
   _period = 25,
