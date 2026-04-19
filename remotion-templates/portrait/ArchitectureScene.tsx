@@ -50,10 +50,6 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
   // --- Derived animations ---
   const titleOpacity = fadeIn(frame, TITLE_START, 18);
   const titleSlide = slideIn(frame, fps, TITLE_START, 40, { damping: 16, mass: 0.7 });
-  // Architecture intentionally renders all layers in the "neutral" state
-  // (post-entrance). The narration sync is unreliable for diagrams, so we
-  // skip per-frame active highlighting and let the entrance stagger carry
-  // the visual rhythm.
   const bgAngle = rotatingGradient(frame, durationInFrames, 135, 120);
   const accentColor = theme.brand_primary;
 
@@ -140,15 +136,12 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
             });
             const opacity = fadeIn(frame, layerStart, 15);
 
-            // No per-frame active highlight in ArchitectureScene; all layers
-            // settle into a uniform "all visible" state after entrance.
             const isActive = false;
             const isNarrated = frame >= entranceDone;
             const layerOpacity = isNarrated ? 1 : 1;
             const scale = 1;
             const iconScale = 1;
 
-            // Continuous float per layer (kept subtle, no active boost)
             const layerFloat = float(frame, 18 + i * 3, 14, i);
             const layerFloatX = float(frame, 30, 6, i + 5);
 

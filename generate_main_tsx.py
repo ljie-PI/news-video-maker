@@ -114,8 +114,6 @@ def _rich_bullet_props(data, audio_ref, seq_count=0, audio_dir=None, seg_id=None
         f'variant={{{seq_count % 3}}}',
         f'audioFile="{audio_ref}"',
     ]
-    # If a per-bullet duration manifest exists alongside the audio,
-    # convert seconds → frames (30fps) and pass as bulletDurations.
     if audio_dir and seg_id:
         manifest_path = os.path.join(audio_dir, f"{seg_id}.bullets.json")
         if os.path.exists(manifest_path):
