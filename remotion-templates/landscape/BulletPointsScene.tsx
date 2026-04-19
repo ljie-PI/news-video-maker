@@ -35,18 +35,19 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
   // Use light mode consistently for Reddit theme
   const accentColor = variant % 2 === 0 ? theme.brand_primary : theme.brand_highlight;
 
-  // Determine which bullet is "active" based on frame progress
   const bulletCount = bullets.length;
-  // Fast entrance — all bullets visible within ~1.5s
+  if (bulletCount <= 0) return null;
   const bulletBaseDelay = 5;
-  const bulletGap = Math.max(3, Math.floor(45 / Math.max(bulletCount, 1)));
+  const bulletGap = Math.max(3, Math.floor(45 / bulletCount));
   const entranceDone = bulletBaseDelay + bulletCount * bulletGap + 10;
-  const activeBulletRaw = interpolate(
-    frame,
-    [entranceDone, durationInFrames - 10],
-    [0, bulletCount - 0.01],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  const activeBulletRaw = entranceDone >= durationInFrames - 10
+    ? bulletCount - 0.01
+    : interpolate(
+        frame,
+        [entranceDone, durationInFrames - 10],
+        [0, bulletCount - 0.01],
+        { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+      );
   const activeBullet = Math.floor(activeBulletRaw);
 
   // Background gradient rotation

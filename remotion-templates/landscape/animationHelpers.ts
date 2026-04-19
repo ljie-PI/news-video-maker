@@ -44,6 +44,7 @@ export function activeIndex(
   count: number
 ): number {
   if (frame < entranceDone || count <= 0) return 0;
+  if (entranceDone >= duration - 10) return count - 1;
   const progress = interpolate(
     frame,
     [entranceDone, duration - 10],

@@ -101,12 +101,10 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
       ? 0
       : 0;
 
-    // Underline sweep for active bullet
-    const sweepStart =
-      entranceDone +
-      ((durationInFrames - entranceDone - 10) / count) * globalIndex;
+    const segmentDuration = (durationInFrames - entranceDone - 10) / count;
+    const sweepStart = entranceDone + segmentDuration * globalIndex;
     const sweepWidth = isActive
-      ? underlineSweep(frame, sweepStart, (durationInFrames - entranceDone - 10) / count)
+      ? (segmentDuration > 0 ? underlineSweep(frame, sweepStart, segmentDuration) : 100)
       : isNarrated
         ? 100
         : 0;
