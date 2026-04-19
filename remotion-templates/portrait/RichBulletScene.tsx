@@ -53,8 +53,13 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
 
   const count = bullets.length;
   const useColumns = false;
-  // Dynamic gap so bullets fill vertical space instead of clustering
-  const bulletGapPx = Math.max(20, Math.floor((height - 400) / (count + 1) / 2));
+  // Dynamic gap so bullets fill vertical space instead of clustering.
+  // For 5 or fewer items keep generous spacing; for 6+ items tighten so
+  // they don't overflow the card.
+  const isDense = count >= 6;
+  const bulletGapPx = isDense
+    ? Math.max(8, Math.floor((height - 400) / (count + 1) / 3))
+    : Math.max(20, Math.floor((height - 400) / (count + 1) / 2));
   const baseDelay = 5;
   const staggerGap = Math.max(4, Math.floor(45 / Math.max(count, 1)));
   const entranceDone = staggerDelay(baseDelay, count - 1, staggerGap) + 12;
@@ -129,7 +134,11 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
             ? `${accentColor}12`
             : "transparent",
           position: "relative",
-          marginBottom: useColumns ? Math.round(bulletGapPx * 0.7) : bulletGapPx,
+          marginBottom: useColumns
+            ? Math.round(bulletGapPx * 0.7)
+            : isDense
+              ? Math.round(bulletGapPx * 0.6)
+              : bulletGapPx,
         }}
       >
         {/* Number badge */}
