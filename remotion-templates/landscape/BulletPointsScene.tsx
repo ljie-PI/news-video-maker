@@ -41,10 +41,8 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
   const bulletGap = Math.max(3, Math.floor(45 / bulletCount));
   const entranceDone = bulletBaseDelay + bulletCount * bulletGap + 10;
   const isDense = bulletCount >= 6;
-  const bulletGapPx = isPortrait
-    ? (isDense
-        ? Math.max(8, Math.floor((height - 400) / (bulletCount + 1) / 3))
-        : Math.max(20, Math.floor((height - 400) / (bulletCount + 1) / 2)))
+  const bulletGapPx = isDense
+    ? Math.max(8, Math.floor((height - 300) / (bulletCount + 1) / 3))
     : Math.max(12, Math.floor((height - 300) / (bulletCount + 1) / 2));
   const activeBulletRaw = entranceDone >= durationInFrames - 10
     ? bulletCount - 0.01
