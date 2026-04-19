@@ -36,7 +36,38 @@ python3 smart_render.py project --output video.mp4 --concurrency 4
 
 **质量评估：** 使用 video_quality_eval_prompt.md（9个维度，目标分数 >= 9.0）
 
-**可用模板（15种）：** cover、project_intro、key_insight、rich_bullet、comparison_table、debate_split、quote_card、data_highlight、feature_card、code_block、architecture、tech_stack、chat_bubbles、timeline、transition
+**可用模板（15 种，详细规范见 `remotion-templates/SCENE_DESIGN.md`）：**
+
+| 模板 ID | 一句话用途 | 适用关键词 / 同义概念 |
+|---|---|---|
+| `cover` | 视频封面 / 片尾，标题 + 副标题 + 来源标识 | 封面、cover_title、credit_roll（片尾用此） |
+| `project_intro` | 项目 / 帖子 / 产品身份卡：rank + 名称 + tagline + star/votes | 项目介绍、ProjectHero、leaderboard 单条 |
+| `key_insight` | 核心洞察 / 痛点：一句大字 + 一段解释 | 核心观点、insight、痛点、hook |
+| `rich_bullet` | 详细要点列表（活跃 bullet 高亮切换） | 要点列表、bullets、leaderboard 总览预告、step_breakdown |
+| `comparison_table` | 竞品 / 方案对比表格 | 对比、split_compare、versus |
+| `debate_split` | 正反方辩论：左右两侧支持 / 反对论点（必须用于 pros/cons 内容） | 辩论、pros vs cons、debate_arena、debate_clash |
+| `quote_card` | 单条社区评论引用：大字引文 + 作者 + 平台 | 引用、评论、immersive_quote、单条精选评论 |
+| `data_highlight` | 数据仪表盘：超大动画数字 + HUD 圆环 / 进度 | star 数、性能数据、百分比、KPI 仪表盘 |
+| `feature_card` | 单点功能特色卡：图标 + 标题 + 描述 | 单点亮点、产品功能、three_column 用三个并列 |
+| `code_block` | 代码片段 / 命令行展示 | 代码、安装命令、CLI、shell |
+| `architecture` | 架构分层图：纵向多层（前端 / 后端 / 数据） | 系统架构、技术栈分层、流程图 |
+| `tech_stack` | 技术栈徽章列表 | 使用的技术、stack badges、依赖列表 |
+| `chat_bubbles` | 多人讨论气泡（左右交替弹入） | 多条评论、社区讨论、comment_feed、danmaku_wall（弹幕样式无，用此替代） |
+| `timeline` | 时间线（事件 / 版本历史，按日期点亮） | 时间线、版本历史、roadmap、timeline_horizontal/vertical |
+| `transition` | 章节过渡 / 来源切换大标题 | 转场、章节标题 |
+
+**模板选择速查（含历史 / 同义概念名映射，便于按描述检索）：**
+- "封面 / cover_title / 片尾 / credit_roll" → `cover`
+- "对比 / split_compare / versus" → `comparison_table`（数据型）或 `debate_split`（观点型）
+- "辩论 / debate_arena / debate_clash / pros vs cons" → `debate_split`
+- "引用 / immersive_quote / 大字金句" → `quote_card`
+- "leaderboard / 排行榜" → 总览预告用 `rich_bullet`，单条详情用 `project_intro`
+- "弹幕墙 / danmaku_wall / 评论流 / comment_feed / notification_center" → `chat_bubbles`
+- "step_breakdown / 步骤引导" → `rich_bullet`（活跃 bullet 表示当前步）
+- "three_column / 三栏并列" → 三个 `feature_card` 串联（每个一栏）
+- "cinematic_lower_third / 字幕条 overlay / card_stack_swipe / social_feed" → 无独立实现，按场景拆分到现有模板，**不要凭名称生造**
+
+**注意**：上表 15 个 ID 是 `generate_main_tsx.py` 唯一识别的 `template` 取值。任何 backup 时代的旧名称（如 `cover_title`、`debate_arena`、`leaderboard`）都不能直接写入 `script.json` 的 `template` 字段，必须按上方映射换成对应 ID。
 
 
 **环境变量**: 先执行 `source ~/.openclaw/workspace/.env`
