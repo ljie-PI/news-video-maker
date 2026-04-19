@@ -278,13 +278,7 @@ python3 smart_render.py remotion-{source}-{orientation} \
 
 ---
 
-## 四、质量评估
-
-渲染完成后，使用 `video_quality_eval_prompt.md`（9 个维度，目标分数 ≥ 9.0）对成片做评分；不达标的部分回到对应步骤修订（旁白 → 步骤 1，音色 → 步骤 2，画面 → 步骤 3）。
-
----
-
-## 五、参考资料
+## 四、参考资料
 
 - 主题色定义：`remotion-templates/themes/{github,hackernews,producthunt,reddit}.ts`
 - 模板视觉规范：`remotion-templates/SCENE_DESIGN.md`
