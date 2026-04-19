@@ -402,28 +402,6 @@ export const QuoteCardScene: React.FC<QuoteCardSceneProps> = ({
               </span>
             )}
           </div>
-
-          {/* Narration text */}
-          {narration && (
-            <div
-              style={{
-                fontFamily,
-                fontSize: Math.round(24 * fScale),
-                color: theme.text_secondary,
-                lineHeight: 1.8,
-                padding: `${Math.round(20 * vScale)}px 0`,
-                borderTop: `1px solid ${theme.card_border}`,
-                marginTop: Math.round(20 * vScale),
-                textAlign: "center",
-                maxWidth: "90%",
-                opacity: fadeIn(frame, CONTEXT_START + 15, 18),
-                position: "relative",
-                zIndex: 1,
-              }}
-            >
-              {narration}
-            </div>
-          )}
         </div>
 
       </AbsoluteFill>

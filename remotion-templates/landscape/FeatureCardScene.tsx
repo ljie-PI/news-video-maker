@@ -307,26 +307,6 @@ export const FeatureCardScene: React.FC<FeatureCardSceneProps> = ({
               );
             })}
           </div>
-
-          {/* Narration text — fills space with additional context */}
-          {narration && narration !== description && (
-            <div
-              style={{
-                marginTop: 30,
-                padding: "20px 30px",
-                fontSize: 28,
-                fontFamily,
-                color: theme.text_secondary,
-                lineHeight: 1.7,
-                maxWidth: "90%",
-                borderTop: `1px solid ${theme.card_border}`,
-                textAlign: "center",
-                opacity: interpolate(frame, [40, 60], [0, 0.85], CLAMP),
-              }}
-            >
-              {narration}
-            </div>
-          )}
         </div>
 
       </AbsoluteFill>

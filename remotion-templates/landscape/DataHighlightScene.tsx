@@ -482,7 +482,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
           <div
             style={{
               position: "absolute",
-              bottom: narration ? 180 : 130,
+              bottom: 130,
               left: 0,
               right: 0,
               display: "flex",
@@ -508,7 +508,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            bottom: narration ? 100 : 60,
+            bottom: 60,
             left: 0,
             right: 0,
             display: "flex",
@@ -535,28 +535,6 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
             {context}
           </div>
         </div>
-
-        {/* ── Narration text ──────────────────────── */}
-        {narration && (
-          <div
-            style={{
-              position: "absolute",
-              bottom: 40,
-              left: 60,
-              right: 60,
-              fontFamily,
-              fontSize: 24,
-              color: theme.text_secondary,
-              lineHeight: 1.8,
-              padding: "16px 20px",
-              borderTop: `1px solid ${theme.card_border}`,
-              opacity: fadeIn(frame, 60, 20),
-              textAlign: "center",
-            }}
-          >
-            {narration}
-          </div>
-        )}
 
       </AbsoluteFill>
     </AbsoluteFill>

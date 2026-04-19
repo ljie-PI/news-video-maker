@@ -233,28 +233,6 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
 
           {renderSide(conSide, SIDE_B_COLOR, "right", POINTS_BASE + 5)}
         </div>
-
-        {/* Narration at bottom */}
-        {narration && (
-          <div
-            style={{
-              fontFamily,
-              fontSize: 24,
-              color: theme.text_secondary,
-              lineHeight: 1.7,
-              textAlign: "center",
-              marginTop: 12,
-              paddingTop: 10,
-              borderTop: `1px solid ${theme.border}`,
-              opacity: fadeIn(frame, 50, 20),
-              flexShrink: 0,
-              maxHeight: 100,
-              overflow: "hidden",
-            }}
-          >
-            {narration}
-          </div>
-        )}
       </AbsoluteFill>
     </AbsoluteFill>
   );

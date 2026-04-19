@@ -484,7 +484,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
           <div
             style={{
               position: "absolute",
-              bottom: narration ? Math.round(180 * vScale) : Math.round(130 * vScale),
+              bottom: Math.round(130 * vScale),
               left: 0,
               right: 0,
               display: "flex",
@@ -510,7 +510,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            bottom: narration ? Math.round(100 * vScale) : 60,
+            bottom: 60,
             left: 0,
             right: 0,
             display: "flex",
@@ -537,28 +537,6 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
             {context}
           </div>
         </div>
-
-        {/* ── Narration text ──────────────────────── */}
-        {narration && (
-          <div
-            style={{
-              position: "absolute",
-              bottom: 40,
-              left: 60,
-              right: 60,
-              fontFamily,
-              fontSize: Math.round(24 * fScale),
-              color: theme.text_secondary,
-              lineHeight: 1.8,
-              padding: `${Math.round(16 * vScale)}px 20px`,
-              borderTop: `1px solid ${theme.card_border}`,
-              opacity: fadeIn(frame, 60, 20),
-              textAlign: "center",
-            }}
-          >
-            {narration}
-          </div>
-        )}
 
       </AbsoluteFill>
     </AbsoluteFill>
