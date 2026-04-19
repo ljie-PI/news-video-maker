@@ -208,6 +208,7 @@ npx remotion render src/index.ts Main --output=out.mp4 --width=1920 --height=108
       "template": "bullet_points",
       "narration": "...",
       "data": {
+        "project": "项目名（与 project_intro 中的 name 一致）",
         "title": "章节标题",
         "bullets": ["要点1", "要点2", "要点3", "要点4"]
       }
@@ -220,7 +221,7 @@ npx remotion render src/index.ts Main --output=out.mp4 --width=1920 --height=108
 - `name` 字段必须是人类可读的项目名称，不能用 slug 或 id
 
 ### 注意事项（以下是 3 轮迭代中发现的关键 bug，不能重犯）
-1. **BulletPointsScene 的 project 属性**：`generate_main_tsx.py` 默认从 `seg_id` 推导，但必须确保传入的是真实项目名称（如 "Gemini CLI"），不能是 slug（如 "gemini_cli"）。
+1. **BulletPointsScene 的 project 属性**：`generate_main_tsx.py` 不会自动从 `seg_id` 推导，必须在 `bullet_points` 节点的 `data.project` 中显式传入真实项目名称（如 "Gemini CLI"），不能是 slug（如 "gemini_cli"），且应与同一 item 的 `project_intro.data.name` 一致。缺省会导致顶部标题显示为空。
 2. **isDark 设置**：除 GitHub 外，其他来源的 BulletPointsScene 中 `isDark` 必须为 `false`（硬编码）。GitHub 来源可使用 `rank % 3 === 0` 交替。
 3. **星标/投票数为 0 时**：ProjectIntroScene 已有 `starsNum > 0` 条件判断，不显示空的星标 badge。Reddit 来源通常没有投票数据。
 4. **HN 来源**：使用 ▲ 图标代替 ★ 显示 points，可在 theme 中覆盖。
