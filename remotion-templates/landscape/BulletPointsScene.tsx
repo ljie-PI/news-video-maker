@@ -27,10 +27,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
   variant = 0,
 }) => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames, width, height } = useVideoConfig();
-  const isPortrait = height > width;
-  const vScale = isPortrait ? 2.0 : 1;
-  const fScale = isPortrait ? 1.25 : 1;
+  const { fps, durationInFrames, height } = useVideoConfig();
 
   // Use light mode consistently for Reddit theme
   const accentColor = variant % 2 === 0 ? theme.brand_primary : theme.brand_highlight;
@@ -79,9 +76,9 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-start",
-          padding: `${Math.round(50 * vScale)}px 80px`,
-          paddingTop: Math.round(60 * vScale),
-          gap: Math.round(24 * vScale),
+          padding: "50px 80px",
+          paddingTop: 60,
+          gap: 24,
           overflow: "hidden",
         }}
       >
@@ -111,7 +108,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: Math.round(42 * fScale),
+              fontSize: 42,
               fontWeight: 700,
               color: accentColor,
               lineHeight: 1.2,
@@ -123,7 +120,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
             <div
               style={{
                 fontFamily,
-                fontSize: Math.round(26 * fScale),
+                fontSize: 26,
                 fontWeight: 500,
                 color: theme.text_secondary,
                 marginTop: 6,
@@ -181,7 +178,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
                 style={{
                   display: "flex",
                   alignItems: "flex-start",
-                  gap: Math.round(18 * vScale),
+                  gap: 18,
                   opacity: bulletOpacity * activeOpacity,
                   transform: `translateX(${bulletX}px) scale(${activeScale})`,
                   transformOrigin: "left center",
@@ -193,7 +190,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
                 <div
                   style={{
                     fontFamily,
-                    fontSize: Math.round(26 * fScale),
+                    fontSize: 26,
                     fontWeight: 700,
                     color: isActive ? "#ffffff" : accentColor,
                     minWidth: 40,
@@ -214,7 +211,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
                   <div
                     style={{
                       fontFamily,
-                      fontSize: Math.round(36 * fScale),
+                      fontSize: 36,
                       fontWeight: isActive ? 600 : 500,
                       color: isActive ? theme.text_primary : theme.text_secondary,
                       lineHeight: 1.45,
