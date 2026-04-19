@@ -320,27 +320,6 @@ export const ProjectHeroScene: React.FC<ProjectHeroSceneProps> = ({
                 </div>
               </div>
             )}
-
-            {/* Narration text — bottom context */}
-            {narration && (
-              <div
-                style={{
-                  fontFamily,
-                  fontSize: 34,
-                  fontWeight: 400,
-                  color: "#8b949e",
-                  lineHeight: 1.6,
-                  opacity: fadeIn(frame, 40, 20),
-                  transform: `translateY(${float(frame, 28, 8, 7)}px)`,
-                  marginTop: 16,
-                  borderTop: `1px solid ${theme.card_border}`,
-                  paddingTop: 20,
-                  maxWidth: 1200,
-                }}
-              >
-                {narration}
-              </div>
-            )}
           </div>
         </div>
       </AbsoluteFill>

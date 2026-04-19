@@ -227,24 +227,6 @@ export const KeyInsightScene: React.FC<KeyInsightSceneProps> = ({
                 );
               })}
             </div>
-
-            {/* Narration text — fills space with extra context */}
-            {narration && narration !== explanation && (
-              <div
-                style={{
-                  fontFamily,
-                  fontSize: 36,
-                  fontWeight: 400,
-                  color: theme.text_secondary,
-                  lineHeight: 1.7,
-                  opacity: fadeIn(frame, EXPLANATION_START + sentences.length * SENTENCE_STAGGER + 5, 18),
-                  borderTop: `1px solid ${theme.card_border}`,
-                  paddingTop: 20,
-                }}
-              >
-                {narration}
-              </div>
-            )}
           </div>
         </div>
 

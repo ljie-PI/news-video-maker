@@ -219,26 +219,6 @@ export const ComparisonTableScene: React.FC<ComparisonTableSceneProps> = ({
           })}
         </div>
 
-        {/* Narration text */}
-        {narration && (
-          <div
-            style={{
-              width: "88%",
-              fontFamily,
-              fontSize: 24,
-              color: theme.text_secondary,
-              lineHeight: 1.8,
-              padding: "20px 0",
-              borderTop: `1px solid ${theme.card_border}`,
-              marginTop: 20,
-              textAlign: "center",
-              opacity: fadeIn(frame, 40, 20),
-            }}
-          >
-            {narration}
-          </div>
-        )}
-
 
 
       </AbsoluteFill>
