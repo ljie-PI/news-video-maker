@@ -29,7 +29,6 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
 
-  const isDark = false;
   const accentColor = variant % 2 === 0 ? theme.brand_primary : theme.brand_highlight;
 
   const bulletCount = bullets.length;

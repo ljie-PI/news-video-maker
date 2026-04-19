@@ -33,9 +33,6 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
   const isReversed = rank % 2 === 0;
 
   // Alternate color scheme
-  const isDark = rank % 3 === 0;
-  const _bgBase = isDark ? theme.dark_bg_from : theme.background_secondary;
-  const _textColor = isDark ? "#ffffff" : theme.text_primary;
   const accentColor = rank % 2 === 0 ? theme.brand_highlight : theme.brand_primary;
 
   // Entrance animations
@@ -89,9 +86,7 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
       <Audio src={staticFile(audioFile)} />
       <AbsoluteFill
         style={{
-          background: isDark
-            ? `linear-gradient(${135 + bgGradientAngle}deg, ${theme.dark_bg_from} 0%, ${theme.dark_bg_mid} 50%, ${theme.dark_bg_to} 100%)`
-            : `linear-gradient(${135 + bgGradientAngle}deg, hsl(210, 15%, 97%) 0%, ${theme.background_secondary} 50%, hsl(220, 15%, 95%) 100%)`,
+          background: `linear-gradient(${135 + bgGradientAngle}deg, hsl(210, 15%, 97%) 0%, ${theme.background_secondary} 50%, hsl(220, 15%, 95%) 100%)`,
           display: "flex",
           flexDirection: isReversed ? "row-reverse" : "row",
           alignItems: "center",
@@ -127,7 +122,7 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
             lineHeight: 1,
             minWidth: 200,
             textAlign: "center",
-            textShadow: isDark ? `0 0 30px ${accentColor}40` : "none",
+            textShadow: "none",
           }}
         >
           {rank}
@@ -149,7 +144,7 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
                 fontFamily,
                 fontSize: 72,
                 fontWeight: 700,
-                color: isDark ? "#ffffff" : theme.brand_primary,
+                color: theme.brand_primary,
                 opacity: nameOpacity,
                 transform: `scale(${nameScale})`,
                 transformOrigin: isReversed ? "right center" : "left center",
@@ -177,7 +172,7 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
               fontFamily,
               fontSize: 36,
               fontWeight: 400,
-              color: isDark ? "#8b949e" : theme.text_secondary,
+              color: theme.text_secondary,
               opacity: taglineOpacity,
               transform: `translateY(${taglineY}px)`,
               lineHeight: 1.4,

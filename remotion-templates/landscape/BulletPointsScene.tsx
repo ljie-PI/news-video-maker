@@ -33,7 +33,6 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
   const fScale = isPortrait ? 1.25 : 1;
 
   // Use light mode consistently for Reddit theme
-  const isDark = false;
   const accentColor = variant % 2 === 0 ? theme.brand_primary : theme.brand_highlight;
 
   // Determine which bullet is "active" based on frame progress
@@ -71,9 +70,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
       <Audio src={staticFile(audioFile)} />
       <AbsoluteFill
         style={{
-          background: isDark
-            ? `linear-gradient(${bgAngle}deg, ${theme.dark_bg_from} 0%, ${theme.dark_bg_mid} 100%)`
-            : `linear-gradient(${bgAngle}deg, #ffffff 0%, ${theme.background_secondary} 100%)`,
+          background: `linear-gradient(${bgAngle}deg, #ffffff 0%, ${theme.background_secondary} 100%)`,
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-start",
@@ -101,7 +98,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
         <div
           style={{
             opacity: titleOpacity,
-            borderBottom: `3px solid ${isDark ? "rgba(255,255,255,0.15)" : theme.border}`,
+            borderBottom: `3px solid ${theme.border}`,
             paddingBottom: 14,
             transform: "none",
           }}
@@ -111,7 +108,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
               fontFamily,
               fontSize: Math.round(42 * fScale),
               fontWeight: 700,
-              color: isDark ? "#ffffff" : accentColor,
+              color: accentColor,
               lineHeight: 1.2,
             }}
           >
@@ -123,7 +120,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
                 fontFamily,
                 fontSize: Math.round(26 * fScale),
                 fontWeight: 500,
-                color: isDark ? "#8b949e" : theme.text_secondary,
+                color: theme.text_secondary,
                 marginTop: 6,
               }}
             >
@@ -214,9 +211,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
                       fontFamily,
                       fontSize: Math.round(28 * fScale),
                       fontWeight: isActive ? 600 : 500,
-                      color: isDark
-                        ? (isActive ? "#ffffff" : "#b0b8c4")
-                        : (isActive ? theme.text_primary : theme.text_secondary),
+                      color: isActive ? theme.text_primary : theme.text_secondary,
                       lineHeight: 1.45,
                       wordBreak: "break-word",
                       whiteSpace: "normal",
@@ -252,7 +247,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
             fontFamily,
             fontSize: 20,
             fontWeight: 600,
-            color: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.15)",
+            color: "rgba(0,0,0,0.15)",
           }}
         >
           {frame > entranceDone ? `${activeBullet + 1}/${bulletCount}` : ""}
