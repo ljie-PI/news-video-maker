@@ -40,6 +40,12 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
   const bulletBaseDelay = 5;
   const bulletGap = Math.max(3, Math.floor(45 / bulletCount));
   const entranceDone = bulletBaseDelay + bulletCount * bulletGap + 10;
+  const isDense = bulletCount >= 6;
+  const bulletGapPx = isPortrait
+    ? (isDense
+        ? Math.max(8, Math.floor((height - 400) / (bulletCount + 1) / 3))
+        : Math.max(20, Math.floor((height - 400) / (bulletCount + 1) / 2)))
+    : Math.max(12, Math.floor((height - 300) / (bulletCount + 1) / 2));
   const activeBulletRaw = entranceDone >= durationInFrames - 10
     ? bulletCount - 0.01
     : interpolate(
@@ -135,7 +141,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: Math.round(20 * vScale),
+            gap: bulletGapPx,
           }}
         >
           {bullets.map((bullet, i) => {
@@ -210,7 +216,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
                   <div
                     style={{
                       fontFamily,
-                      fontSize: Math.round(28 * fScale),
+                      fontSize: Math.round(36 * fScale),
                       fontWeight: isActive ? 600 : 500,
                       color: isActive ? theme.text_primary : theme.text_secondary,
                       lineHeight: 1.45,

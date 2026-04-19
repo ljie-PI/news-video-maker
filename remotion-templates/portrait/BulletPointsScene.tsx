@@ -27,13 +27,17 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
   variant = 0,
 }) => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
+  const { fps, durationInFrames, height } = useVideoConfig();
 
   const accentColor = variant % 2 === 0 ? theme.brand_primary : theme.brand_highlight;
 
   const bulletCount = bullets.length;
   if (bulletCount <= 0) return null;
   const entranceDone = 12 + bulletCount * 10;
+  const isDense = bulletCount >= 6;
+  const bulletGapPx = isDense
+    ? Math.max(8, Math.floor((height - 400) / (bulletCount + 1) / 3))
+    : Math.max(20, Math.floor((height - 400) / (bulletCount + 1) / 2));
   const activeBulletRaw = entranceDone >= durationInFrames - 10
     ? bulletCount - 0.01
     : interpolate(
@@ -104,7 +108,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: 48,
+              fontSize: 60,
               fontWeight: 700,
               color: accentColor,
               lineHeight: 1.2,
@@ -116,7 +120,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
             <div
               style={{
                 fontFamily,
-                fontSize: 30,
+                fontSize: 38,
                 fontWeight: 500,
                 color: theme.text_secondary,
                 marginTop: 8,
@@ -132,7 +136,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: 32,
+            gap: bulletGapPx,
             flex: 1,
             justifyContent: "center",
           }}
@@ -199,14 +203,15 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
                 >
                   {i + 1}
                 </div>
-                <div style={{ flex: 1, position: "relative" }}>
+                <div style={{ flex: 1, position: "relative", minWidth: 0 }}>
                   <div
                     style={{
                       fontFamily,
-                      fontSize: 32,
+                      fontSize: 45,
                       fontWeight: isActive ? 600 : 500,
                       color: isActive ? theme.text_primary : theme.text_secondary,
                       lineHeight: 1.5,
+                      wordBreak: "break-word",
                     }}
                   >
                     {bullet}
