@@ -23,16 +23,26 @@ abort, so callers can review and re-split offending segments.
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
 import time
 from pathlib import Path
 
-from tts_preprocess import preprocess_narration
-
 DEFAULT_COSYVOICE_DIR = os.path.expanduser("~/.openclaw/workspace/CosyVoice")
 MAX_SEGMENT_SECONDS = 15.0
+
+_HYPHEN_BETWEEN_LETTERS = re.compile(r'(?<=[A-Za-z])-(?=[A-Za-z])')
+_CJK_THEN_ASCII = re.compile(r'([\u4e00-\u9fff])([A-Za-z0-9])')
+_ASCII_THEN_CJK = re.compile(r'([A-Za-z0-9])([\u4e00-\u9fff])')
+
+
+def preprocess_narration(text: str) -> str:
+    text = _HYPHEN_BETWEEN_LETTERS.sub(' ', text)
+    text = _CJK_THEN_ASCII.sub(r'\1 \2', text)
+    text = _ASCII_THEN_CJK.sub(r'\1 \2', text)
+    return text
 
 
 def _build_items(script):
