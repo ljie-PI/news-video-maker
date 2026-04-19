@@ -112,7 +112,7 @@ videos/yyyy-mm-dd_HH/
 
 **输出**：`videos/yyyy-mm-dd_HH/{source}/script.json`
 
-#### 1.1 可用模板（16 个，详细规范见 `remotion-templates/SCENE_DESIGN.md`）
+#### 1.1 可用模板（17 个，详细规范见 `remotion-templates/SCENE_DESIGN.md`）
 
 | 模板 ID | 一句话用途 | 适用关键词 / 同义概念 |
 |---|---|---|
@@ -134,18 +134,9 @@ videos/yyyy-mm-dd_HH/
 | `timeline` | 时间线（事件 / 版本历史，按日期点亮） | 时间线、版本历史、roadmap |
 | `transition` | 章节过渡 / 来源切换大标题 | 转场、章节标题 |
 
-**模板选择速查（含历史 / 同义概念名映射，便于按描述检索）：**
-- "封面 / cover_title / 片尾 / credit_roll" → `cover`
-- "对比 / split_compare / versus" → `comparison_table`（数据型）或 `debate_split`（观点型）
-- "辩论 / debate_arena / debate_clash / pros vs cons" → `debate_split`
-- "引用 / immersive_quote / 大字金句" → `quote_card`
-- "leaderboard / 排行榜" → 总览预告用 `rich_bullet`，单条详情用 `project_hero`（跨来源）或 `project_intro`（仅 GitHub）
-- "弹幕墙 / danmaku_wall / 评论流 / comment_feed / notification_center" → `chat_bubbles`
-- "step_breakdown / 步骤引导" → `rich_bullet`（活跃 bullet 表示当前步）
-- "three_column / 三栏并列" → 三个 `feature_card` 串联
-- "cinematic_lower_third / 字幕条 overlay / card_stack_swipe / social_feed" → 无独立实现，按场景拆分到现有模板，**不要凭名称生造**
+**注意**：上表 17 个模板 ID + 1 个向后兼容别名 `cover_title` ≡ `cover` 是 `generate_main_tsx.py` 当前接受的全部 `template` 取值。其它 backup 时代的概念名（`debate_arena` / `leaderboard` / `immersive_quote` / `cinematic_lower_third` / `card_stack_swipe` / `social_feed` 等）**不在 registry**，写错会被跳过并打印 `WARNING: Unknown template`——遇到这些概念请按第 3 列同义词映射到现有模板，不要凭名称生造。
 
-**注意**：上表 16 个 ID（含 `project_hero` / `bullet_points` 两个独立组件）+ 1 个向后兼容别名 `cover_title` ≡ `cover` 是 `generate_main_tsx.py` 当前接受的全部 `template` 取值。其它 backup 时代的概念名（`debate_arena` / `leaderboard` / `immersive_quote` 等）**不在 registry**，写错会被跳过并打印 `WARNING: Unknown template`。
+> `remotion-templates/SCENE_DESIGN.md` 是更早版本的视觉规范，仅包含其中 15 个场景，未含 `project_intro` 与 `bullet_points`；这两个组件请直接参考 `landscape/` 下的 `ProjectIntroScene.tsx` / `BulletPointsScene.tsx` 源码。
 
 #### 1.2 画面显示语言规则（严格遵守）
 
@@ -180,7 +171,7 @@ videos/yyyy-mm-dd_HH/
 2. 为每个 item 规划 5-10 个分镜：先决定每个分镜要讲什么内容（结合二.5 旁白深度要求），再选合适模板
 3. 第 1 分镜固定 `cover`，第 2 分镜固定 `rich_bullet`（总览预告，列出**所有** items）
 4. 撰写每个分镜的 `narration`（中文，遵循二.6/7 与 1.2 的语言规则）
-5. 写入 `script.json`：顶层是 `{"segments": [...]}`，每个 segment 包含 `id`（唯一标识，用于 audio 文件名）、`template`（取 1.1 表中 16 个模板 ID 之一）、`narration`（旁白文本）、`data`（模板需要的字段，字段集随模板不同而不同；详见 `remotion-templates/SCENE_DESIGN.md` 中各 Scene 的 Props 定义）
+5. 写入 `script.json`：顶层是 `{"segments": [...]}`，每个 segment 包含 `id`（唯一标识，用于 audio 文件名）、`template`（取 1.1 表中 17 个模板 ID 之一）、`narration`（旁白文本）、`data`（模板需要的字段，字段集随模板不同而不同；详见 `remotion-templates/SCENE_DESIGN.md` 中各 Scene 的 Props 定义）
 
 #### 1.4 关键字段约束（不写到 example，避免 LLM 照抄）
 
