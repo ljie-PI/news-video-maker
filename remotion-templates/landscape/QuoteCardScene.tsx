@@ -62,7 +62,7 @@ export const QuoteCardScene: React.FC<QuoteCardSceneProps> = ({
 
   // --- Animated values ---
   const bgAngle = rotatingGradient(frame, durationInFrames, 135, 60);
-  const cardFloat = Math.sin(frame / 22) * 4;
+  const cardFloat = 0; // sin floating disabled — see ProjectHeroScene
 
   // Card entrance: spring bounce from bottom
   const cardY = slideIn(frame, fps, CARD_ENTRANCE_START, 100, {
@@ -78,9 +78,7 @@ export const QuoteCardScene: React.FC<QuoteCardSceneProps> = ({
     [0, 1],
     [2.0, 1.0],
   );
-  const quoteMarkPulse = frame > 30
-    ? 1 + Math.sin((frame - 30) / 25) * 0.04
-    : 1;
+  const quoteMarkPulse = 1; // sin breathing disabled — see ProjectHeroScene
   const quoteMarkScale = quoteMarkEntrance * quoteMarkPulse;
 
   // Closing quote mark appears after all words
@@ -101,9 +99,9 @@ export const QuoteCardScene: React.FC<QuoteCardSceneProps> = ({
   // Context fade in
   const contextOpacity = context ? fadeIn(frame, CONTEXT_START, 15) : 0;
 
-  // Side decorations pulse
-  const leftDecorOpacity = 0.10 + Math.sin(frame / 25) * 0.006;
-  const rightDecorOpacity = 0.06 + Math.sin(frame / 40 + 2) * 0.006;
+  // Side decorations static (sin pulse disabled — see ProjectHeroScene)
+  const leftDecorOpacity = 0.10;
+  const rightDecorOpacity = 0.06;
 
   return (
     <AbsoluteFill>

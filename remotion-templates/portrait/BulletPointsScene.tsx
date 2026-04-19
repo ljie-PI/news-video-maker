@@ -92,7 +92,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
             width: 6,
             height: "100%",
             background: `linear-gradient(180deg, ${accentColor}00, ${accentColor}, ${accentColor}00)`,
-            transform: `translateY(${Math.sin(frame / 30) * 150}px)`,
+            transform: `translateY(0)`,
           }}
         />
 
@@ -102,7 +102,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
             opacity: titleOpacity,
             borderBottom: `3px solid ${theme.border}`,
             paddingBottom: 18,
-            transform: `translateX(${Math.sin(frame / 60) * 5}px)`,
+            transform: `translateX(0)`,
           }}
         >
           <div
@@ -158,7 +158,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
 
             const isActive = i === activeBullet && frame > entranceDone;
             const isNarrated = i <= activeBullet && frame > entranceDone;
-            const activeScale = isActive ? 1.02 + Math.sin(frame / 12) * 0.01 : (isNarrated ? 1.0 : 0.95);
+            const activeScale = isActive ? 1.02 : (isNarrated ? 1.0 : 0.95);
             const activeOpacity = isActive ? 1 : (isNarrated ? 0.7 : 0.5);
 
             const underlineWidth = isActive
