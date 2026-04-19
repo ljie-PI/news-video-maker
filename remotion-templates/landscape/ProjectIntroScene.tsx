@@ -198,13 +198,13 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
               <div
                 style={{
                   fontFamily,
-                  fontSize: 24,
+                  fontSize: 32,
                   fontWeight: 600,
                   color: "#ffffff",
-                  backgroundColor: theme.brand_primary,
-                  padding: "6px 20px",
-                  borderRadius: 20,
-                  boxShadow: `0 0 10px ${theme.brand_primary}60`,
+                  backgroundColor: theme.status_success,
+                  padding: "10px 28px",
+                  borderRadius: 24,
+                  boxShadow: `0 0 16px ${theme.status_success}90`,
                 }}
               >
                 ★ +{displayedStars}
