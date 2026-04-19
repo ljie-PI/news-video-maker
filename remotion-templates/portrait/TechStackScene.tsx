@@ -101,8 +101,6 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
   const entranceDone = BADGE_BASE_DELAY + totalCount * STAGGER_GAP + 10;
   const active = activeIndex(frame, entranceDone, durationInFrames, totalCount);
 
-  // --- Progress bar ---
-
   const circles = [0, 1, 2].map((i) => ({
     x: [300, 1600, 960][i],
     y: [200, 700, 450][i],

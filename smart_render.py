@@ -35,7 +35,7 @@ ANIM_ESTIMATES = {
     "FeatureCardScene":     100,   # icon + title + desc entrance then static
     "DebateSplitScene":     120,   # card entrance then static
     "QuoteCardScene":       100,   # quote word entrance then static
-    "DataHighlightScene":   "continuous",  # gauge ring, HudCorner, gradient all rotate continuously
+    "DataHighlightScene":   "continuous",  # gauge ring + HudCorner rotate every frame
     "CodeBlockScene":       120,   # code lines appear then static
     "ChatBubblesScene":     "continuous",  # activeIndex bubble cycling
     "TechStackScene":       120,   # badge stagger then static
