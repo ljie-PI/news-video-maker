@@ -88,7 +88,7 @@ videos/yyyy-mm-dd_HH/
 
 7. **旁白语言**：**一律用中文**。HN/Reddit 这类英文内容较多的来源**不能直接读英文标题或评论**，必须先翻译成中文再撰写旁白。旁白侧重解说和分析，画面侧重原文要点和数据，**两者不需要完全一致**。
 
-8. **TTS 友好**：旁白文本避免特殊字符；英文避免使用 `-` `_` `.` 把单词连在一起（CosyVoice 会读不出来）；旁白中的每个 bullet 和每个模块单独一个子分镜，方便后期音画对齐。
+8. **TTS 友好**：旁白文本避免特殊字符；英文避免使用 `-` `_` `.` 把单词连在一起（TTS 会读不出来）；旁白中的每个 bullet 和每个模块单独一个子分镜，方便后期音画对齐。
 
 9. **画面密度**：每个内容分镜画面上可见文字 ≥ **80 中文字 / 150 英文字**。旁白提到的关键信息（数据点、技术名词、评论观点）≥ **70%** 必须在画面上展示。旁白提到的数据点（Star 数、性能数字、百分比）应以**大号动画数字 / 动态计数器**形式同步显示；竞品对比必须用表格 / 分栏（不要纯文字列表）；社区评论必须用引用卡片（不要 bullet）。
 
@@ -190,33 +190,17 @@ videos/yyyy-mm-dd_HH/
 
 **输出**：`videos/yyyy-mm-dd_HH/{source}/audio/{seg_id}.wav`
 
-**命令**（CosyVoice）：
+**命令**：
 ```bash
-cd ~/.openclaw/workspace/CosyVoice && \
-  uv run python clone_voice.py "旁白文本" \
-    -o /path/to/audio/{seg_id}.wav \
-    --speed 1.2 \
-    --stream
+python tts_batch.py \
+  videos/yyyy-mm-dd_HH/{source}/script.json \
+  videos/yyyy-mm-dd_HH/{source}/audio \
+  --speed 1.3
 ```
-参考音色：`reference/my_voice.wav`（默认）。
 
-> ⚠️ **必须加 `--stream`**：`clone_voice.py` 非 stream 模式存在已知 bug——长文本被 CosyVoice 内部切成多段时只会保留最后一段，导致音频缺失大半内容。`--stream` 走的是分片拼接分支，能得到完整音频。无论旁白长短一律加上，避免短文本临时不切分而长文本被截断的混淆。
+**校验**：脚本退出码 `2` 表示存在 segment 总时长 > 15 秒，必须回到步骤 1 拆分该 segment 后重跑。
 
-**做法**：
-1. 遍历 script.json 的所有 segments，按 `id` 顺序串行调用 CosyVoice
-2. 跳过已存在的 wav 文件（支持断点续跑）
-3. 每生成完一条 wav，用 `ffprobe -v quiet -show_entries format=duration -of csv=p=0 {wav}` 读取**音频实际时长（秒）**，作为后续帧偏移和 §二.10「单分镜旁白时长 ≤ 15 秒」校验依据；超过 15 秒的分镜必须在日志中标红，回到步骤 1 拆分该 segment 后重跑
-4. 失败的 segment 记录原始旁白和报错堆栈到日志，便于人工修复后重跑
-
-**`rich_bullet` 特殊流程（让 bullet 高亮与旁白同步）**：
-- 该模板的 `narration` 在 §三.1.1 已要求用 `\n\n` 切分为 `bullets.length` 段
-- TTS 阶段对每段单独调用 `clone_voice.py --stream` 生成 `audio/{seg_id}_b{i}.wav`（i 从 1 起）
-- 用 ffprobe 读取每段时长（秒），写入清单 `audio/{seg_id}.bullets.json`：`{"durations": [秒, 秒, ...]}`（顺序与 bullets 一致，长度必须等于 `bullets.length`）
-- 用 `ffmpeg -f concat` 合并子 wav 为最终 `audio/{seg_id}.wav`（渲染时仍只播放一个文件）
-- 渲染端：`generate_main_tsx.py` 读到该清单时会把秒转为帧（×30），作为 `bulletDurations` prop 传给 `RichBulletScene`，组件按累计时间高亮当前 bullet；清单缺失或长度不匹配则退化为均分时长
-- 总时长（合并后整段 wav）仍受 §二.10 ≤ 15s 限制
-
-**日志**：`logs/{source}_02_tts.log`，**每条 wav 一行**记录 `id / 字数 / 音频时长(秒) / 生成耗时(秒) / 文件大小`，超时分镜额外用 `WARN` 前缀标出；末尾追加汇总（总分镜数 / 总时长 / 失败数 / 超时数）。
+**日志**：`logs/{source}_02_tts.log`，记录 `tts_batch.py` 全部 stdout。
 
 ---
 
