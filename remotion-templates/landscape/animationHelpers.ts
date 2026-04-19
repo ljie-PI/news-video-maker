@@ -44,9 +44,6 @@ export function activeIndex(
   count: number
 ): number {
   if (frame < entranceDone || count <= 0) return 0;
-  // Guard against degenerate ranges (very short segments or many items)
-  // where entranceDone can meet/exceed the end frame, which would make
-  // interpolate's inputRange non-monotonic and throw.
   if (entranceDone >= duration - 10) return count - 1;
   const progress = interpolate(
     frame,

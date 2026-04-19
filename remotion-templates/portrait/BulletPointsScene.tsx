@@ -32,9 +32,8 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
   const accentColor = variant % 2 === 0 ? theme.brand_primary : theme.brand_highlight;
 
   const bulletCount = bullets.length;
+  if (bulletCount <= 0) return null;
   const entranceDone = 12 + bulletCount * 10;
-  // Guard against degenerate inputRange (entranceDone >= durationInFrames - 10)
-  // which would cause interpolate to throw.
   const activeBulletRaw = entranceDone >= durationInFrames - 10
     ? bulletCount - 0.01
     : interpolate(
