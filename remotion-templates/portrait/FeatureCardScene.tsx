@@ -159,7 +159,6 @@ export const FeatureCardScene: React.FC<FeatureCardSceneProps> = ({
   const DESC_START = 30;
   const DESC_STAGGER = Math.max(15, Math.floor((durationInFrames * 0.5) / Math.max(descLines.length, 1)));
 
-  const cardFloat = 0;
   const iconFloat = 0;
   const iconBounce = 0;
   const iconWobble = 0;
@@ -212,7 +211,7 @@ export const FeatureCardScene: React.FC<FeatureCardSceneProps> = ({
             alignItems: "center",
             padding: "50px 80px 40px",
             gap: Math.round(36 * vScale),
-            transform: `translateY(${cardFloat}px)`,
+            transform: `translateY(0)`,
           }}
         >
           {/* Icon */}

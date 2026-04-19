@@ -54,23 +54,19 @@ export function activeIndex(
   return Math.floor(Math.max(0, Math.min(progress, count - 1)));
 }
 
-/** Breathing/pulse animation. Returns scale factor centered at 1. */
-export function breathe(frame: number, period = 20, amplitude = 0.12): number {
-  // Capped to imperceptible scale variation — avoids visible content wobble
-  const capped = Math.min(amplitude, 0.004);
-  return 1 + Math.sin(frame / period) * capped;
+/** No-op kept for backward compatibility — always returns 1. */
+export function breathe(_frame: number, _period = 20, _amplitude = 0.12): number {
+  return 1;
 }
 
-/** Float animation. Returns pixel offset for gentle hovering. */
+/** No-op kept for backward compatibility — always returns 0. */
 export function float(
-  frame: number,
-  period = 25,
-  amplitude = 25,
-  phase = 0
+  _frame: number,
+  _period = 25,
+  _amplitude = 25,
+  _phase = 0
 ): number {
-  // Capped to ≤2px — provides subtle motion without visible content wobble
-  const capped = Math.min(amplitude, 2);
-  return Math.sin(frame / period + phase) * capped;
+  return 0;
 }
 
 /** Typewriter reveal: returns how many characters should be visible. */

@@ -229,7 +229,6 @@ export const CodeBlockScene: React.FC<CodeBlockSceneProps> = ({
   const gradientAngle = rotatingGradient(frame, durationInFrames, 135, 120);
 
   // ── Continuous animations ──
-  const cardFloat = float(frame, 22, 30);
   const glowPulse = 0.08;
 
 
@@ -317,7 +316,7 @@ export const CodeBlockScene: React.FC<CodeBlockSceneProps> = ({
             background: "#1e1e1e",
             borderRadius: 16,
             opacity: cardOpacity,
-            transform: `scale(${cardScale}) translateY(${cardFloat}px)`,
+            transform: `scale(${cardScale}) translateY(0)`,
             boxShadow:
               "0 8px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.08)",
             display: "flex",

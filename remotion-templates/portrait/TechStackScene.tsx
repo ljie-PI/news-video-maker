@@ -101,14 +101,11 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
   const entranceDone = BADGE_BASE_DELAY + totalCount * STAGGER_GAP + 10;
   const active = activeIndex(frame, entranceDone, durationInFrames, totalCount);
 
-  // --- Progress bar ---
-
-  // --- Floating ambient circles ---
   const circles = [0, 1, 2].map((i) => ({
-    x: Math.sin(frame / (30 + i * 9) + i * 2) * 50 + [300, 1600, 960][i],
-    y: Math.cos(frame / (25 + i * 7) + i * 1.5) * 36 + [200, 700, 450][i],
-    size: 140 + i * 60 + Math.sin(frame / 20 + i) * 6,
-    opacity: 0.10 + Math.sin(frame / 22 + i) * 0.012,
+    x: [300, 1600, 960][i],
+    y: [200, 700, 450][i],
+    size: 140 + i * 60,
+    opacity: 0.10,
   }));
 
   // Render a single badge

@@ -62,19 +62,18 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
           overflow: "hidden",
         }}
       >
-        {/* Pulsing ambient glow behind layers */}
         <div
           style={{
             position: "absolute",
             left: "50%",
             top: "55%",
-            width: 700 + Math.sin(frame / 12) * 30,
-            height: 700 + Math.sin(frame / 12) * 30,
+            width: 700,
+            height: 700,
             transform: "translate(-50%, -50%)",
             borderRadius: "50%",
             background: `radial-gradient(circle, ${accentColor}25, transparent 70%)`,
             filter: "blur(40px)",
-            opacity: 0.25 + Math.sin(frame / 10) * 0.03,
+            opacity: 0.25,
           }}
         />
 

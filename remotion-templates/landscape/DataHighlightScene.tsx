@@ -331,8 +331,6 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
         }} />
         {/* Animated grid overlay */}
         <GridBackground frame={frame} durationInFrames={durationInFrames} />
-
-        {/* Floating decorative circles */}
         {[0, 1, 2, 3].map((i) => {
           const cx = [200, 1700, 400, 1500][i];
           const cy = [150, 250, 800, 700][i];
@@ -341,13 +339,13 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
               key={i}
               style={{
                 position: "absolute",
-                left: Math.sin(frame / (18 + i * 5) + i * 1.8) * 200 + cx,
-                top: Math.cos(frame / (14 + i * 4) + i * 2.5) * 180 + cy,
-                width: 120 + i * 40 + Math.sin(frame / 12 + i) * 30,
-                height: 120 + i * 40 + Math.sin(frame / 12 + i) * 30,
+                left: cx,
+                top: cy,
+                width: 120 + i * 40,
+                height: 120 + i * 40,
                 borderRadius: "50%",
                 background: i % 2 === 0 ? theme.brand_primary : theme.brand_highlight,
-                opacity: 0.12 + Math.sin(frame / 16 + i * 1.5) * 0.08,
+                opacity: 0.12,
                 filter: "blur(30px)",
                 pointerEvents: "none",
               }}

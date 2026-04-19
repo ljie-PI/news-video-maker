@@ -62,7 +62,6 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
   const rankPulse = 1;
   const rankRotate = 0;
   const nameGlow = 1;
-  const bgGradientAngle = (frame / durationInFrames) * 80;
 
   const starsNum = parseInt(stars.replace(/[^0-9]/g, "")) || 0;
   const counterProgress = interpolate(frame, [45, 90], [0, 1], {
@@ -71,15 +70,12 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
   });
   const displayedStars = Math.floor(starsNum * counterProgress);
 
-  const scanY = (frame * 4) % 2000;
-  const progress = frame / durationInFrames;
-
   return (
     <AbsoluteFill>
       <Audio src={staticFile(audioFile)} />
       <AbsoluteFill
         style={{
-          background: `linear-gradient(${135 + bgGradientAngle}deg, hsl(210, 15%, 97%) 0%, ${theme.background_secondary} 50%, hsl(220, 15%, 95%) 100%)`,
+          background: `linear-gradient(135deg, hsl(210, 15%, 97%) 0%, ${theme.background_secondary} 50%, hsl(220, 15%, 95%) 100%)`,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -89,18 +85,6 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
           overflow: "hidden",
         }}
       >
-        {/* Scanning line */}
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: scanY,
-            width: "100%",
-            height: 2,
-            background: `linear-gradient(90deg, transparent, ${accentColor}40, transparent)`,
-          }}
-        />
-
         {/* Rank number — centered top */}
         <div
           style={{
@@ -199,26 +183,6 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
               </div>
             </div>
           )}
-        </div>
-
-        {/* Progress bar */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            width: "100%",
-            height: 4,
-            backgroundColor: "rgba(0,0,0,0.05)",
-          }}
-        >
-          <div
-            style={{
-              height: "100%",
-              width: `${progress * 100}%`,
-              background: `linear-gradient(90deg, ${accentColor}, ${theme.status_success})`,
-            }}
-          />
         </div>
       </AbsoluteFill>
     </AbsoluteFill>

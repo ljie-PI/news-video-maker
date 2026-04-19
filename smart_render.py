@@ -29,20 +29,20 @@ from pathlib import Path
 ANIM_ESTIMATES = {
     "CoverScene":           120,   # title char-by-char entrance
     "ProjectHeroScene":     100,   # rank + name + badge entrance
-    "KeyInsightScene":      150,   # typewriter + sentence stagger, static after (floats removed)
+    "KeyInsightScene":      150,   # typewriter + sentence stagger, then static
     "RichBulletScene":      "continuous",  # activeIndex highlight cycling
     "ComparisonTableScene": 120,   # row entrance then static
     "FeatureCardScene":     100,   # icon + title + desc entrance then static
     "DebateSplitScene":     120,   # card entrance then static
     "QuoteCardScene":       100,   # quote word entrance then static
-    "DataHighlightScene":   180,   # counter animation then static (floats removed)
+    "DataHighlightScene":   "continuous",  # gauge ring + HudCorner rotate every frame
     "CodeBlockScene":       120,   # code lines appear then static
     "ChatBubblesScene":     "continuous",  # activeIndex bubble cycling
     "TechStackScene":       120,   # badge stagger then static
     "ArchitectureScene":    120,   # layer entrance then static
     "TimelineScene":        "continuous",  # timeline progression
-    "TransitionScene":      60,    # quick transition
-    "ProjectIntroScene":    "continuous",  # rankFloat/rankPulse/rankRotate + scan line + progress bar
+    "TransitionScene":      60,    # quick transition (glitch active throughout)
+    "ProjectIntroScene":    120,   # rank/badge entrance + star counter (ends ~90), then static
     "BulletPointsScene":    "continuous",  # activeBullet cycling
 }
 

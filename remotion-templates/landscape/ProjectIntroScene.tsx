@@ -67,7 +67,6 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
   const rankPulse = 1;
   const rankRotate = 0;
   const nameGlow = 1;
-  const bgGradientAngle = (frame / durationInFrames) * 80;
 
   // Animated star counter (counts up from 0 to displayed value)
   const starsNum = parseInt(stars.replace(/[^0-9]/g, "")) || 0;
@@ -86,7 +85,7 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
       <Audio src={staticFile(audioFile)} />
       <AbsoluteFill
         style={{
-          background: `linear-gradient(${135 + bgGradientAngle}deg, hsl(210, 15%, 97%) 0%, ${theme.background_secondary} 50%, hsl(220, 15%, 95%) 100%)`,
+          background: `linear-gradient(135deg, hsl(210, 15%, 97%) 0%, ${theme.background_secondary} 50%, hsl(220, 15%, 95%) 100%)`,
           display: "flex",
           flexDirection: isReversed ? "row-reverse" : "row",
           alignItems: "center",
