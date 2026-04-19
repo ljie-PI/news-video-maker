@@ -51,16 +51,14 @@ function parseMainNumber(str: string): {
     return { value: null, prefix: "", suffix: "", decimals: 0 };
   }
   const [, leading, num, unit, trailing] = match;
-  const multipliers: Record<string, number> = {
-    k: 1_000, K: 1_000,
-    m: 1_000_000, M: 1_000_000,
-    b: 1_000_000_000, B: 1_000_000_000,
-  };
-  const numericMultiplier = multipliers[unit] ?? 1;
   const decimals = num.includes(".") ? num.split(".")[1].length : 0;
-  const value = parseFloat(num) * numericMultiplier;
-  // Percent and prefix/suffix text are preserved as display-only suffix.
-  const displaySuffix = (unit === "%" ? "%" : unit) + trailing;
+  // Keep the parsed value as-is (e.g. "47k" -> 47, "1.2M" -> 1.2). The unit
+  // character is preserved in the display suffix and rendered after the
+  // rolling counter, so multiplying here would produce nonsense like
+  // "47,000k". Only the magnitude character is preserved alongside any
+  // trailing text (e.g. "+47k stars" -> prefix:"+", value:47, suffix:"k stars").
+  const value = parseFloat(num);
+  const displaySuffix = unit + trailing;
   return { value, prefix: leading, suffix: displaySuffix, decimals };
 }
 
