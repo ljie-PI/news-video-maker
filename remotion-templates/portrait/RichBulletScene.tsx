@@ -13,7 +13,6 @@ import {
   fadeIn,
   slideIn,
   staggerDelay,
-  activeIndex,
   underlineSweep,
   float,
   rotatingGradient,
@@ -66,17 +65,16 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   const staggerGap = Math.max(4, Math.floor(45 / Math.max(count, 1)));
   const entranceDone = staggerDelay(baseDelay, count - 1, staggerGap) + 12;
 
-  let active: number;
-  if (bulletDurations && bulletDurations.length === count) {
+  const audioDriven = !!bulletDurations && bulletDurations.length === count;
+  let active = count - 1;
+  if (audioDriven) {
     let acc = 0;
     let computed = 0;
     for (let i = 0; i < count; i++) {
       if (frame >= acc) computed = i;
-      acc += bulletDurations[i];
+      acc += bulletDurations![i];
     }
     active = computed;
-  } else {
-    active = activeIndex(frame, entranceDone, durationInFrames, count);
   }
   const bgAngle = rotatingGradient(frame, durationInFrames, 135, 120);
 
@@ -103,8 +101,10 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
     const translateX = slideIn(frame, fps, delay, 100, { damping: 14, mass: 0.8 });
     const opacity = fadeIn(frame, delay, 15);
 
-    const isActive = globalIndex === active && frame >= entranceDone;
-    const isNarrated = globalIndex < active && frame >= entranceDone;
+    const isActive = audioDriven
+      ? globalIndex === active && frame >= entranceDone
+      : true;
+    const isNarrated = audioDriven && globalIndex < active && frame >= entranceDone;
     const isFuture = !isActive && !isNarrated;
 
     const stateOpacity = isActive ? 1 : isNarrated ? 0.7 : 0.4;
