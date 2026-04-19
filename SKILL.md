@@ -239,11 +239,10 @@ python3 generate_main_tsx.py script.json {audio_prefix} \
 ```
 
 **注意事项**：
-1. **isDark**：除 GitHub 外，其他来源的 BulletPointsScene 中 `isDark` 必须为 `false`（硬编码）。GitHub 来源可使用 `rank % 3 === 0` 交替。
-2. **HN 来源**：用 ▲ 替代 ★ 显示 points，可在 theme 中覆盖；或直接选 `project_hero` 模板（前缀自动解析）。
-3. **竖屏 scanY**：使用 `% 2000` 而非 `% 1200`（适配 1920 高度）。
-4. **Root.tsx 尺寸**：横屏 `width={1920} height={1080}`，竖屏 `width={1080} height={1920}`。`generate_main_tsx.py` 默认横屏，竖屏需通过 `--width 1080 --height 1920` 显式指定。
-5. **starsNum=0**：ProjectIntroScene 已有 `starsNum > 0` 守卫，不显示空 badge。Reddit 通常无投票数据，留空即可。
+1. **HN 来源**：用 ▲ 替代 ★ 显示 points，可在 theme 中覆盖；或直接选 `project_hero` 模板（前缀自动解析）。
+2. **竖屏 scanY**：使用 `% 2000` 而非 `% 1200`（适配 1920 高度）。
+3. **Root.tsx 尺寸**：横屏 `width={1920} height={1080}`，竖屏 `width={1080} height={1920}`。`generate_main_tsx.py` 默认横屏，竖屏需通过 `--width 1080 --height 1920` 显式指定。
+4. **starsNum=0**：ProjectIntroScene 已有 `starsNum > 0` 守卫，不显示空 badge。Reddit 通常无投票数据，留空即可。
 
 **日志**：`logs/{source}_03_remotion.log`，记录两个项目的安装日志、`generate_main_tsx.py` 的 stdout / stderr、跳过的未知 template warning。
 

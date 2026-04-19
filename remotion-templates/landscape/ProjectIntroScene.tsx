@@ -33,9 +33,7 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
   const isReversed = rank % 2 === 0;
 
   // Alternate color scheme
-  const isDark = rank % 3 === 0;
-  const _bgBase = isDark ? theme.dark_bg_from : theme.background_secondary;
-  const _textColor = isDark ? "#ffffff" : theme.text_primary;
+  const isDark = false;
   const accentColor = rank % 2 === 0 ? theme.brand_highlight : theme.brand_primary;
 
   // Entrance animations

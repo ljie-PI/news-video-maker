@@ -29,7 +29,7 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
 
-  const isDark = rank % 3 === 0;
+  const isDark = false;
   const accentColor = rank % 2 === 0 ? theme.brand_highlight : theme.brand_primary;
 
   const rankSpring = spring({ frame, fps, config: { damping: 15, stiffness: 80 } });
