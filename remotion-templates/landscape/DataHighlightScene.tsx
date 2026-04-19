@@ -331,8 +331,6 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
         }} />
         {/* Animated grid overlay */}
         <GridBackground frame={frame} durationInFrames={durationInFrames} />
-
-        {/* Static decorative circles (sin floating disabled, see ProjectHeroScene) */}
         {[0, 1, 2, 3].map((i) => {
           const cx = [200, 1700, 400, 1500][i];
           const cy = [150, 250, 800, 700][i];

@@ -62,7 +62,6 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
           overflow: "hidden",
         }}
       >
-        {/* Static ambient glow (sin pulsing disabled, see ProjectHeroScene) */}
         <div
           style={{
             position: "absolute",

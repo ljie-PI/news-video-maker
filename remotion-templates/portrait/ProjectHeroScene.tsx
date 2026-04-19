@@ -48,8 +48,6 @@ export const ProjectHeroScene: React.FC<ProjectHeroSceneProps> = ({
   // --- Background ---
   const gradAngle = rotatingGradient(frame, durationInFrames, 135, 80);
 
-  // --- Static gradient circles (ambient decoration; sin floating disabled
-  //     so smart_render's freeze frame matches a full render exactly) ---
   const circles = [0, 1, 2, 3, 4].map((i) => {
     const cx = [260, 1620, 960, 180, 1440][i];
     const cy = [180, 740, 380, 620, 280][i];

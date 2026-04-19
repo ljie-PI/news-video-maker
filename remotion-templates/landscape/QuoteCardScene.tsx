@@ -62,7 +62,6 @@ export const QuoteCardScene: React.FC<QuoteCardSceneProps> = ({
 
   // --- Animated values ---
   const bgAngle = rotatingGradient(frame, durationInFrames, 135, 60);
-  const cardFloat = 0; // sin floating disabled — see ProjectHeroScene
 
   // Card entrance: spring bounce from bottom
   const cardY = slideIn(frame, fps, CARD_ENTRANCE_START, 100, {
@@ -78,8 +77,7 @@ export const QuoteCardScene: React.FC<QuoteCardSceneProps> = ({
     [0, 1],
     [2.0, 1.0],
   );
-  const quoteMarkPulse = 1; // sin breathing disabled — see ProjectHeroScene
-  const quoteMarkScale = quoteMarkEntrance * quoteMarkPulse;
+  const quoteMarkScale = quoteMarkEntrance;
 
   // Closing quote mark appears after all words
   const closingQuoteOpacity = fadeIn(frame, Math.ceil(allWordsFrame), 20);
@@ -87,7 +85,7 @@ export const QuoteCardScene: React.FC<QuoteCardSceneProps> = ({
     spring({ frame: Math.max(0, frame - Math.ceil(allWordsFrame)), fps, config: { damping: 14, mass: 0.6 } }),
     [0, 1],
     [2.0, 1.0],
-  ) * quoteMarkPulse;
+  );
 
   // Author info fade in
   const authorOpacity = fadeIn(frame, AUTHOR_START, 18);
@@ -99,9 +97,6 @@ export const QuoteCardScene: React.FC<QuoteCardSceneProps> = ({
   // Context fade in
   const contextOpacity = context ? fadeIn(frame, CONTEXT_START, 15) : 0;
 
-  // Side decorations static (sin pulse disabled — see ProjectHeroScene)
-  const leftDecorOpacity = 0.10;
-  const rightDecorOpacity = 0.06;
 
   return (
     <AbsoluteFill>
@@ -138,7 +133,7 @@ export const QuoteCardScene: React.FC<QuoteCardSceneProps> = ({
             width: "18%",
             height: "70%",
             background: `linear-gradient(180deg, ${theme.brand_primary}00 0%, ${theme.brand_primary} 50%, ${theme.brand_primary}00 100%)`,
-            opacity: leftDecorOpacity,
+            opacity: 0.10,
             filter: "blur(60px)",
             borderRadius: "0 50% 50% 0",
           }}
@@ -152,7 +147,7 @@ export const QuoteCardScene: React.FC<QuoteCardSceneProps> = ({
             width: "16%",
             height: "60%",
             background: `linear-gradient(180deg, ${theme.brand_highlight}00 0%, ${theme.brand_highlight} 50%, ${theme.brand_highlight}00 100%)`,
-            opacity: rightDecorOpacity,
+            opacity: 0.06,
             filter: "blur(60px)",
             borderRadius: "50% 0 0 50%",
           }}
@@ -176,7 +171,7 @@ export const QuoteCardScene: React.FC<QuoteCardSceneProps> = ({
             position: "relative",
             overflow: "hidden",
             opacity: cardOpacity,
-            transform: `translateY(${cardY + cardFloat}px)`,
+            transform: `translateY(${cardY}px)`,
           }}
         >
           {/* Card inner glow */}

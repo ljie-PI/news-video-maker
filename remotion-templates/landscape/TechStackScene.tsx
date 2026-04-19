@@ -101,7 +101,6 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
 
   // --- Progress bar ---
 
-  // --- Static ambient circles (sin floating disabled, see ProjectHeroScene) ---
   const circles = [0, 1, 2].map((i) => ({
     x: [300, 1600, 960][i],
     y: [200, 700, 450][i],
