@@ -34,8 +34,9 @@ DEFAULT_COSYVOICE_DIR = os.path.expanduser("~/.openclaw/workspace/CosyVoice")
 MAX_SEGMENT_SECONDS = 15.0
 
 _HYPHEN_BETWEEN_LETTERS = re.compile(r'(?<=[A-Za-z])-(?=[A-Za-z])')
-_CJK_THEN_ASCII = re.compile(r'([\u4e00-\u9fff])([A-Za-z0-9])')
-_ASCII_THEN_CJK = re.compile(r'([A-Za-z0-9])([\u4e00-\u9fff])')
+_CJK = r'\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af'
+_CJK_THEN_ASCII = re.compile(rf'([{_CJK}])([A-Za-z0-9])')
+_ASCII_THEN_CJK = re.compile(rf'([A-Za-z0-9])([{_CJK}])')
 
 
 def preprocess_narration(text: str) -> str:
