@@ -257,16 +257,13 @@ python3 generate_main_tsx.py script.json {audio_prefix} \
 - `videos/yyyy-mm-dd_HH/1920x1080/{source}.mp4`
 - `videos/yyyy-mm-dd_HH/1080x1920/{source}.mp4`
 
-**渲染命令**（必须使用 `smart_render.py`，不要直接调用 `npx remotion render`）：
+**渲染命令**：
 ```bash
-python3 smart_render.py remotion-{source}-{orientation} \
-  --output /path/to/videos/{date_h}/{wxh}/{source}.mp4 \
-  --concurrency 4
+cd remotion-{source}-{orientation} && \
+  npx remotion render src/index.ts Main \
+    --output /path/to/videos/{date_h}/{wxh}/{source}.mp4 \
+    --fps=30 --codec=h264 --concurrency=4
 ```
-
-`smart_render.py` 会读 `ANIM_ESTIMATES`，对静态尾段直接复用最后一帧，相比标准渲染有 2-4× 加速。任一新增模板若包含连续动效，必须在 `smart_render.py` 的 `ANIM_ESTIMATES` 中标注 `"continuous"`，否则尾段会被错误地用 freeze frame 填充。
-
-仅当 `smart_render.py` 报错且需要排查时，才临时回退到 `cd remotion-{source}-{orientation} && npx remotion render src/index.ts Main --output ... --fps=30 --codec=h264 --concurrency=4`；问题修复后必须切回 `smart_render.py`。
 
 **日志**：`logs/{source}_04_render.log`，记录命令、总耗时、输出文件大小、ffmpeg 报错（如有）。
 
@@ -279,4 +276,3 @@ python3 smart_render.py remotion-{source}-{orientation} \
 - 模板组件实现：`remotion-templates/{landscape,portrait}/*Scene.tsx`
 - Remotion 入口：`remotion-templates/index.ts`、`index.css`
 - 帧偏移生成器：`generate_main_tsx.py`（项目根目录）
-- 智能渲染器：`smart_render.py`（项目根目录）
