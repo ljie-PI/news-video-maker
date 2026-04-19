@@ -199,7 +199,7 @@ videos/yyyy-mm-dd_HH/
 python tts_batch.py \
   videos/yyyy-mm-dd_HH/{source}/script.json \
   videos/yyyy-mm-dd_HH/{source}/audio \
-  --speed 1.3
+  --speed 1.2
 ```
 
 **校验**：脚本退出码 `2` 表示存在 segment 总时长 > 15 秒，必须回到步骤 1 拆分该 segment 后重跑。
