@@ -31,6 +31,12 @@ interface RichBulletSceneProps {
   bulletDurations?: number[];
 }
 
+// Empirically tuned per-count shrink curve so 5-10 bullets all fit in
+// portrait without overlapping. count <= 4 stays at scale 1.0.
+const DENSITY_SCALE: Record<number, number> = {
+  5: 0.90, 6: 0.84, 7: 0.80, 8: 0.76, 9: 0.70, 10: 0.66,
+};
+
 export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   project,
   sectionTitle,
@@ -53,11 +59,11 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   const count = bullets.length;
   const useColumns = false;
 
-  // Density-adaptive layout: scale font/padding/gap as bullet count grows so
-  // 1-10 bullets all fit and stay visually balanced. See plan / spec.
-  const DENSITY_SCALE: Record<number, number> = {
-    5: 0.90, 6: 0.84, 7: 0.80, 8: 0.76, 9: 0.70, 10: 0.66,
-  };
+  // Density-adaptive layout: after 4 bullets, progressively reduce type size
+  // and spacing so 5-10 bullets still fit. `densityScale` drives font/padding;
+  // `detailClamp` drops from 3 to 2 lines for denser lists; `gapFactor`
+  // further compresses spacing as count rises; final gap is clamped to
+  // 16..160 px to avoid unreadably tight or overly loose layouts.
   const densityScale = count <= 4 ? 1 : (DENSITY_SCALE[count] ?? 0.66);
   const detailClamp = count <= 3 ? 3 : 2;
 
@@ -194,10 +200,13 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
                   ? theme.text_on_bg_muted
                   : theme.text_muted,
               lineHeight: 1.35,
-              wordBreak: "break-word",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
+              ...(densityScale < 1
+                ? {
+                    whiteSpace: "nowrap" as const,
+                    overflow: "hidden" as const,
+                    textOverflow: "ellipsis" as const,
+                  }
+                : { wordBreak: "break-word" as const }),
             }}
           >
             {bullet.title}
