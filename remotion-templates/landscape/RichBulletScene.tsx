@@ -101,7 +101,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
     const isFuture = !isActive && !isNarrated;
 
     const stateOpacity = isActive ? 1 : isNarrated ? 0.7 : 0.4;
-    const scale = isActive ? 1.06 : 1;
+    const scale = isActive ? 1.03 : 1;
 
     const activeFloat = 0;
     const activeFloatX = 0;
@@ -133,7 +133,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
           gap: 16,
           opacity: opacity * stateOpacity,
           transform: `translateY(${translateY + activeFloat + narratedFloat}px) translateX(${translateX + activeFloatX + narratedFloatX}px) scale(${scale})`,
-          transformOrigin: "center top",
+          transformOrigin: "left top",
           padding: useColumns ? "10px 14px" : "12px 16px",
           borderRadius: 12,
           backgroundColor: isActive
@@ -314,7 +314,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
           <div
             style={{
               display: "flex",
-              gap: useColumns ? 60 : 0,
+              gap: useColumns ? 70 : 0,
               alignItems: "flex-start",
             }}
           >
