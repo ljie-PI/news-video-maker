@@ -39,10 +39,12 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
 
   // Layout constants
   const timelineY = Math.round(height * 0.5);
-  const timelineLeft = Math.round(width * 0.094);
-  const timelineRight = Math.round(width * 0.906);
+  const timelineLeft = Math.round(width * 0.15);
+  const timelineRight = Math.round(width * 0.85);
   const timelineWidth = timelineRight - timelineLeft;
   const _nodeRadius = 8;
+  const CARD_WIDTH = 210;
+  const SAFE_MARGIN = Math.round(width * 0.05);
 
   // Timing
   const lineDrawDuration = 30;
@@ -230,22 +232,22 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
               <div
                 style={{
                   position: "absolute",
-                  left: x - 125,
+                  left: Math.max(SAFE_MARGIN, Math.min(x - CARD_WIDTH / 2, width - SAFE_MARGIN - CARD_WIDTH)),
                   top: cardTop,
-                  width: 250,
+                  width: CARD_WIDTH,
                   opacity: cardOpacity,
                   transform: `translateY(${cardBounce}px)`,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  gap: 6,
+                  gap: 4,
                 }}
               >
                 {/* Date label */}
                 <div
                   style={{
                     fontFamily,
-                    fontSize: 20,
+                    fontSize: 17,
                     fontWeight: 600,
                     color: isActive ? theme.brand_primary : theme.text_on_bg_muted,
                     opacity: textOpacity,
@@ -259,14 +261,14 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
                 <div
                   style={{
                     fontFamily,
-                    fontSize: 28,
+                    fontSize: 22,
                     fontWeight: 500,
                     color: theme.text_on_bg,
                     opacity: textOpacity,
                     background: cardBg,
-                    borderRadius: 14,
-                    padding: "14px 18px",
-                    maxWidth: 250,
+                    borderRadius: 12,
+                    padding: "12px 14px",
+                    maxWidth: CARD_WIDTH,
                     textAlign: "center",
                     lineHeight: 1.35,
                     boxShadow: cardShadow,

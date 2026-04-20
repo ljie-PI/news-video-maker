@@ -84,7 +84,7 @@ export const ComparisonTableScene: React.FC<ComparisonTableSceneProps> = ({
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "space-evenly",
+          justifyContent: "center",
           paddingTop: Math.round(40 * vScale),
           paddingBottom: Math.round(40 * vScale),
           overflow: "hidden",
@@ -112,7 +112,7 @@ export const ComparisonTableScene: React.FC<ComparisonTableSceneProps> = ({
             fontSize: Math.round(48 * fScale),
             fontWeight: 700,
             color: theme.text_on_bg,
-            marginBottom: Math.round(36 * vScale),
+            marginBottom: Math.round(16 * vScale),
             transform: `scale(${titleScale})`,
             textAlign: "center",
           }}
