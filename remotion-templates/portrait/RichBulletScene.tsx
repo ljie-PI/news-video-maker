@@ -33,7 +33,7 @@ interface RichBulletSceneProps {
 
 // Empirically tuned per-count shrink curve so 5-10 bullets all fit in
 // portrait without overlapping. count <= 4 stays at scale 1.0.
-const DENSITY_SCALE: Record<number, number> = {
+const DENSITY_SCALE: Partial<Record<number, number>> = {
   5: 0.90, 6: 0.84, 7: 0.80, 8: 0.76, 9: 0.70, 10: 0.66,
 };
 
@@ -59,11 +59,13 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   const count = bullets.length;
   const useColumns = false;
 
-  // Density-adaptive layout: after 4 bullets, progressively reduce type size
-  // and spacing so 5-10 bullets still fit. `densityScale` drives font/padding;
-  // `detailClamp` drops from 3 to 2 lines for denser lists; `gapFactor`
-  // further compresses spacing as count rises; final gap is clamped to
-  // 16..160 px to avoid unreadably tight or overly loose layouts.
+  // Density-adaptive layout. Thresholds:
+  //   - detailClamp drops from 3 to 2 lines starting at count = 4
+  //   - densityScale and gapFactor stay at 1.0 through count = 4, then
+  //     progressively compress font/padding/spacing for count = 5..10
+  // `baseGap` starts from available vertical space (`height - 400` reserved
+  // for title/chrome) and the final gap is clamped to 16..160 px to avoid
+  // unreadably tight or overly loose layouts.
   const densityScale = count <= 4 ? 1 : (DENSITY_SCALE[count] ?? 0.66);
   const detailClamp = count <= 3 ? 3 : 2;
 
