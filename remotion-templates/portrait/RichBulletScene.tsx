@@ -42,8 +42,6 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
 }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames, height } = useVideoConfig();
-  const vScale = 2.0;
-  const fScale = 1.25;
 
   const accentColor =
     variant % 3 === 0
@@ -54,13 +52,24 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
 
   const count = bullets.length;
   const useColumns = false;
-  // Dynamic gap so bullets fill vertical space instead of clustering.
-  // For 5 or fewer items keep generous spacing; for 6+ items tighten so
-  // they don't overflow the card.
-  const isDense = count >= 6;
-  const bulletGapPx = isDense
-    ? Math.max(8, Math.floor((height - 400) / (count + 1) / 3))
-    : Math.max(20, Math.floor((height - 400) / (count + 1) / 2));
+
+  // Density-adaptive layout: scale font/padding/gap as bullet count grows so
+  // 1-10 bullets all fit and stay visually balanced. See plan / spec.
+  const DENSITY_SCALE: Record<number, number> = {
+    5: 0.90, 6: 0.84, 7: 0.80, 8: 0.76, 9: 0.70, 10: 0.66,
+  };
+  const densityScale = count <= 4 ? 1 : (DENSITY_SCALE[count] ?? 0.66);
+  const detailClamp = count <= 3 ? 3 : 2;
+
+  const vScale = 2.0 * densityScale;
+  const fScale = 1.25 * densityScale;
+
+  const baseGap = Math.floor((height - 400) / (count + 1) / 2);
+  const gapFactor = count <= 4 ? 1 : Math.max(0.35, 1 - (count - 4) * 0.12);
+  const bulletGapPx = Math.max(
+    16,
+    Math.min(160, Math.round(baseGap * gapFactor * densityScale))
+  );
   const baseDelay = 5;
   const staggerGap = Math.max(4, Math.floor(45 / Math.max(count, 1)));
   const entranceDone = staggerDelay(baseDelay, count - 1, staggerGap) + 12;
@@ -147,23 +156,19 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
             ? `${accentColor}12`
             : "transparent",
           position: "relative",
-          marginBottom: useColumns
-            ? Math.round(bulletGapPx * 0.7)
-            : isDense
-              ? Math.round(bulletGapPx * 0.6)
-              : bulletGapPx,
+          marginBottom: bulletGapPx,
         }}
       >
         {/* Number badge */}
         <div
           style={{
             fontFamily,
-            fontSize: 22,
+            fontSize: Math.round(22 * densityScale),
             fontWeight: 700,
             color: isActive ? "#ffffff" : isFuture ? `${accentColor}80` : accentColor,
-            minWidth: 40,
-            height: 40,
-            borderRadius: 10,
+            minWidth: Math.round(40 * densityScale),
+            height: Math.round(40 * densityScale),
+            borderRadius: Math.round(10 * densityScale),
             backgroundColor: isActive ? accentColor : `${accentColor}18`,
             display: "flex",
             alignItems: "center",
@@ -190,6 +195,9 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
                   : theme.text_muted,
               lineHeight: 1.35,
               wordBreak: "break-word",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}
           >
             {bullet.title}
@@ -203,7 +211,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
               lineHeight: 1.5,
               marginTop: Math.round(6 * vScale),
               display: "-webkit-box",
-              WebkitLineClamp: 4,
+              WebkitLineClamp: detailClamp,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
               wordBreak: "break-word",
@@ -302,7 +310,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: 22,
+              fontSize: Math.round(22 * densityScale),
               fontWeight: 600,
               color: theme.text_muted,
               whiteSpace: "nowrap",
