@@ -61,7 +61,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   const audioDriven = !!bulletDurations && bulletDurations.length === count;
   let active = count - 1;
   if (audioDriven) {
-    let acc = 0;
+    let acc = entranceDone;
     let computed = 0;
     for (let i = 0; i < count; i++) {
       if (frame >= acc) computed = i;
