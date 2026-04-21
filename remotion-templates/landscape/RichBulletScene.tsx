@@ -61,13 +61,31 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   const audioDriven = !!bulletDurations && bulletDurations.length === count;
   let active = count - 1;
   if (audioDriven) {
-    let acc = 0;
+    let acc = entranceDone;
     let computed = 0;
     for (let i = 0; i < count; i++) {
       if (frame >= acc) computed = i;
       acc += bulletDurations![i];
     }
     active = computed;
+  }
+
+  // Pre-compute per-bullet sweep timing
+  const sweepStarts: number[] = [];
+  const sweepDurs: number[] = [];
+  if (audioDriven) {
+    let acc = entranceDone;
+    for (let i = 0; i < count; i++) {
+      sweepStarts.push(acc);
+      sweepDurs.push(bulletDurations![i]);
+      acc += bulletDurations![i];
+    }
+  } else {
+    const seg = (durationInFrames - entranceDone - 10) / count;
+    for (let i = 0; i < count; i++) {
+      sweepStarts.push(entranceDone + seg * i);
+      sweepDurs.push(seg);
+    }
   }
   const bgAngle = rotatingGradient(frame, durationInFrames, 135, 120);
 
@@ -114,12 +132,10 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
       ? 0
       : 0;
 
-    const segmentDuration = (durationInFrames - entranceDone - 10) / count;
-    const sweepStart = entranceDone + segmentDuration * globalIndex;
     const sweepWidth = !audioDriven
       ? (frame >= entranceDone ? 100 : 0)
       : isActive
-        ? (segmentDuration > 0 ? underlineSweep(frame, sweepStart, segmentDuration) : 100)
+        ? (sweepDurs[globalIndex] > 0 ? underlineSweep(frame, sweepStarts[globalIndex], sweepDurs[globalIndex]) : 100)
         : isNarrated
           ? 100
           : 0;
