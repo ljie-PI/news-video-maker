@@ -233,7 +233,7 @@ cp remotion-templates/themes/{source}.ts remotion-{source}-{orientation}/src/the
 ln -s $(pwd)/audio remotion-{source}-{orientation}/public/audio
 
 # 5. 生成 Main.tsx + Root.tsx（自动按 wav 时长计算帧偏移）
-python3 generate_main_tsx.py script.json {audio_prefix} \
+python3 generate_main_tsx.py script.json \
   remotion-{source}-{orientation}/src \
   --width {1920|1080} --height {1080|1920} \
   --audio-dir remotion-{source}-{orientation}/public/audio
