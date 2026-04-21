@@ -53,10 +53,9 @@ cd remotion-{source} && npm install
 
 ### 2. 生成 Main.tsx
 ```bash
-python3 remotion-templates/generate_main_tsx.py script_{source}.json {audio_prefix} remotion-{source}/src
+python3 remotion-templates/generate_main_tsx.py script_{source}.json remotion-{source}/src
 ```
 - `script_{source}.json`: 脚本 JSON（含 segments 数组）
-- `{audio_prefix}`: 音频文件前缀（如 `github_v4`, `hn`, `ph`, `reddit`）
 - 自动计算每个 segment 的音频帧数，生成 Main.tsx 和 Root.tsx
 
 ### 3. 渲染
