@@ -98,7 +98,7 @@ cd $PROJ && npm install && cd ..
 
 ### 4. TTS 生成音频
 
-每个 segment 的旁白生成一个 wav，命名为 `{audio_prefix}_{seg_id}.wav`。例如使用 CosyVoice：
+每个 segment 的旁白生成一个 wav，命名为 `{seg_id}.wav`。例如使用 CosyVoice：
 
 ```bash
 cd ~/.openclaw/workspace/CosyVoice
@@ -109,14 +109,13 @@ uv run python clone_voice.py "中文旁白文本" -o audio/github_intro.wav --sp
 
 ```bash
 python3 generate_main_tsx.py \
-    script.json github $PROJ/src \
+    script.json $PROJ/src \
     --width 1920 --height 1080 \
     --audio-dir $PROJ/public/audio
 ```
 
 参数：
 - `script.json`：分镜脚本
-- `github`：音频文件名前缀（对应 `github_{seg_id}.wav`）
 - `$PROJ/src`：输出目录
 - `--width` / `--height`：竖屏请用 `1080` × `1920`
 - `--audio-dir`：音频实际存放路径

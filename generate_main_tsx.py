@@ -333,17 +333,16 @@ def build_sequence(template, data, audio_ref, frame_offset, dur, seq_count, audi
 
 
 def main():
-    if len(sys.argv) < 4:
-        print("Usage: generate_main_tsx.py <script.json> <audio_prefix> <output_dir> [--width W] [--height H] [--audio-dir DIR]")
+    if len(sys.argv) < 3:
+        print("Usage: generate_main_tsx.py <script.json> <output_dir> [--width W] [--height H] [--audio-dir DIR]")
         sys.exit(1)
 
     script_path = sys.argv[1]
-    audio_prefix = sys.argv[2]
-    output_dir = sys.argv[3]
+    output_dir = sys.argv[2]
 
     width, height = 1920, 1080
     custom_audio_dir = None
-    args = sys.argv[4:]
+    args = sys.argv[3:]
     for i, arg in enumerate(args):
         if arg == "--width" and i + 1 < len(args):
             width = int(args[i + 1])
@@ -379,7 +378,7 @@ def main():
                 "narration": narration,
             }
 
-        wav_file = f"{audio_prefix}_{seg_id}.wav"
+        wav_file = f"{seg_id}.wav"
         wav_path = os.path.join(audio_dir, wav_file)
 
         if not os.path.exists(wav_path):
