@@ -324,7 +324,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
             <div
               style={{
                 fontFamily,
-                fontSize: Math.round(48 * fScale),
+                fontSize: Math.round(38 * fScale),
                 fontWeight: 700,
                 color: accentColor,
                 lineHeight: 1.2,
