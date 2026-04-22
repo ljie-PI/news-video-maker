@@ -66,7 +66,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          padding: "50px 60px",
+          padding: "80px 60px",
           gap: 36,
           overflow: "hidden",
         }}
