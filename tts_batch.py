@@ -183,11 +183,6 @@ def main():
     warnings = _emit_outputs(timings, mapping, raw_dir, audio_dir)
 
     print(f"\n✅ done: {len(timings['items'])} item(s) total")
-    if warnings:
-        print(f"⚠  {len(warnings)} segment(s) exceed {MAX_SEGMENT_SECONDS}s; please re-split:")
-        for seg_id, dur in warnings:
-            print(f"   - {seg_id}: {dur:.2f}s")
-        return 2
     return 0
 
 

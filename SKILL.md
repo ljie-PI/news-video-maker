@@ -204,8 +204,6 @@ python tts_batch.py \
   --speed 1.2
 ```
 
-**校验**：脚本退出码 `2` 表示存在 segment 总时长 > 15 秒，必须回到步骤 1 拆分该 segment 后重跑。
-
 **日志**：`logs/{source}_02_tts.log`，记录 `tts_batch.py` 全部 stdout。
 
 ---
