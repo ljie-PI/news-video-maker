@@ -312,6 +312,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
             flex: "0 0 auto",
             opacity: titleOpacity,
             transform: `translateY(${titleSlide}px)`,
+            paddingTop: 20,
             paddingBottom: Math.round(16 * vScale),
             borderBottom: `3px solid ${theme.card_border}`,
             marginBottom: Math.round(24 * vScale),
