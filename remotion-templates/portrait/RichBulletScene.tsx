@@ -85,6 +85,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   const audioDriven = !!bulletDurations && bulletDurations.length === count;
 
   // Active bullet tracks the real audio timeline (starts at frame 0).
+  // After all audio ends, active = count (sentinel) so all bullets show as narrated.
   let active = count - 1;
   if (audioDriven) {
     let acc = 0;
@@ -93,7 +94,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
       if (frame >= acc) computed = i;
       acc += bulletDurations![i];
     }
-    active = computed;
+    active = frame >= acc ? count : computed;
   }
 
   // Pre-compute per-bullet sweep timing.
@@ -352,7 +353,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
               whiteSpace: "nowrap",
             }}
           >
-            {audioDriven && frame >= entranceDone ? `${active + 1} / ${count}` : ""}
+            {audioDriven && frame >= entranceDone ? `${Math.min(active + 1, count)} / ${count}` : ""}
           </div>
         </div>
 
