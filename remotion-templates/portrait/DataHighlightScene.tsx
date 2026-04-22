@@ -303,7 +303,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
   const contextY = slideIn(frame, fps, 55, 40);
 
   // Ring sizes
-  const RING_SIZE = 380;
+  const RING_SIZE = 456;
 
   const glowScale = 1;
   const glowOpacity = 0.25;
@@ -441,10 +441,10 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
                   key={i}
                   style={{
                     position: "absolute",
-                    width: 200,
-                    height: 200,
-                    left: -100,
-                    top: -100,
+                    width: 240,
+                    height: 240,
+                    left: -120,
+                    top: -120,
                     borderRadius: "50%",
                     border: `2px solid ${theme.brand_primary}`,
                     transform: `scale(${ringScale})`,
