@@ -122,7 +122,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
             flexDirection: effectiveVertical ? "column" : "row",
             alignItems: "center",
             justifyContent: "center",
-            gap: effectiveVertical ? 8 : 16,
+            gap: effectiveVertical ? 12 : 16,
             padding: effectiveVertical ? "10px 0" : "0 20px",
           }}
         >
@@ -207,7 +207,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
                     style={{
                       display: "flex",
                       flexDirection: "column",
-                      gap: 6,
+                      gap: 9,
                       textAlign: effectiveVertical ? "left" : "center",
                     }}
                   >
