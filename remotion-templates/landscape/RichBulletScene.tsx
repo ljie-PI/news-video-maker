@@ -59,26 +59,38 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   const entranceDone = staggerDelay(baseDelay, count - 1, staggerGap) + 12;
 
   const audioDriven = !!bulletDurations && bulletDurations.length === count;
+
+  // Active bullet tracks the real audio timeline (starts at frame 0).
+  // After all audio ends, active = count (sentinel) so all bullets show as narrated.
   let active = count - 1;
   if (audioDriven) {
-    let acc = entranceDone;
+    let acc = 0;
     let computed = 0;
     for (let i = 0; i < count; i++) {
       if (frame >= acc) computed = i;
       acc += bulletDurations![i];
     }
-    active = computed;
+    active = frame >= acc ? count : computed;
   }
 
-  // Pre-compute per-bullet sweep timing
+  // Pre-compute per-bullet sweep timing.
+  // Audio plays from frame 0 but sweep is only visible after entranceDone.
+  // Intersect each bullet's audio window [audioStart, audioEnd) with
+  // [entranceDone, ∞) so bullets consumed during entrance show as narrated.
   const sweepStarts: number[] = [];
   const sweepDurs: number[] = [];
   if (audioDriven) {
-    let acc = entranceDone;
+    let audioAcc = 0;
     for (let i = 0; i < count; i++) {
-      sweepStarts.push(acc);
-      sweepDurs.push(bulletDurations![i]);
-      acc += bulletDurations![i];
+      const audioStart = audioAcc;
+      const audioEnd = audioAcc + bulletDurations![i];
+      const visStart = Math.max(audioStart, entranceDone);
+      // min 1 prevents zero-duration in underlineSweep/interpolate;
+      // fully-consumed bullets show as narrated (100% bar) via isNarrated logic.
+      const visDur = Math.max(1, audioEnd - visStart);
+      sweepStarts.push(visStart);
+      sweepDurs.push(visDur);
+      audioAcc = audioEnd;
     }
   } else {
     const seg = (durationInFrames - entranceDone - 10) / count;
@@ -313,7 +325,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
               whiteSpace: "nowrap",
             }}
           >
-            {audioDriven && frame >= entranceDone ? `${active + 1} / ${count}` : ""}
+            {audioDriven && frame >= entranceDone ? `${Math.min(active + 1, count)} / ${count}` : ""}
           </div>
         </div>
 
