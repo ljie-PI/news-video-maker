@@ -214,7 +214,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
                     <div
                       style={{
                         fontFamily,
-                        fontSize: 36,
+                        fontSize: 48,
                         fontWeight: 700,
                         color: isActive ? theme.text_on_bg : theme.text_secondary,
                         lineHeight: 1.3,
@@ -225,7 +225,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
                     <div
                       style={{
                         fontFamily,
-                        fontSize: 28,
+                        fontSize: 36,
                         fontWeight: 400,
                         color: isActive ? theme.text_on_bg_muted : theme.text_muted,
                         lineHeight: 1.45,
@@ -273,7 +273,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
                     <div
                       style={{
                         fontFamily,
-                        fontSize: 24,
+                        fontSize: 36,
                         color: accentColor,
                         lineHeight: 1,
                         opacity: arrowProgress,
