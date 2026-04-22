@@ -129,7 +129,7 @@ videos/yyyy-mm-dd_HH/
 | `project_hero` | **跨来源通用**身份卡：rank + 名称 + tagline + 任意前缀 stats（▲ points / votes / ⭐ 等，自动解析前缀） | HN / PH / Reddit 身份卡、排行榜单条 |
 | `key_insight` | 核心洞察 / 痛点：一句大字 + 一段解释 | 核心观点、insight、痛点、hook |
 | `rich_bullet` | 详细要点列表（活跃 bullet 高亮切换，每条带 title + detail 子结构）<br/>**旁白格式**：`narration` 必须用连续两个换行 `\n\n` 分隔成 `bullets.length` 段，每段对应一条 bullet 的旁白，确保画面高亮与语音同步<br/>**上限 6 条**：超过 6 条时拆成两个 segment | 要点列表、排行榜总览预告、步骤拆解 |
-| `bullet_points` | 简洁要点列表（纯字符串 bullets，顶部带项目名称栏）<br/>**上限 6 条**：超过 6 条时拆成两个 segment | 项目子要点、章节分要点 |
+| `bullet_points` | 简洁要点列表（纯字符串 bullets，顶部带项目名称栏）<br/>**旁白格式**：`narration` 必须用连续两个换行 `\n\n` 分隔成 `bullets.length` 段，每段对应一条 bullet 的旁白<br/>**上限 6 条**：超过 6 条时拆成两个 segment | 项目子要点、章节分要点 |
 | `comparison_table` | 竞品 / 方案对比表格 | 对比、并排比较 |
 | `debate_split` | 正反方辩论：左右两侧支持 / 反对论点（pros/cons 必用） | 辩论、pros vs cons |
 | `quote_card` | 单条社区评论引用：大字引文 + 作者 + 平台 | 引用、单条精选评论 |
@@ -183,6 +183,7 @@ videos/yyyy-mm-dd_HH/
 
 - 每个 segment 的 `id` 必须全局唯一（用作 audio 文件名前缀）
 - `rich_bullet` 和 `bullet_points` 的 `bullets` 数组**最多 6 条**；超过时应拆成两个 segment（代码层也有自动拆分兜底）
+- **旁白分段规则（⚠️ 必须严格遵守）**：`rich_bullet` 和 `bullet_points` 的 `narration` **必须**用 `\n\n`（连续两个换行）将旁白分隔成**恰好 `bullets.length` 段**，每段对应一条 bullet。不分段或段数不匹配会导致画面高亮与语音完全不同步。示例：3 条 bullet → narration 包含 2 个 `\n\n`，分成 3 段
 - `data.name`（项目名）必须是人类可读的真实名称，**不能用 slug 或 id**
 - `bullet_points.data.project` 必须**显式传入真实项目名**（如 "Gemini CLI"），不能是 slug，且应与同一 item 的 `project_intro.data.name` 一致；缺省会导致顶部标题为空
 - 数值字段：GitHub 用 `stars`，HN 用 `points`，PH 用 `votes`，Reddit 通常没有（留空或省略）
