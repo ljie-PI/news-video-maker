@@ -60,33 +60,34 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
 
   const audioDriven = !!bulletDurations && bulletDurations.length === count;
 
-  // Audio plays from frame 0 but entrance animation takes entranceDone frames.
-  // Shorten first bullet's effective duration to compensate for the lag.
-  const effectiveDurs = audioDriven ? [...bulletDurations!] : [];
-  if (audioDriven && effectiveDurs.length > 0) {
-    effectiveDurs[0] = Math.max(1, effectiveDurs[0] - entranceDone);
-  }
-
+  // Active bullet tracks the real audio timeline (starts at frame 0).
   let active = count - 1;
   if (audioDriven) {
-    let acc = entranceDone;
+    let acc = 0;
     let computed = 0;
     for (let i = 0; i < count; i++) {
       if (frame >= acc) computed = i;
-      acc += effectiveDurs[i];
+      acc += bulletDurations![i];
     }
     active = computed;
   }
 
-  // Pre-compute per-bullet sweep timing
+  // Pre-compute per-bullet sweep timing.
+  // Audio plays from frame 0 but sweep is only visible after entranceDone.
+  // Intersect each bullet's audio window [audioStart, audioEnd) with
+  // [entranceDone, ∞) so bullets consumed during entrance show as narrated.
   const sweepStarts: number[] = [];
   const sweepDurs: number[] = [];
   if (audioDriven) {
-    let acc = entranceDone;
+    let audioAcc = 0;
     for (let i = 0; i < count; i++) {
-      sweepStarts.push(acc);
-      sweepDurs.push(effectiveDurs[i]);
-      acc += effectiveDurs[i];
+      const audioStart = audioAcc;
+      const audioEnd = audioAcc + bulletDurations![i];
+      const visStart = Math.max(audioStart, entranceDone);
+      const visDur = Math.max(1, audioEnd - visStart);
+      sweepStarts.push(visStart);
+      sweepDurs.push(visDur);
+      audioAcc = audioEnd;
     }
   } else {
     const seg = (durationInFrames - entranceDone - 10) / count;
