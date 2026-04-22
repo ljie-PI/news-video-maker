@@ -169,7 +169,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
                     backgroundColor: theme.card_bg,
                     borderRadius: 16,
                     border: `2px solid ${borderColor}`,
-                    padding: effectiveVertical ? "18px 28px" : "24px 20px",
+                    padding: effectiveVertical ? "50px 28px" : "50px 20px",
                     display: "flex",
                     flexDirection: effectiveVertical ? "row" : "column",
                     alignItems: "center",

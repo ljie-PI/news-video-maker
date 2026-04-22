@@ -182,7 +182,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
         style={{
           background: `linear-gradient(${bgAngle}deg, ${theme.dark_bg_from} 0%, ${theme.dark_bg_mid} 50%, ${theme.dark_bg_to} 100%)`,
           overflow: "hidden",
-          padding: "36px 28px",
+          padding: "50px 28px",
           display: "flex",
           flexDirection: "column",
         }}

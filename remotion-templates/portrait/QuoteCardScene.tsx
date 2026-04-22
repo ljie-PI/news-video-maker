@@ -165,7 +165,7 @@ export const QuoteCardScene: React.FC<QuoteCardSceneProps> = ({
             borderRadius: 24,
             boxShadow:
               "0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 0, 0, 0.2)",
-            padding: `${Math.round(40 * vScale)}px 50px ${Math.round(40 * vScale)}px`,
+            padding: `50px 50px ${Math.round(40 * vScale)}px`,
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-evenly",

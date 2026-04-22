@@ -94,7 +94,7 @@ export const CoverScene: React.FC<CoverSceneProps> = ({
             flexWrap: "wrap",
             justifyContent: "center",
             maxWidth: "900px",
-            padding: "0 60px",
+            padding: "50px 60px",
           }}
         >
           {chars.map((char, i) => {

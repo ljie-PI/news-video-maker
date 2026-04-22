@@ -302,7 +302,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
             borderRadius: 20,
             display: "flex",
             flexDirection: "column",
-            padding: "30px 24px 30px",
+            padding: "50px 24px 30px",
           }}
         >
 

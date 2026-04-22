@@ -224,7 +224,7 @@ export const ProjectHeroScene: React.FC<ProjectHeroSceneProps> = ({
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-evenly",
-              padding: "60px 40px 60px",
+              padding: "50px 40px 60px",
               gap: 32 * vScale,
             }}
           >

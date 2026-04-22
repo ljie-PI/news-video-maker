@@ -80,7 +80,7 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          padding: "80px 60px",
+          padding: "50px 60px",
           gap: 40,
           overflow: "hidden",
         }}

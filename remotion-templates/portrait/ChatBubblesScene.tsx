@@ -176,7 +176,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
           style={{
             maxWidth: "85%",
             minWidth: "50%",
-            padding: "22px 30px",
+            padding: "50px 30px",
             borderRadius: isLeft ? "24px 24px 24px 6px" : "24px 24px 6px 24px",
             backgroundColor: isActive
               ? `${accentColor}30`
