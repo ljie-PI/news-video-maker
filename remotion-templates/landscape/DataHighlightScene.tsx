@@ -271,9 +271,9 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
   const hasNumeric = parsedNumber.value !== null;
   const bgAngle = rotatingGradient(frame, durationInFrames, 135, 120);
 
-  // Counter animation: roll from 0 → target over 70% of segment
+  // Counter animation: roll from 0 → target over 30% of segment
   const COUNTER_START = 10;
-  const COUNTER_END = Math.floor(durationInFrames * 0.7);
+  const COUNTER_END = Math.floor(durationInFrames * 0.3);
   const currentValueRaw = interpolate(
     frame,
     [COUNTER_START, COUNTER_END],
