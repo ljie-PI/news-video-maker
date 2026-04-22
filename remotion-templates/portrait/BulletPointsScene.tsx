@@ -101,7 +101,6 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
           style={{
             opacity: titleOpacity,
             borderBottom: `3px solid ${theme.border}`,
-            paddingTop: 20,
             paddingBottom: 18,
             transform: `translateX(0)`,
           }}
