@@ -21,6 +21,102 @@ def get_duration_frames(wav_path: str) -> int:
     return math.ceil(seconds * 30)
 
 
+MAX_BULLETS = 6
+
+
+def _split_audio(wav_path: str, split_sec: float, out_a: str, out_b: str):
+    """Split a wav file at split_sec into two files."""
+    subprocess.run(
+        ["ffmpeg", "-y", "-i", wav_path, "-t", str(split_sec),
+         "-c", "copy", out_a, "-loglevel", "error"],
+        check=True,
+    )
+    subprocess.run(
+        ["ffmpeg", "-y", "-i", wav_path, "-ss", str(split_sec),
+         "-c", "copy", out_b, "-loglevel", "error"],
+        check=True,
+    )
+
+
+def _split_bullet_segments(segments: list, audio_dir: str) -> list:
+    """Pre-process: split rich_bullet/bullet_points segments with >MAX_BULLETS items."""
+    result = []
+    for seg in segments:
+        template = seg.get("template", "")
+        bullets = seg.get("data", {}).get("bullets", [])
+        if template not in ("rich_bullet", "bullet_points") or len(bullets) <= MAX_BULLETS:
+            result.append(seg)
+            continue
+
+        seg_id = seg["id"]
+        data = seg["data"]
+        narration = seg.get("narration", "")
+        mid = math.ceil(len(bullets) / 2)
+
+        # Split narration by \n\n for rich_bullet
+        narration_parts = [p.strip() for p in narration.split("\n\n") if p.strip()] if "\n\n" in narration else []
+
+        # Try to find bulletDurations to split audio precisely
+        manifest_path = os.path.join(audio_dir, f"{seg_id}.bullets.json")
+        durations = None
+        if os.path.exists(manifest_path):
+            try:
+                with open(manifest_path) as f:
+                    durations = json.load(f).get("durations", [])
+                if len(durations) != len(bullets):
+                    durations = None
+            except (ValueError, OSError):
+                durations = None
+
+        # Split audio
+        wav_path = os.path.join(audio_dir, f"{seg_id}.wav")
+        id_a, id_b = f"{seg_id}-a", f"{seg_id}-b"
+        wav_a = os.path.join(audio_dir, f"{id_a}.wav")
+        wav_b = os.path.join(audio_dir, f"{id_b}.wav")
+
+        if os.path.exists(wav_path):
+            if durations:
+                split_sec = sum(durations[:mid])
+            else:
+                # Fallback: split proportionally
+                total_sec = subprocess.run(
+                    ["ffprobe", "-v", "quiet", "-show_entries", "format=duration",
+                     "-of", "csv=p=0", wav_path],
+                    capture_output=True, text=True,
+                )
+                split_sec = float(total_sec.stdout.strip()) * mid / len(bullets)
+            _split_audio(wav_path, split_sec, wav_a, wav_b)
+
+            # Write split bullets.json manifests
+            if durations:
+                dur_a = durations[:mid]
+                dur_b = durations[mid:]
+                for fname, dur_list in [(f"{id_a}.bullets.json", dur_a), (f"{id_b}.bullets.json", dur_b)]:
+                    with open(os.path.join(audio_dir, fname), "w") as f:
+                        json.dump({"durations": dur_list}, f, ensure_ascii=False, indent=2)
+
+        # Build two segments
+        title = data.get("sectionTitle", data.get("title", ""))
+        seg_a = {
+            "id": id_a,
+            "template": template,
+            "narration": "\n\n".join(narration_parts[:mid]) if narration_parts else narration,
+            "data": {**data, "bullets": bullets[:mid], "sectionTitle": title},
+        }
+        seg_b = {
+            "id": id_b,
+            "template": template,
+            "narration": "\n\n".join(narration_parts[mid:]) if narration_parts else "",
+            "data": {**data, "bullets": bullets[mid:], "sectionTitle": f"{title}（续）"},
+        }
+
+        print(f"SPLIT: {seg_id} ({len(bullets)} bullets) → {id_a} ({mid}) + {id_b} ({len(bullets)-mid})")
+        result.append(seg_a)
+        result.append(seg_b)
+
+    return result
+
+
 def escape(s) -> str:
     """Escape special chars for JSX string attributes."""
     if s is None:
@@ -356,7 +452,7 @@ def main():
     with open(script_path) as f:
         script = json.load(f)
 
-    segments = script["segments"]
+    segments = _split_bullet_segments(script["segments"], audio_dir)
     sequences = []
     frame_offset = 0
     used_components = set()
