@@ -95,7 +95,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: 50,
+            top: 80,
             left: 0,
             width: "100%",
             textAlign: "center",
@@ -114,7 +114,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: 130,
+            top: 160,
             left: 60,
             right: 60,
             bottom: 50,

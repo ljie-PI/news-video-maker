@@ -286,7 +286,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: 36,
+            top: 80,
             left: 0,
             width: "100%",
             display: "flex",
@@ -319,7 +319,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: 120,
+            top: 160,
             bottom: 40,
             left: 80,
             right: 80,
