@@ -55,7 +55,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
   // Scroll offset: push bubbles up as new ones appear so ~3-4 are visible
   const MAX_VISIBLE = 4;
   const BUBBLE_HEIGHT = 160;
-  const BUBBLE_GAP = 20;
+  const BUBBLE_GAP = 40;
   const BUBBLE_STEP = BUBBLE_HEIGHT + BUBBLE_GAP;
 
   const getScrollOffset = (): number => {
@@ -100,17 +100,13 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
       : slideIn(frame, fps, entrance, 150, { damping: 14, mass: 0.8 });
     const opacity = fadeIn(frame, entrance, 18);
 
-    // Active state
+    // Once a bubble appears, it stays fully visible
     const isActive = frame >= entranceDone && index === activeIdx;
     const isPast = frame >= entranceDone && index < activeIdx;
     const isFuture = frame >= entranceDone && index > activeIdx;
 
-    const cardOpacity = isActive ? 1 : isPast ? 0.5 : isFuture ? 0.35 : 1;
-    const cardScale = isActive
-      ? 1.06
-      : isPast
-        ? 0.95
-        : 1;
+    const cardOpacity = 1;
+    const cardScale = isActive ? 1.06 : 1;
 
     const floatY = 0;
     const floatX = 0;
@@ -176,7 +172,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
           style={{
             maxWidth: "85%",
             minWidth: "50%",
-            padding: "22px 30px",
+            padding: "50px 30px",
             borderRadius: isLeft ? "24px 24px 24px 6px" : "24px 24px 6px 24px",
             backgroundColor: isActive
               ? `${accentColor}30`
@@ -207,7 +203,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
                 alignItems: "center",
                 justifyContent: "center",
                 fontFamily,
-                fontSize: 24,
+                fontSize: 32,
                 fontWeight: 700,
                 color: "#ffffff",
                 flexShrink: 0,
@@ -218,7 +214,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
             <div
               style={{
                 fontFamily,
-                fontSize: 24,
+                fontSize: 32,
                 fontWeight: 700,
                 color: isActive ? theme.text_on_bg : accentColor,
                 letterSpacing: 0.3,
@@ -231,7 +227,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
                 style={{
                   marginLeft: "auto",
                   fontFamily,
-                  fontSize: 24,
+                  fontSize: 32,
                   fontWeight: 600,
                   color: isActive ? theme.text_on_bg : theme.text_on_bg_muted,
                   backgroundColor: isActive
@@ -250,7 +246,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: 24,
+              fontSize: 32,
               fontWeight: isActive ? 500 : 400,
               color: isActive ? theme.text_on_bg : theme.text_on_bg_muted,
               lineHeight: 1.55,
@@ -290,7 +286,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: 36,
+            top: 80,
             left: 0,
             width: "100%",
             display: "flex",
@@ -307,7 +303,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: 40,
+              fontSize: 60,
               fontWeight: 700,
               color: theme.text_on_bg,
               textAlign: "center",
@@ -323,7 +319,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: 120,
+            top: 160,
             bottom: 40,
             left: 80,
             right: 80,

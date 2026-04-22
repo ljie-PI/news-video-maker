@@ -232,7 +232,7 @@ export const ProjectHeroScene: React.FC<ProjectHeroSceneProps> = ({
             <div
               style={{
                 fontFamily,
-                fontSize: 32,
+                fontSize: 48,
                 fontWeight: 600,
                 color: accentColor,
                 opacity: sourceOpacity,
@@ -248,7 +248,7 @@ export const ProjectHeroScene: React.FC<ProjectHeroSceneProps> = ({
               <div
                 style={{
                   fontFamily,
-                  fontSize: Math.round(96 * fScale),
+                  fontSize: 80,
                   fontWeight: 700,
                   color: theme.brand_primary,
                   opacity: nameOpacity,

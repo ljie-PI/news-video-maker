@@ -294,7 +294,7 @@ export const CodeBlockScene: React.FC<CodeBlockSceneProps> = ({
         {/* Title */}
         <div
           style={{
-            padding: "30px 32px 16px",
+            padding: "50px 32px 16px",
             textAlign: "center",
             fontFamily,
             fontSize: 60,

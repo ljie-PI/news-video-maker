@@ -120,7 +120,7 @@ export const KeyInsightScene: React.FC<KeyInsightSceneProps> = ({
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-evenly",
-              padding: "40px 60px 40px 50px",
+              padding: "50px 60px 40px 50px",
               gap: Math.round(36 * vScale),
               alignItems: "center",
             }}

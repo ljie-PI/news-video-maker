@@ -95,12 +95,12 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: 50,
+            top: 80,
             left: 0,
             width: "100%",
             textAlign: "center",
             fontFamily,
-            fontSize: 52,
+            fontSize: 60,
             fontWeight: 700,
             color: theme.text_on_bg,
             opacity: titleOpacity,
@@ -114,7 +114,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: 130,
+            top: 160,
             left: 60,
             right: 60,
             bottom: 50,
@@ -122,7 +122,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
             flexDirection: effectiveVertical ? "column" : "row",
             alignItems: "center",
             justifyContent: "center",
-            gap: effectiveVertical ? 8 : 16,
+            gap: effectiveVertical ? 12 : 16,
             padding: effectiveVertical ? "10px 0" : "0 20px",
           }}
         >
@@ -169,7 +169,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
                     backgroundColor: theme.card_bg,
                     borderRadius: 16,
                     border: `2px solid ${borderColor}`,
-                    padding: effectiveVertical ? "18px 28px" : "24px 20px",
+                    padding: effectiveVertical ? "50px 28px" : "50px 20px",
                     display: "flex",
                     flexDirection: effectiveVertical ? "row" : "column",
                     alignItems: "center",
@@ -207,14 +207,14 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
                     style={{
                       display: "flex",
                       flexDirection: "column",
-                      gap: 6,
+                      gap: 9,
                       textAlign: effectiveVertical ? "left" : "center",
                     }}
                   >
                     <div
                       style={{
                         fontFamily,
-                        fontSize: 36,
+                        fontSize: 48,
                         fontWeight: 700,
                         color: isActive ? theme.text_on_bg : theme.text_secondary,
                         lineHeight: 1.3,
@@ -225,7 +225,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
                     <div
                       style={{
                         fontFamily,
-                        fontSize: 28,
+                        fontSize: 36,
                         fontWeight: 400,
                         color: isActive ? theme.text_on_bg_muted : theme.text_muted,
                         lineHeight: 1.45,
@@ -273,7 +273,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
                     <div
                       style={{
                         fontFamily,
-                        fontSize: 24,
+                        fontSize: 36,
                         color: accentColor,
                         lineHeight: 1,
                         opacity: arrowProgress,
