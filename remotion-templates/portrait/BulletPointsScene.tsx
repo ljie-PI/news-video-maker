@@ -120,7 +120,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
             <div
               style={{
                 fontFamily,
-                fontSize: 38,
+                fontSize: 36,
                 fontWeight: 500,
                 color: theme.text_secondary,
                 marginTop: 8,
@@ -186,7 +186,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
                 <div
                   style={{
                     fontFamily,
-                    fontSize: 30,
+                    fontSize: 28,
                     fontWeight: 700,
                     color: isActive ? "#ffffff" : accentColor,
                     minWidth: 48,
@@ -207,7 +207,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
                   <div
                     style={{
                       fontFamily,
-                      fontSize: 45,
+                      fontSize: 48,
                       fontWeight: isActive ? 600 : 500,
                       color: isActive ? theme.text_primary : theme.text_secondary,
                       lineHeight: 1.5,
@@ -261,7 +261,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
             top: 30,
             right: 40,
             fontFamily,
-            fontSize: 22,
+            fontSize: 24,
             fontWeight: 600,
             color: "rgba(0,0,0,0.15)",
           }}

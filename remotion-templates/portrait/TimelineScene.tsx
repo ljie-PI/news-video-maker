@@ -245,7 +245,7 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
                 <div
                   style={{
                     fontFamily,
-                    fontSize: 20,
+                    fontSize: 24,
                     fontWeight: 600,
                     color: isActive ? theme.brand_primary : theme.text_on_bg_muted,
                     opacity: textOpacity,

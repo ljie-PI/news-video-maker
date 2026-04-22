@@ -336,7 +336,7 @@ export const QuoteCardScene: React.FC<QuoteCardSceneProps> = ({
               <span
                 style={{
                   fontFamily,
-                  fontSize: 22,
+                  fontSize: 24,
                   fontWeight: 700,
                   color: "#ffffff",
                   textTransform: "uppercase",
@@ -362,7 +362,7 @@ export const QuoteCardScene: React.FC<QuoteCardSceneProps> = ({
             <span
               style={{
                 fontFamily,
-                fontSize: 16,
+                fontSize: 24,
                 fontWeight: 600,
                 color: theme.brand_primary,
                 backgroundColor: `${theme.brand_primary}18`,
@@ -379,7 +379,7 @@ export const QuoteCardScene: React.FC<QuoteCardSceneProps> = ({
               <span
                 style={{
                   fontFamily,
-                  fontSize: 16,
+                  fontSize: 24,
                   fontWeight: 600,
                   color: theme.brand_primary,
                   backgroundColor: `${theme.brand_primary}18`,

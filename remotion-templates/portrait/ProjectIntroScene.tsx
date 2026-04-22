@@ -89,7 +89,7 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
         <div
           style={{
             fontFamily,
-            fontSize: 220,
+            fontSize: 150,
             fontWeight: 800,
             color: accentColor,
             opacity: rankOpacity * nameGlow,
@@ -118,7 +118,7 @@ export const ProjectIntroScene: React.FC<ProjectIntroSceneProps> = ({
             <div
               style={{
                 fontFamily,
-                fontSize: 64,
+                fontSize: 60,
                 fontWeight: 700,
                 color: theme.brand_primary,
                 opacity: nameOpacity,

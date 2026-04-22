@@ -157,7 +157,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                   <span
                     style={{
                       fontFamily,
-                      fontSize: 42,
+                      fontSize: 40,
                       fontWeight: 400,
                       color: theme.text_primary,
                       lineHeight: 1.55,

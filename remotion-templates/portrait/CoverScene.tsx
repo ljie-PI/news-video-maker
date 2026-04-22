@@ -111,7 +111,7 @@ export const CoverScene: React.FC<CoverSceneProps> = ({
                 key={i}
                 style={{
                   fontFamily,
-                  fontSize: 110,
+                  fontSize: 120,
                   fontWeight: 700,
                   color: titleColor,
                   opacity: charOpacity,
@@ -128,7 +128,7 @@ export const CoverScene: React.FC<CoverSceneProps> = ({
         <div
           style={{
             fontFamily,
-            fontSize: 42,
+            fontSize: 40,
             color: theme.text_secondary,
             marginTop: 50,
             opacity: subtitleOpacity,

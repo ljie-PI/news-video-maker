@@ -199,7 +199,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
         <div
           style={{
             fontFamily,
-            fontSize: Math.round(22 * densityScale),
+            fontSize: Math.round(24 * densityScale),
             fontWeight: 700,
             color: isActive ? "#ffffff" : isFuture ? `${accentColor}80` : accentColor,
             minWidth: Math.round(40 * densityScale),
@@ -222,7 +222,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: Math.round(36 * fScale),
+              fontSize: Math.round(38 * fScale),
               fontWeight: 700,
               color: isActive
                 ? theme.brand_primary
@@ -244,7 +244,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: Math.round(28 * fScale),
+              fontSize: Math.round(29 * fScale),
               fontWeight: 400,
               color: isActive ? theme.text_secondary : theme.text_muted,
               lineHeight: 1.5,
@@ -335,7 +335,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
             <div
               style={{
                 fontFamily,
-                fontSize: Math.round(30 * fScale),
+                fontSize: Math.round(29 * fScale),
                 fontWeight: 500,
                 color: "#8b949e",
                 marginTop: 6,
@@ -349,7 +349,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: Math.round(22 * densityScale),
+              fontSize: Math.round(24 * densityScale),
               fontWeight: 600,
               color: theme.text_muted,
               whiteSpace: "nowrap",

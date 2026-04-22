@@ -144,7 +144,7 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
           backgroundColor: isActive ? bg : `${bg}cc`,
           border: `2px solid ${isActive ? glow : `${glow}60`}`,
           fontFamily,
-          fontSize: Math.round(28 * fScale),
+          fontSize: Math.round(29 * fScale),
           fontWeight: 600,
           color: "#ffffff",
           opacity: entranceOpacity,
@@ -222,7 +222,7 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
         <div
           style={{
             fontFamily,
-            fontSize: Math.round(52 * fScale),
+            fontSize: Math.round(48 * fScale),
             fontWeight: 700,
             color: theme.brand_primary,
             opacity: titleOpacity,
