@@ -359,7 +359,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: "50%",
+            top: "42%",
             left: "50%",
             width: 700,
             height: 700,
@@ -374,7 +374,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: "50%",
+            top: "42%",
             left: "50%",
             transform: "translate(-50%, -55%)",
           }}
@@ -425,7 +425,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
           <div
             style={{
               position: "absolute",
-              top: "50%",
+              top: "42%",
               left: "50%",
               transform: "translate(-50%, -55%)",
               pointerEvents: "none",
@@ -460,7 +460,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: "50%",
+            top: "42%",
             left: "50%",
             transform: "translate(-50%, -50%)",
             display: "flex",
