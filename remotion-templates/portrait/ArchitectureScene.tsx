@@ -100,7 +100,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
             width: "100%",
             textAlign: "center",
             fontFamily,
-            fontSize: 52,
+            fontSize: 60,
             fontWeight: 700,
             color: theme.text_on_bg,
             opacity: titleOpacity,

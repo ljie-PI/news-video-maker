@@ -99,7 +99,7 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
           <span
             style={{
               fontFamily,
-              fontSize: 52,
+              fontSize: 60,
               fontWeight: 700,
               color: theme.text_on_bg,
             }}

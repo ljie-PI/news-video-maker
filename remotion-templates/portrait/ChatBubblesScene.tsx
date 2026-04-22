@@ -307,7 +307,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: 40,
+              fontSize: 60,
               fontWeight: 700,
               color: theme.text_on_bg,
               textAlign: "center",

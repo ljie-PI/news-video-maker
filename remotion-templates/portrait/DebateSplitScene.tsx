@@ -191,7 +191,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
         <div
           style={{
             fontFamily,
-            fontSize: 48,
+            fontSize: 60,
             fontWeight: 700,
             color: theme.text_primary,
             textAlign: "center",
