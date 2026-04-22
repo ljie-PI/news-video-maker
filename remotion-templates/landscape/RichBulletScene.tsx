@@ -85,6 +85,8 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
       const audioStart = audioAcc;
       const audioEnd = audioAcc + bulletDurations![i];
       const visStart = Math.max(audioStart, entranceDone);
+      // min 1 prevents zero-duration in underlineSweep/interpolate;
+      // fully-consumed bullets show as narrated (100% bar) via isNarrated logic.
       const visDur = Math.max(1, audioEnd - visStart);
       sweepStarts.push(visStart);
       sweepDurs.push(visDur);
