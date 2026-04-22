@@ -39,9 +39,14 @@ def _split_audio(wav_path: str, split_sec: float, out_a: str, out_b: str):
 
 
 def _split_bullet_segments(segments: list, audio_dir: str) -> list:
-    """Pre-process: split rich_bullet/bullet_points segments with >MAX_BULLETS items."""
+    """Pre-process: split rich_bullet/bullet_points segments with >MAX_BULLETS items.
+
+    Applies repeatedly until every segment has ≤MAX_BULLETS bullets.
+    """
+    queue = list(segments)
     result = []
-    for seg in segments:
+    while queue:
+        seg = queue.pop(0)
         template = seg.get("template", "")
         bullets = seg.get("data", {}).get("bullets", [])
         if template not in ("rich_bullet", "bullet_points") or len(bullets) <= MAX_BULLETS:
@@ -95,7 +100,7 @@ def _split_bullet_segments(segments: list, audio_dir: str) -> list:
                     with open(os.path.join(audio_dir, fname), "w") as f:
                         json.dump({"durations": dur_list}, f, ensure_ascii=False, indent=2)
 
-        # Build two segments
+        # Build two segments — push back to queue for further splitting if needed
         title = data.get("sectionTitle", data.get("title", ""))
         seg_a = {
             "id": id_a,
@@ -111,8 +116,8 @@ def _split_bullet_segments(segments: list, audio_dir: str) -> list:
         }
 
         print(f"SPLIT: {seg_id} ({len(bullets)} bullets) → {id_a} ({mid}) + {id_b} ({len(bullets)-mid})")
-        result.append(seg_a)
-        result.append(seg_b)
+        queue.insert(0, seg_b)
+        queue.insert(0, seg_a)
 
     return result
 
