@@ -232,7 +232,7 @@ export const ProjectHeroScene: React.FC<ProjectHeroSceneProps> = ({
             <div
               style={{
                 fontFamily,
-                fontSize: Math.round(26 * fScale),
+                fontSize: 32,
                 fontWeight: 600,
                 color: accentColor,
                 opacity: sourceOpacity,

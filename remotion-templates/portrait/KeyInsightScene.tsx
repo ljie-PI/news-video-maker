@@ -203,7 +203,7 @@ export const KeyInsightScene: React.FC<KeyInsightSceneProps> = ({
                     key={i}
                     style={{
                       fontFamily,
-                      fontSize: Math.round(42 * fScale),
+                      fontSize: 52,
                       fontWeight: 400,
                       color: theme.text_secondary,
                       lineHeight: 1.7,
