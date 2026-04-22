@@ -59,13 +59,21 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   const entranceDone = staggerDelay(baseDelay, count - 1, staggerGap) + 12;
 
   const audioDriven = !!bulletDurations && bulletDurations.length === count;
+
+  // Audio plays from frame 0 but entrance animation takes entranceDone frames.
+  // Shorten first bullet's effective duration to compensate for the lag.
+  const effectiveDurs = audioDriven ? [...bulletDurations!] : [];
+  if (audioDriven && effectiveDurs.length > 0) {
+    effectiveDurs[0] = Math.max(1, effectiveDurs[0] - entranceDone);
+  }
+
   let active = count - 1;
   if (audioDriven) {
     let acc = entranceDone;
     let computed = 0;
     for (let i = 0; i < count; i++) {
       if (frame >= acc) computed = i;
-      acc += bulletDurations![i];
+      acc += effectiveDurs[i];
     }
     active = computed;
   }
@@ -77,8 +85,8 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
     let acc = entranceDone;
     for (let i = 0; i < count; i++) {
       sweepStarts.push(acc);
-      sweepDurs.push(bulletDurations![i]);
-      acc += bulletDurations![i];
+      sweepDurs.push(effectiveDurs[i]);
+      acc += effectiveDurs[i];
     }
   } else {
     const seg = (durationInFrames - entranceDone - 10) / count;
