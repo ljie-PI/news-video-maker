@@ -354,7 +354,7 @@ export const CodeBlockScene: React.FC<CodeBlockSceneProps> = ({
               style={{
                 marginLeft: 20,
                 fontFamily: CODE_FONT,
-                fontSize: 16,
+                fontSize: 24,
                 color: "#888",
                 textTransform: "uppercase",
                 letterSpacing: "0.05em",

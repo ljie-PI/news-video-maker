@@ -201,7 +201,7 @@ const StatCard: React.FC<{
       <span
         style={{
           fontFamily,
-          fontSize: 42,
+          fontSize: 40,
           fontWeight: 800,
           color: theme.brand_highlight,
           lineHeight: 1.2,
@@ -212,7 +212,7 @@ const StatCard: React.FC<{
       <span
         style={{
           fontFamily,
-          fontSize: 22,
+          fontSize: 32,
           fontWeight: 400,
           color: theme.text_muted,
           marginTop: 6,

@@ -207,7 +207,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
                 alignItems: "center",
                 justifyContent: "center",
                 fontFamily,
-                fontSize: 16,
+                fontSize: 24,
                 fontWeight: 700,
                 color: "#ffffff",
                 flexShrink: 0,
@@ -218,7 +218,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
             <div
               style={{
                 fontFamily,
-                fontSize: 22,
+                fontSize: 24,
                 fontWeight: 700,
                 color: isActive ? theme.text_on_bg : accentColor,
                 letterSpacing: 0.3,
@@ -231,7 +231,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
                 style={{
                   marginLeft: "auto",
                   fontFamily,
-                  fontSize: 18,
+                  fontSize: 24,
                   fontWeight: 600,
                   color: isActive ? theme.text_on_bg : theme.text_on_bg_muted,
                   backgroundColor: isActive
@@ -250,7 +250,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: 26,
+              fontSize: 24,
               fontWeight: isActive ? 500 : 400,
               color: isActive ? theme.text_on_bg : theme.text_on_bg_muted,
               lineHeight: 1.55,
@@ -307,7 +307,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: 44,
+              fontSize: 40,
               fontWeight: 700,
               color: theme.text_on_bg,
               textAlign: "center",

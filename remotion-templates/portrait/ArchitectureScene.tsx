@@ -189,7 +189,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
                   {layer.icon && (
                     <div
                       style={{
-                        fontSize: 64,
+                        fontSize: 60,
                         lineHeight: 1,
                         flexShrink: 0,
                         transform: `scale(${iconScale})`,
@@ -214,7 +214,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
                     <div
                       style={{
                         fontFamily,
-                        fontSize: 38,
+                        fontSize: 36,
                         fontWeight: 700,
                         color: isActive ? theme.text_on_bg : theme.text_secondary,
                         lineHeight: 1.3,
@@ -273,7 +273,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
                     <div
                       style={{
                         fontFamily,
-                        fontSize: 18,
+                        fontSize: 24,
                         color: accentColor,
                         lineHeight: 1,
                         opacity: arrowProgress,

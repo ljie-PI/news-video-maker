@@ -217,7 +217,7 @@ export const FeatureCardScene: React.FC<FeatureCardSceneProps> = ({
           {/* Icon */}
           <div
             style={{
-              fontSize: 160,
+              fontSize: 150,
               lineHeight: 1,
               opacity: iconOpacity,
               transform: `scale(${iconScale}) rotate(${iconRotation + iconWobble}deg) translateY(${iconFloat + iconBounce}px)`,
@@ -231,7 +231,7 @@ export const FeatureCardScene: React.FC<FeatureCardSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: Math.round(80 * fScale),
+              fontSize: Math.round(77 * fScale),
               fontWeight: 800,
               color: theme.brand_primary,
               lineHeight: 1.2,

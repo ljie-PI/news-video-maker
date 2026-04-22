@@ -86,7 +86,7 @@ export const KeyInsightScene: React.FC<KeyInsightSceneProps> = ({
             position: "absolute",
             right: 60,
             bottom: 40,
-            fontSize: 200,
+            fontSize: 150,
             opacity: 0.05,
             lineHeight: 1,
             userSelect: "none",
@@ -141,7 +141,7 @@ export const KeyInsightScene: React.FC<KeyInsightSceneProps> = ({
             <div
               style={{
                 fontFamily,
-                fontSize: Math.round(72 * fScale),
+                fontSize: Math.round(77 * fScale),
                 fontWeight: 700,
                 color: theme.text_on_bg,
                 lineHeight: 1.35,
@@ -203,7 +203,7 @@ export const KeyInsightScene: React.FC<KeyInsightSceneProps> = ({
                     key={i}
                     style={{
                       fontFamily,
-                      fontSize: Math.round(44 * fScale),
+                      fontSize: Math.round(42 * fScale),
                       fontWeight: 400,
                       color: theme.text_secondary,
                       lineHeight: 1.7,
