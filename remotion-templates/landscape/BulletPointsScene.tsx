@@ -108,7 +108,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: 36,
+              fontSize: 42,
               fontWeight: 700,
               color: accentColor,
               lineHeight: 1.2,

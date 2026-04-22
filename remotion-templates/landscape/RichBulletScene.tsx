@@ -294,7 +294,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
             <div
               style={{
                 fontFamily,
-                fontSize: 36,
+                fontSize: 48,
                 fontWeight: 700,
                 color: accentColor,
                 lineHeight: 1.2,
