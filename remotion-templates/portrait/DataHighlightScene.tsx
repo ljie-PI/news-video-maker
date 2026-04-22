@@ -417,9 +417,6 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
           </div>
         </div>
 
-        {/* ── HUD corner decoration (top-right) ──────────────── */}
-        <HudCorner frame={frame} durationInFrames={durationInFrames} />
-
         {/* ── Expanding ring pulses after counter completes ──── */}
         {frame > COUNTER_END && (
           <div
