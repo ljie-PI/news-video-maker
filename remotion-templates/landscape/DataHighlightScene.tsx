@@ -118,54 +118,6 @@ const RingArc: React.FC<{
   );
 };
 
-/* ── HUD corner decoration ─────────────────────────────────────── */
-
-const HudCorner: React.FC<{ frame: number; durationInFrames: number }> = ({
-  frame,
-  durationInFrames,
-}) => {
-  const rotation = (frame / durationInFrames) * 360;
-  const opacity = fadeIn(frame, 5, 25);
-  const size = 100;
-  return (
-    <div
-      style={{
-        position: "absolute",
-        top: 40,
-        right: 50,
-        width: size,
-        height: size,
-        opacity,
-      }}
-    >
-      <svg width={size} height={size} viewBox="0 0 100 100">
-        <g transform={`rotate(${rotation} 50 50)`}>
-          <rect
-            x="10"
-            y="10"
-            width="80"
-            height="80"
-            rx="4"
-            fill="none"
-            stroke={theme.brand_primary}
-            strokeWidth="1.5"
-            strokeDasharray="12 8"
-            opacity={0.6}
-          />
-          <circle cx="50" cy="50" r="30" fill="none" stroke={theme.brand_highlight} strokeWidth="1" opacity={0.4} />
-          <line x1="50" y1="20" x2="50" y2="80" stroke={theme.brand_highlight} strokeWidth="0.5" opacity={0.3} />
-          <line x1="20" y1="50" x2="80" y2="50" stroke={theme.brand_highlight} strokeWidth="0.5" opacity={0.3} />
-        </g>
-        {/* Static corner brackets */}
-        <polyline points="5,20 5,5 20,5" fill="none" stroke={theme.brand_primary} strokeWidth="2" />
-        <polyline points="80,5 95,5 95,20" fill="none" stroke={theme.brand_primary} strokeWidth="2" />
-        <polyline points="95,80 95,95 80,95" fill="none" stroke={theme.brand_primary} strokeWidth="2" />
-        <polyline points="20,95 5,95 5,80" fill="none" stroke={theme.brand_primary} strokeWidth="2" />
-      </svg>
-    </div>
-  );
-};
-
 /* ── Stat card ─────────────────────────────────────────────────── */
 
 const StatCard: React.FC<{
