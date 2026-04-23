@@ -281,7 +281,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
             color: "rgba(0,0,0,0.15)",
           }}
         >
-          {frame > entranceDone ? `${activeBullet + 1}/${bulletCount}` : ""}
+          {frame > entranceDone ? `${Math.min(activeBullet + 1, bulletCount)}/${bulletCount}` : ""}
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
