@@ -56,7 +56,7 @@ def _build_items(script):
     for seg in script.get("segments", []):
         seg_id = seg["id"]
         narration = seg.get("narration", "")
-        is_rich = seg.get("template") == "rich_bullet"
+        is_rich = seg.get("template") in ("rich_bullet", "bullet_points")
         if is_rich and "\n\n" in narration:
             parts = [p.strip() for p in narration.split("\n\n") if p.strip()]
             for i, part in enumerate(parts):

@@ -229,7 +229,7 @@ def _rich_bullet_props(data, audio_ref, seq_count=0, audio_dir=None, seg_id=None
                 print(f"WARNING: failed to read {manifest_path}: {e}")
     return props
 
-def _bullet_points_props(data, audio_ref, seq_count=0, **_):
+def _bullet_points_props(data, audio_ref, seq_count=0, audio_dir=None, seg_id=None, **_):
     # BulletPointsScene takes plain strings only — flatten {title, detail}
     # objects back to "title — detail" strings if needed.
     raw_bullets = data.get("bullets", [])
@@ -243,13 +243,26 @@ def _bullet_points_props(data, audio_ref, seq_count=0, **_):
             bullets.append(f"{title} — {detail}" if detail else title)
         else:
             bullets.append(str(b))
-    return [
+    props = [
         f'project="{escape(data.get("project", ""))}"',
         f'sectionTitle="{escape(data.get("sectionTitle", data.get("title", "")))}"',
         f'bullets={{{json_prop(bullets)}}}',
         f'variant={{{seq_count % 3}}}',
         f'audioFile="{audio_ref}"',
     ]
+    if audio_dir and seg_id:
+        manifest_path = os.path.join(audio_dir, f"{seg_id}.bullets.json")
+        if os.path.exists(manifest_path):
+            try:
+                with open(manifest_path) as f:
+                    manifest = json.load(f)
+                durations_sec = manifest.get("durations", [])
+                if isinstance(durations_sec, list) and len(durations_sec) == len(bullets):
+                    durations_frames = [max(1, math.ceil(float(s) * 30)) for s in durations_sec]
+                    props.append(f'bulletDurations={{{json_prop(durations_frames)}}}')
+            except (ValueError, OSError) as e:
+                print(f"WARNING: failed to read {manifest_path}: {e}")
+    return props
 
 def _comparison_table_props(data, audio_ref, **_):
     # Normalize rows: accept both [{cells: [...]}] and [[...]] formats

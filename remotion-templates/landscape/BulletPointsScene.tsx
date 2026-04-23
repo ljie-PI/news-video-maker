@@ -17,6 +17,7 @@ interface BulletPointsSceneProps {
   audioFile: string;
   narration?: string;
   variant?: number;
+  bulletDurations?: number[];
 }
 
 export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
@@ -25,6 +26,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
   bullets,
   audioFile,
   variant = 0,
+  bulletDurations,
 }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames, height } = useVideoConfig();
@@ -41,15 +43,28 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
   const bulletGapPx = isDense
     ? Math.max(8, Math.floor((height - 300) / (bulletCount + 1) / 3))
     : Math.max(12, Math.floor((height - 300) / (bulletCount + 1) / 2));
-  const activeBulletRaw = entranceDone >= durationInFrames - 10
-    ? bulletCount - 0.01
-    : interpolate(
-        frame,
-        [entranceDone, durationInFrames - 10],
-        [0, bulletCount - 0.01],
-        { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-      );
-  const activeBullet = Math.floor(activeBulletRaw);
+  const audioDriven = !!bulletDurations && bulletDurations.length === bulletCount;
+
+  let activeBullet = bulletCount - 1;
+  if (audioDriven) {
+    let acc = 0;
+    let computed = 0;
+    for (let i = 0; i < bulletCount; i++) {
+      if (frame >= acc) computed = i;
+      acc += bulletDurations![i];
+    }
+    activeBullet = frame >= acc ? bulletCount : computed;
+  } else {
+    const activeBulletRaw = entranceDone >= durationInFrames - 10
+      ? bulletCount - 0.01
+      : interpolate(
+          frame,
+          [entranceDone, durationInFrames - 10],
+          [0, bulletCount - 0.01],
+          { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+        );
+    activeBullet = Math.floor(activeBulletRaw);
+  }
 
   // Background gradient rotation
   const bgAngle = 135 + (frame / durationInFrames) * 60;
