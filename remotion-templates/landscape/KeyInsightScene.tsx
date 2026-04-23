@@ -47,7 +47,7 @@ export const KeyInsightScene: React.FC<KeyInsightSceneProps> = ({
 
   // Split explanation into sentences
   const sentences = explanation
-    .split(/(?<=[。！？.!?])\s*/)
+    .split(/(?<=[。！？])\s*/)
     .filter((s) => s.trim().length > 0);
 
   // --- Animated values ---
