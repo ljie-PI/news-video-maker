@@ -301,7 +301,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
   const contextY = slideIn(frame, fps, 55, 40);
 
   // Ring sizes
-  const RING_SIZE = 380;
+  const RING_SIZE = 456;
 
   const glowScale = 1;
   const glowOpacity = 0.25;
@@ -357,7 +357,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: "50%",
+            top: "42%",
             left: "50%",
             width: 700,
             height: 700,
@@ -372,7 +372,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: "50%",
+            top: "42%",
             left: "50%",
             transform: "translate(-50%, -55%)",
           }}
@@ -415,15 +415,12 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
           </div>
         </div>
 
-        {/* ── HUD corner decoration (top-right) ──────────────── */}
-        <HudCorner frame={frame} durationInFrames={durationInFrames} />
-
         {/* ── Expanding ring pulses after counter completes ──── */}
         {frame > COUNTER_END && (
           <div
             style={{
               position: "absolute",
-              top: "50%",
+              top: "42%",
               left: "50%",
               transform: "translate(-50%, -55%)",
               pointerEvents: "none",
@@ -439,10 +436,10 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
                   key={i}
                   style={{
                     position: "absolute",
-                    width: 200,
-                    height: 200,
-                    left: -100,
-                    top: -100,
+                    width: 240,
+                    height: 240,
+                    left: -120,
+                    top: -120,
                     borderRadius: "50%",
                     border: `2px solid ${theme.brand_primary}`,
                     transform: `scale(${ringScale})`,
@@ -458,7 +455,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: "50%",
+            top: "42%",
             left: "50%",
             transform: "translate(-50%, -50%)",
             display: "flex",
