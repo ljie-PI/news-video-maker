@@ -41,13 +41,21 @@
 
 ## 1. `cover` — CoverScene（视频封面 / 片尾）
 
+CoverScene 现在渲染 `public/cover.png`（全屏铺满 + 淡入），标题/副标题文字内嵌在图片中。生成视频前需把对应来源与分辨率的封面拷贝到
+`public/cover.png`：
+
+```bash
+# 横屏：1920x1080；竖屏：1080x1440
+cp remotion-templates/covers/{source}_{W}x{H}.png public/cover.png
+```
+
 ```typescript
 {
-  title: string;       // "GitHub 今日热榜"
-  subtitle: string;    // "2026-04-13 Top 10 开源项目深度解读"
+  // 数据字段均为可选，仅为兼容老 script.json 保留；CoverScene 本体忽略它们。
+  title?: string;
+  subtitle?: string;
 }
 ```
-**必填**：`title`、`subtitle`。
 
 ---
 

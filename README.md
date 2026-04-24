@@ -62,6 +62,10 @@ cp remotion-templates/themes/${SOURCE}.ts $PROJ/src/theme.ts
 # 链接 TTS 音频
 ln -s "$(pwd)/audio" $PROJ/public/audio
 
+# 复制封面图（尺寸按朝向选择：横屏 1920x1080，竖屏 1080x1440）
+if [ "$ORIENTATION" = "landscape" ]; then RES=1920x1080; else RES=1080x1440; fi
+cp remotion-templates/covers/${SOURCE}_${RES}.png $PROJ/public/cover.png
+
 cd $PROJ && npm install && cd ..
 ```
 

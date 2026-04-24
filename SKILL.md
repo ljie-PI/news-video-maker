@@ -74,7 +74,7 @@ videos/yyyy-mm-dd_HH/
 4. **分镜数量与模板多样性**：每个 item 生成 **5-10 个分镜**。每个 item 至少使用 **5 种不同模板**，全视频至少使用 **10 种不同模板**，确保视觉多样性。
 
 5. **视频开头结构（必须）**：
-   - **CoverScene**（≈2 秒）：标题 + 日期 + 来源标识，快速过渡
+   - **CoverScene**（≈2 秒）：**旁白只需一句简短欢迎语即可进入正题，不要播报日期**
    - **RichBulletScene 总览预告**（≈5-8 秒）：列出**所有**项目/帖子的名称 + 一句话亮点 + 关键数据（如 "+814⭐"），配合旁白的总览介绍
    - **不能只放一个空荡荡的封面**，开头就要有内容抓住观众
 
@@ -231,7 +231,12 @@ cp remotion-templates/themes/{source}.ts remotion-{source}-{orientation}/src/the
 # 4. 链接音频
 ln -s $(pwd)/audio remotion-{source}-{orientation}/public/audio
 
-# 5. 生成 Main.tsx + Root.tsx（自动按 wav 时长计算帧偏移）
+# 5. 复制对应来源 + 分辨率的封面图到 public/cover.png
+#    {W}x{H} 取 1920x1080（横屏）或 1080x1440（竖屏）
+cp remotion-templates/covers/{source}_{W}x{H}.png \
+  remotion-{source}-{orientation}/public/cover.png
+
+# 6. 生成 Main.tsx + Root.tsx（自动按 wav 时长计算帧偏移）
 python3 generate_main_tsx.py script.json \
   remotion-{source}-{orientation}/src \
   --width {1920|1080} --height {1080|1440} \
