@@ -56,7 +56,6 @@ cp remotion-templates/covers/{source}_{W}x{H}.png public/cover.png
   subtitle?: string;
 }
 ```
-**必填**：无（音频由 `segments[].id` 对应的 `{id}.wav` 提供）。
 
 ---
 
