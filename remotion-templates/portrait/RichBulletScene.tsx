@@ -94,6 +94,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   // At height=1440: 72 + 48 + 6 + 24 + 3 + 36 = 189
   const titleChromePad = Math.round(16 * hScale);
   const titleChromeMargin = Math.round(24 * hScale);
+  const titleRegionH = 72 + 48 + 6 + titleChromePad + 3 + titleChromeMargin;
 
   // Card height for layout reserve (detailClamp=1 line of detail).
   const estCardH =
@@ -101,12 +102,15 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
     tier.titleFs * 1.35 +
     tier.mt +
     tier.detailFs * 1.5 * detailClamp;
-  // Bullets area = canvas - outer 60 - card padding 80 - title region ~190 - 20 safety
-  const availableArea = height - 360;
-  const bulletGapPx = Math.max(
-    12,
-    Math.min(160, Math.floor((availableArea - count * estCardH) / count))
-  );
+  // Bullets area = canvas - outer margin (60) - card padding (80) - title region - 20 safety
+  const availableArea = height - 60 - 80 - titleRegionH - 20;
+  const bulletGapPx =
+    count === 0
+      ? 0
+      : Math.max(
+          12,
+          Math.min(160, Math.floor((availableArea - count * estCardH) / count))
+        );
   const baseDelay = 5;
   const staggerGap = Math.max(4, Math.floor(45 / Math.max(count, 1)));
   const entranceDone = staggerDelay(baseDelay, count - 1, staggerGap) + 12;
@@ -256,6 +260,8 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
               fontWeight: 700,
               color: isFuture ? theme.text_muted : theme.brand_primary,
               lineHeight: 1.35,
+              // Force single-line + ellipsis. estCardH assumes a 1-line title;
+              // allowing wrap would invalidate the gap reserve and overflow.
               whiteSpace: "nowrap" as const,
               overflow: "hidden" as const,
               textOverflow: "ellipsis" as const,
