@@ -231,7 +231,12 @@ cp remotion-templates/themes/{source}.ts remotion-{source}-{orientation}/src/the
 # 4. 链接音频
 ln -s $(pwd)/audio remotion-{source}-{orientation}/public/audio
 
-# 5. 生成 Main.tsx + Root.tsx（自动按 wav 时长计算帧偏移）
+# 5. 复制对应来源 + 分辨率的封面图到 public/cover.png
+#    {W}x{H} 取 1920x1080（横屏）或 1080x1440（竖屏）
+cp remotion-templates/covers/{source}_{W}x{H}.png \
+  remotion-{source}-{orientation}/public/cover.png
+
+# 6. 生成 Main.tsx + Root.tsx（自动按 wav 时长计算帧偏移）
 python3 generate_main_tsx.py script.json \
   remotion-{source}-{orientation}/src \
   --width {1920|1080} --height {1080|1440} \
