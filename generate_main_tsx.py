@@ -41,8 +41,9 @@ def _split_audio(wav_path: str, split_sec: float, out_a: str, out_b: str):
 def _split_bullet_segments(segments: list, audio_dir: str, is_portrait: bool = False) -> list:
     """Pre-process: split rich_bullet/bullet_points segments with >MAX_BULLETS items.
 
-    Applies repeatedly until every segment has ≤MAX_BULLETS bullets.
-    In landscape mode, rich_bullet is not split (two-column layout handles more items).
+    Applies repeatedly until each splittable segment has ≤MAX_BULLETS bullets.
+    In landscape mode, rich_bullet is not split (two-column layout handles more items),
+    so those segments may still exceed MAX_BULLETS.
     """
     queue = list(segments)
     result = []
@@ -472,7 +473,8 @@ def main():
     with open(script_path) as f:
         script = json.load(f)
 
-    segments = _split_bullet_segments(script["segments"], audio_dir, is_portrait=(height > width))
+    is_portrait = height > width
+    segments = _split_bullet_segments(script["segments"], audio_dir, is_portrait=is_portrait)
     sequences = []
     frame_offset = 0
     used_components = set()
@@ -484,7 +486,7 @@ def main():
         data = seg["data"]
 
         # Portrait mode: replace code_block with key_insight
-        if height > width and template == "code_block":
+        if is_portrait and template == "code_block":
             template = "key_insight"
             narration = seg.get("narration", "")
             data = {
