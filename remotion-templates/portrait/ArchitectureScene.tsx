@@ -36,7 +36,7 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
   narration,
 }) => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
+  const { fps, durationInFrames, height } = useVideoConfig();
   const isVertical = direction === "vertical";
   const effectiveVertical = true;
   const count = layers.length;
@@ -114,10 +114,10 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: 160,
+            top: Math.round(160 * height / 1920),
             left: 60,
             right: 60,
-            bottom: 50,
+            bottom: Math.round(50 * height / 1920),
             display: "flex",
             flexDirection: effectiveVertical ? "column" : "row",
             alignItems: "center",

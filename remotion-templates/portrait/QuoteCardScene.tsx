@@ -35,8 +35,8 @@ export const QuoteCardScene: React.FC<QuoteCardSceneProps> = ({
   narration,
 }) => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
-  const vScale = 2.0;
+  const { fps, durationInFrames, height } = useVideoConfig();
+  const vScale = height / 960;
   const fScale = 1.25;
 
   // --- Word processing ---

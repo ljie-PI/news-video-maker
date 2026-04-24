@@ -37,7 +37,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
   narration,
 }) => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
+  const { fps, durationInFrames, height } = useVideoConfig();
 
   // Use theme brand colors — matches each platform's identity
   const SIDE_A_COLOR = theme.brand_primary;
@@ -135,7 +135,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                   overflow: "hidden",
                   opacity,
                   transform: `translateX(${slideOffset}px)`,
-                  minHeight: 150,
+                  minHeight: Math.round(150 * height / 1920),
                 }}
               >
                 {/* Left color accent stripe */}

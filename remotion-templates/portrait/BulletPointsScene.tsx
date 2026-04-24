@@ -65,7 +65,6 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
 
   const bgAngle = 135 + (frame / durationInFrames) * 60;
   const progress = frame / durationInFrames;
-  const scanY = (frame * 4) % 2000;
 
   const titleOpacity = interpolate(frame, [0, 18], [0, 1], {
     extrapolateLeft: "clamp",
@@ -86,18 +85,6 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
           overflow: "hidden",
         }}
       >
-        {/* Scan line */}
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: scanY,
-            width: "100%",
-            height: 1,
-            background: `linear-gradient(90deg, transparent, ${accentColor}25, transparent)`,
-          }}
-        />
-
         {/* Left accent bar */}
         <div
           style={{

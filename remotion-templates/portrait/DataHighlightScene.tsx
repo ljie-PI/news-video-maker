@@ -264,8 +264,8 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
   narration,
 }) => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
-  const vScale = 2.0;
+  const { fps, durationInFrames, height } = useVideoConfig();
+  const vScale = height / 960;
   const fScale = 1.25;
 
   const parsedNumber = parseMainNumber(mainNumber);
@@ -361,8 +361,8 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
             position: "absolute",
             top: "42%",
             left: "50%",
-            width: 700,
-            height: 700,
+            width: Math.round(700 * height / 1920),
+            height: Math.round(700 * height / 1920),
             transform: `translate(-50%, -60%) scale(${glowScale})`,
             background: `radial-gradient(circle, ${theme.brand_primary}30 0%, transparent 70%)`,
             filter: "blur(30px)",

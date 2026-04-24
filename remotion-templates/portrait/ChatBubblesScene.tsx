@@ -35,7 +35,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
   audioFile,
 }) => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
+  const { fps, durationInFrames, height } = useVideoConfig();
 
   const LEFT_COLOR = theme.brand_primary;
   const RIGHT_COLOR = theme.brand_highlight;
@@ -319,7 +319,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: 160,
+            top: Math.round(160 * height / 1920),
             bottom: 40,
             left: 80,
             right: 80,

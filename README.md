@@ -2,7 +2,7 @@
 
 > OpenClaw skill — 把深度调研报告自动转成带 TTS 旁白的 MP4 新闻速递视频。
 
-基于 GitHub、Hacker News、Reddit、Product Hunt 的深度调研内容（deep_dive 报告），自动生成横屏（1920×1080）和竖屏（1080×1920）两种格式的 MP4 视频。视频使用 [Remotion](https://www.remotion.dev/) + React 渲染，配合 CosyVoice TTS 旁白和平台专属配色，开箱即得评分 ≥9.0/10 的成片。
+基于 GitHub、Hacker News、Reddit、Product Hunt 的深度调研内容（deep_dive 报告），自动生成横屏（1920×1080）和竖屏（1080×1440）两种格式的 MP4 视频。视频使用 [Remotion](https://www.remotion.dev/) + React 渲染，配合 CosyVoice TTS 旁白和平台专属配色，开箱即得评分 ≥9.0/10 的成片。
 
 ---
 
@@ -10,7 +10,7 @@
 
 - **15 种场景模板**：CoverScene、ProjectHeroScene、KeyInsightScene、RichBulletScene、ComparisonTableScene、QuoteCardScene、DataHighlightScene、DebateSplitScene、ArchitectureScene、TechStackScene、TimelineScene、FeatureCardScene、CodeBlockScene、ChatBubblesScene、TransitionScene。
 - **平台主题色**：GitHub（蓝紫 `#0969da`）、Hacker News（橙 `#ff6600`）、Reddit（橙红 `#ff4500`）、Product Hunt（珊瑚红 `#ff6154`）。
-- **横竖屏双版本**：每个组件都有 `landscape/` 与 `portrait/` 两套实现，针对 1920×1080 与 1080×1920 分别优化布局。
+- **横竖屏双版本**：每个组件都有 `landscape/` 与 `portrait/` 两套实现，针对 1920×1080 与 1080×1440 分别优化布局。
 - **音频驱动的自动排版**：`generate_main_tsx.py` 根据每段 TTS 音频时长自动计算帧偏移，生成 Remotion `Main.tsx` / `Root.tsx`。
 - **质量评估 prompt**：`video_quality_eval_prompt.md` 提供 9 维度（P0/P1）量化评估，目标分数 ≥9.0。
 
@@ -117,7 +117,7 @@ python3 generate_main_tsx.py \
 参数：
 - `script.json`：分镜脚本
 - `$PROJ/src`：输出目录
-- `--width` / `--height`：竖屏请用 `1080` × `1920`
+- `--width` / `--height`：竖屏请用 `1080` × `1440`
 - `--audio-dir`：音频实际存放路径
 
 ### 6. 渲染视频
@@ -150,7 +150,7 @@ news-video-maker/
     ├── tsconfig.json
     ├── index.ts / index.css
     ├── landscape/                # 横屏 1920×1080 组件 + animationHelpers.ts
-    ├── portrait/                 # 竖屏 1080×1920 组件 + animationHelpers.ts
+    ├── portrait/                 # 竖屏 1080×1440 组件 + animationHelpers.ts
     └── themes/                   # github / hackernews / reddit / producthunt
 ```
 

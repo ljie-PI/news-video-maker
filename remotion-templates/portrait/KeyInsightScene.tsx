@@ -33,8 +33,8 @@ export const KeyInsightScene: React.FC<KeyInsightSceneProps> = ({
   narration,
 }) => {
   const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
-  const vScale = 2.0;
+  const { durationInFrames, height } = useVideoConfig();
+  const vScale = height / 960;
   const fScale = 1.25;
 
   // --- Animation timing ---

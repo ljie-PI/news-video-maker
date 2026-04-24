@@ -10,7 +10,7 @@ remotion-templates/
 │   ├── CoverScene.tsx      # 封面/结尾场景（深色渐变背景、逐字淡入、浮动圆形）
 │   ├── ProjectIntroScene.tsx  # 项目介绍（rank浮动脉冲、名称下划线扫、星标计数器）
 │   └── BulletPointsScene.tsx  # 要点列表（逐条弹入、活跃高亮、下划线扫动）
-├── portrait/               # 竖屏 1080×1920 组件（纵向堆叠布局）
+├── portrait/               # 竖屏 1080×1440 组件（纵向堆叠布局）
 │   ├── CoverScene.tsx
 │   ├── ProjectIntroScene.tsx
 │   └── BulletPointsScene.tsx
@@ -64,7 +64,7 @@ cd remotion-{source}
 # 横屏
 npx remotion render src/index.ts Main --output=out.mp4 --width=1920 --height=1080 --fps=30 --codec=h264 --concurrency=4
 # 竖屏
-npx remotion render src/index.ts Main --output=out.mp4 --width=1080 --height=1920 --fps=30 --codec=h264 --concurrency=4
+npx remotion render src/index.ts Main --output=out.mp4 --width=1080 --height=1440 --fps=30 --codec=h264 --concurrency=4
 ```
 
 ## 脚本 JSON 格式
