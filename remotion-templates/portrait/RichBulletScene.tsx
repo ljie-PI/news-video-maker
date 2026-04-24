@@ -184,8 +184,6 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
     const isFuture = !isActive && !isNarrated;
 
     const stateOpacity = isActive ? 1 : isNarrated ? 0.7 : 0.4;
-    // Keep active bullet at the same width to avoid ellipsizing title text.
-    const scale = 1;
 
     const activeFloat = 0;
     const activeFloatX = 0;
@@ -214,7 +212,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
           alignItems: "flex-start",
           gap: 16,
           opacity: opacity * stateOpacity,
-          transform: `translateY(${translateY + activeFloat + narratedFloat}px) translateX(${translateX + activeFloatX + narratedFloatX}px) scale(${scale})`,
+          transform: `translateY(${translateY + activeFloat + narratedFloat}px) translateX(${translateX + activeFloatX + narratedFloatX}px)`,
           transformOrigin: "left top",
           padding: useColumns
             ? `${Math.round(tier.pad * 0.83)}px 14px`
