@@ -69,7 +69,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   const densityScale = count <= 4 ? 1 : (DENSITY_SCALE[count] ?? 0.66);
   const detailClamp = count <= 3 ? 3 : 2;
 
-  const vScale = 2.0 * densityScale;
+  const vScale = (height / 960) * densityScale;
   const fScale = 1.25 * densityScale;
 
   const baseGap = Math.floor((height - 400) / (count + 1) / 2);

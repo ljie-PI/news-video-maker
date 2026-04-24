@@ -2,7 +2,7 @@
 name: news-video-maker
 description: >
   Generate narrated news recap videos from deep research files. Supports GitHub, Hacker News, Reddit, and Product Hunt.
-  Uses Remotion + React templates with platform-specific themes. Outputs landscape (1920×1080) and portrait (1080×1920) MP4 videos.
+  Uses Remotion + React templates with platform-specific themes. Outputs landscape (1920×1080) and portrait (1080×1440) MP4 videos.
   Use when the user wants to create news summary videos from deep_dive research data.
 ---
 
@@ -47,7 +47,7 @@ source ~/.openclaw/workspace/.env
 ```
 videos/yyyy-mm-dd_HH/
 ├── 1920x1080/                # 横屏成片 {source}.mp4
-├── 1080x1920/                # 竖屏成片 {source}.mp4
+├── 1080x1440/                # 竖屏成片 {source}.mp4
 ├── {source}/                 # 每来源工作区
 │   ├── script.json           # 步骤 1 输出
 │   ├── audio/                # 步骤 2 输出
@@ -105,7 +105,7 @@ videos/yyyy-mm-dd_HH/
 
 ## 三、执行步骤
 
-> 以下流程对**每个被选中的来源**单独执行。生成两个版本：横屏 1920×1080 和竖屏 1080×1920。
+> 以下流程对**每个被选中的来源**单独执行。生成两个版本：横屏 1920×1080 和竖屏 1080×1440。
 > Reddit 来源整体做一个视频，根据 subreddit 分类，从 AI 相关分类取 Top 10 帖子。
 
 ### 步骤 1：生成分镜（旁白 + 模板选择）
@@ -234,15 +234,14 @@ ln -s $(pwd)/audio remotion-{source}-{orientation}/public/audio
 # 5. 生成 Main.tsx + Root.tsx（自动按 wav 时长计算帧偏移）
 python3 generate_main_tsx.py script.json \
   remotion-{source}-{orientation}/src \
-  --width {1920|1080} --height {1080|1920} \
+  --width {1920|1080} --height {1080|1440} \
   --audio-dir remotion-{source}-{orientation}/public/audio
 ```
 
 **注意事项**：
 1. **HN 来源**：用 ▲ 替代 ★ 显示 points，可在 theme 中覆盖；或直接选 `project_hero` 模板（前缀自动解析）。
-2. **竖屏 scanY**：使用 `% 2000` 而非 `% 1200`（适配 1920 高度）。
-3. **Root.tsx 尺寸**：横屏 `width={1920} height={1080}`，竖屏 `width={1080} height={1920}`。`generate_main_tsx.py` 默认横屏，竖屏需通过 `--width 1080 --height 1920` 显式指定。
-4. **starsNum=0**：ProjectIntroScene 已有 `starsNum > 0` 守卫，不显示空 badge。Reddit 通常无投票数据，留空即可。
+2. **Root.tsx 尺寸**：横屏 `width={1920} height={1080}`，竖屏 `width={1080} height={1440}`。`generate_main_tsx.py` 默认横屏，竖屏需通过 `--width 1080 --height 1440` 显式指定。
+3. **starsNum=0**：ProjectIntroScene 已有 `starsNum > 0` 守卫，不显示空 badge。Reddit 通常无投票数据，留空即可。
 
 **日志**：`logs/{source}_03_remotion.log`，记录两个项目的安装日志、`generate_main_tsx.py` 的 stdout / stderr、跳过的未知 template warning。
 
@@ -254,7 +253,7 @@ python3 generate_main_tsx.py script.json \
 
 **输出**：
 - `videos/yyyy-mm-dd_HH/1920x1080/{source}.mp4`
-- `videos/yyyy-mm-dd_HH/1080x1920/{source}.mp4`
+- `videos/yyyy-mm-dd_HH/1080x1440/{source}.mp4`
 
 **渲染命令**：
 ```bash

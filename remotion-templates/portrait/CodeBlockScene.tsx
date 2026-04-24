@@ -191,7 +191,7 @@ export const CodeBlockScene: React.FC<CodeBlockSceneProps> = ({
   narration,
 }) => {
   const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
+  const { durationInFrames, height } = useVideoConfig();
 
   const lines = code.split("\n");
 
@@ -202,7 +202,7 @@ export const CodeBlockScene: React.FC<CodeBlockSceneProps> = ({
   // Dynamic terminal height: sized to content, not full screen
   const headerBarHeight = 46;
   const codePaddingV = 56;
-  const terminalMaxH = 1000;
+  const terminalMaxH = Math.round(1000 * height / 1920);
   const terminalHeight = Math.max(200,
     Math.min(lines.length * codeLineHeight + headerBarHeight + codePaddingV, terminalMaxH)
   );
