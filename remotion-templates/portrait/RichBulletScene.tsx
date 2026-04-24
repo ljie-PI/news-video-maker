@@ -183,7 +183,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
     const isNarrated = audioDriven && globalIndex < active && frame >= entranceDone;
     const isFuture = !isActive && !isNarrated;
 
-    const stateOpacity = isActive ? 1 : isNarrated ? 0.7 : 0.4;
+    const stateOpacity = isActive ? 1 : isNarrated ? 0.85 : 0.4;
 
     const activeFloat = 0;
     const activeFloatX = 0;
@@ -254,11 +254,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
               fontFamily,
               fontSize: tier.titleFs,
               fontWeight: 700,
-              color: isActive
-                ? theme.brand_primary
-                : isNarrated
-                  ? theme.text_on_bg_muted
-                  : theme.text_muted,
+              color: isFuture ? theme.text_muted : theme.brand_primary,
               lineHeight: 1.35,
               whiteSpace: "nowrap" as const,
               overflow: "hidden" as const,
@@ -272,7 +268,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
               fontFamily,
               fontSize: tier.detailFs,
               fontWeight: 400,
-              color: isActive ? theme.text_secondary : theme.text_muted,
+              color: isFuture ? theme.text_muted : theme.text_secondary,
               lineHeight: 1.5,
               marginTop: tier.mt,
               display: "-webkit-box",
