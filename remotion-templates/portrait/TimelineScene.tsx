@@ -199,7 +199,7 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
                   left: x - 1,
                   top: isAbove ? timelineY - Math.round(140 * height / 1920) + 10 : timelineY + 10,
                   width: 2,
-                  height: isAbove ? 130 : 30,
+                  height: isAbove ? Math.round(140 * height / 1920) - 10 : Math.round(40 * height / 1920) - 10,
                   background: `linear-gradient(${isAbove ? "180deg" : "0deg"}, ${nodeColor}60, transparent)`,
                   opacity: cardOpacity,
                   transformOrigin: isAbove ? "bottom center" : "top center",

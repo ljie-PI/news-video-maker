@@ -505,7 +505,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
           <div
             style={{
               position: "absolute",
-              bottom: Math.round(80 * vScale),
+              bottom: Math.round(130 * vScale),
               left: 0,
               right: 0,
               display: "flex",
