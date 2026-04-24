@@ -114,10 +114,10 @@ export const ArchitectureScene: React.FC<ArchitectureSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: Math.round(160 * height / 1920),
+            top: Math.round(160 * height / 1440),
             left: 60,
             right: 60,
-            bottom: Math.round(50 * height / 1920),
+            bottom: Math.round(50 * height / 1440),
             display: "flex",
             flexDirection: effectiveVertical ? "column" : "row",
             alignItems: "center",

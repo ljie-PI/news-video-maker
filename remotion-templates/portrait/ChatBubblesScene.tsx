@@ -319,7 +319,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: Math.round(160 * height / 1920),
+            top: Math.round(160 * height / 1440),
             bottom: 40,
             left: 80,
             right: 80,
