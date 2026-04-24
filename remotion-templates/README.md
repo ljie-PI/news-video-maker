@@ -47,8 +47,8 @@ cp remotion-templates/themes/{source}.ts remotion-{source}/src/theme.ts
 # 链接音频目录
 ln -s $(pwd)/audio remotion-{source}/public/audio
 
-# 复制封面图到 public/cover.png（横屏 1920x1080，竖屏 1080x1440）
-cp remotion-templates/covers/{source}_1920x1080.png remotion-{source}/public/cover.png
+# 复制封面图到 public/cover.png（按最终渲染分辨率选择：横屏 1920x1080，竖屏 1080x1440）
+cp remotion-templates/covers/{source}_{W}x{H}.png remotion-{source}/public/cover.png
 
 # 安装依赖
 cd remotion-{source} && npm install
