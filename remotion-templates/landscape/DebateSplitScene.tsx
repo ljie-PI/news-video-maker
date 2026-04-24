@@ -77,6 +77,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
             gap: 12,
             opacity: labelOpacity,
             transform: `translateX(${labelSlide}px)`,
+            marginTop: 32,
             paddingBottom: 8,
             borderBottom: `2px solid ${color}`,
             marginBottom: 4,
@@ -94,7 +95,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
           <span
             style={{
               fontFamily,
-              fontSize: 32,
+              fontSize: 40,
               fontWeight: 700,
               color: color,
               letterSpacing: 0.5,
