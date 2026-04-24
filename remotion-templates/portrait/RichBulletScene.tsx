@@ -347,7 +347,10 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
             justifyContent: "space-between",
           }}
         >
-          <div>
+          {/* Single-line + ellipsis enforced so titleRegionH (used by
+              availableArea/gap math) stays a known constant; wrapping would
+              overflow the reserved bullet area. */}
+          <div style={{ minWidth: 0, flex: "1 1 auto", overflow: "hidden" }}>
             <div
               style={{
                 fontFamily,
@@ -355,6 +358,9 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
                 fontWeight: 700,
                 color: accentColor,
                 lineHeight: 1.2,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
               }}
             >
               {project}
@@ -366,6 +372,9 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
                 fontWeight: 500,
                 color: "#8b949e",
                 marginTop: 6,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
               }}
             >
               {sectionTitle}
