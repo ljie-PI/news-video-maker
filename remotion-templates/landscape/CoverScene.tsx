@@ -6,7 +6,6 @@ import {
   interpolate,
   staticFile,
   useCurrentFrame,
-  useVideoConfig,
 } from "remotion";
 import { theme } from "./theme";
 
@@ -21,13 +20,10 @@ interface CoverSceneProps {
 
 export const CoverScene: React.FC<CoverSceneProps> = ({ audioFile }) => {
   const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
-
   const fadeIn = interpolate(frame, [0, 12], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const progress = frame / Math.max(durationInFrames, 1);
 
   return (
     <AbsoluteFill style={{ backgroundColor: theme.dark_bg_mid }}>
@@ -41,24 +37,6 @@ export const CoverScene: React.FC<CoverSceneProps> = ({ audioFile }) => {
           opacity: fadeIn,
         }}
       />
-      <div
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          width: "100%",
-          height: 4,
-          backgroundColor: theme.overlay_subtle,
-        }}
-      >
-        <div
-          style={{
-            height: "100%",
-            width: `${progress * 100}%`,
-            background: `linear-gradient(90deg, ${theme.brand_primary}, ${theme.brand_highlight})`,
-          }}
-        />
-      </div>
     </AbsoluteFill>
   );
 };

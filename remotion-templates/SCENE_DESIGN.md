@@ -41,8 +41,7 @@
 
 ## 1. `cover` — CoverScene（视频封面 / 片尾）
 
-CoverScene 现在渲染 `public/cover.png`（全屏铺满 + 淡入 + 底部进度条），
-标题/副标题文字内嵌在图片中。生成视频前需把对应来源与分辨率的封面拷贝到
+CoverScene 现在渲染 `public/cover.png`（全屏铺满 + 淡入），标题/副标题文字内嵌在图片中。生成视频前需把对应来源与分辨率的封面拷贝到
 `public/cover.png`：
 
 ```bash
