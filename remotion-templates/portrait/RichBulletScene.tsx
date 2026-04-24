@@ -31,11 +31,32 @@ interface RichBulletSceneProps {
   bulletDurations?: number[];
 }
 
-// Empirically tuned per-count shrink curve so 5-10 bullets all fit in
-// portrait without overlapping. count <= 4 stays at scale 1.0.
-const DENSITY_SCALE: Partial<Record<number, number>> = {
-  5: 0.90, 6: 0.84, 7: 0.80, 8: 0.76, 9: 0.70, 10: 0.66,
-};
+// Discrete tier spec for P3 scale-aligned layout (1080×1440 portrait).
+// All font sizes land on the 12-level scale (24/28/32/36/40/48/52/60/…).
+// `titleFs`=bullet title, `detailFs`=detail body, `pad`=vertical card padding,
+// `mt`=margin between title and detail, `badgeFs`/`badgeSize`=number badge.
+// Higher count → smaller tier. Max count = 6 (auto-split handles >6).
+interface BulletTier {
+  titleFs: number;
+  detailFs: number;
+  pad: number;
+  mt: number;
+  badgeFs: number;
+  badgeSize: number;
+  badgeRadius: number;
+}
+
+const BULLET_TIERS: BulletTier[] = [
+  // Tier 1 — n ≤ 2
+  { titleFs: 60, detailFs: 48, pad: 24, mt: 9, badgeFs: 32, badgeSize: 48, badgeRadius: 12 },
+  // Tier 2 — n = 3..4
+  { titleFs: 52, detailFs: 40, pad: 20, mt: 8, badgeFs: 28, badgeSize: 40, badgeRadius: 10 },
+  // Tier 3 — n = 5..6 (and fallback for >6)
+  { titleFs: 48, detailFs: 36, pad: 18, mt: 7, badgeFs: 24, badgeSize: 36, badgeRadius: 10 },
+];
+
+const tierFor = (count: number): BulletTier =>
+  count <= 2 ? BULLET_TIERS[0] : count <= 4 ? BULLET_TIERS[1] : BULLET_TIERS[2];
 
 export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   project,
@@ -59,24 +80,32 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   const count = bullets.length;
   const useColumns = false;
 
-  // Density-adaptive layout. Thresholds:
-  //   - detailClamp drops from 3 to 2 lines starting at count = 4
-  //   - densityScale and gapFactor stay at 1.0 through count = 4, then
-  //     progressively compress font/padding/spacing for count = 5..10
-  // `baseGap` starts from available vertical space (`height - 400` reserved
-  // for title/chrome) and the final gap is clamped to 16..160 px to avoid
-  // unreadably tight or overly loose layouts.
-  const densityScale = count <= 4 ? 1 : (DENSITY_SCALE[count] ?? 0.66);
-  const detailClamp = count <= 3 ? 3 : 2;
+  // Tier-based layout (P3). Each count picks a scale-aligned font tier;
+  // gap is back-computed so the bullet stack fits the card's bullets area.
+  // Title region padding/margins are independent of bullet density (they
+  // describe the scene, not the bullets).
+  const tier = tierFor(count);
+  const detailClamp = 1;
+  const hScale = height / 960; // responsive canvas scaling only
 
-  const vScale = (height / 960) * densityScale;
-  const fScale = 1.25 * densityScale;
+  // Title region height (project + sectionTitle + bottom border gap).
+  //   project(60)*1.2 line + sectionTitle(48) + marginTop(6)
+  //   + paddingBottom(16*hS) + border(3) + marginBottom(24*hS)
+  // At height=1440: 72 + 48 + 6 + 24 + 3 + 36 = 189
+  const titleChromePad = Math.round(16 * hScale);
+  const titleChromeMargin = Math.round(24 * hScale);
 
-  const baseGap = Math.floor((height - 400) / (count + 1) / 2);
-  const gapFactor = count <= 4 ? 1 : Math.max(0.35, 1 - (count - 4) * 0.12);
+  // Card height for layout reserve (detailClamp=1 line of detail).
+  const estCardH =
+    2 * tier.pad +
+    tier.titleFs * 1.35 +
+    tier.mt +
+    tier.detailFs * 1.5 * detailClamp;
+  // Bullets area = canvas - outer 60 - card padding 80 - title region ~190 - 20 safety
+  const availableArea = height - 360;
   const bulletGapPx = Math.max(
-    16,
-    Math.min(160, Math.round(baseGap * gapFactor * densityScale))
+    12,
+    Math.min(160, Math.floor((availableArea - count * estCardH) / count))
   );
   const baseDelay = 5;
   const staggerGap = Math.max(4, Math.floor(45 / Math.max(count, 1)));
@@ -155,7 +184,8 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
     const isFuture = !isActive && !isNarrated;
 
     const stateOpacity = isActive ? 1 : isNarrated ? 0.7 : 0.4;
-    const scale = isActive ? 1.03 : 1;
+    // Keep active bullet at the same width to avoid ellipsizing title text.
+    const scale = 1;
 
     const activeFloat = 0;
     const activeFloatX = 0;
@@ -186,7 +216,9 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
           opacity: opacity * stateOpacity,
           transform: `translateY(${translateY + activeFloat + narratedFloat}px) translateX(${translateX + activeFloatX + narratedFloatX}px) scale(${scale})`,
           transformOrigin: "left top",
-          padding: useColumns ? `${Math.round(10 * vScale)}px 14px` : `${Math.round(12 * vScale)}px 16px`,
+          padding: useColumns
+            ? `${Math.round(tier.pad * 0.83)}px 14px`
+            : `${tier.pad}px 16px`,
           borderRadius: 12,
           backgroundColor: isActive
             ? `${accentColor}12`
@@ -199,12 +231,12 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
         <div
           style={{
             fontFamily,
-            fontSize: Math.round(24 * densityScale),
+            fontSize: tier.badgeFs,
             fontWeight: 700,
             color: isActive ? "#ffffff" : isFuture ? `${accentColor}80` : accentColor,
-            minWidth: Math.round(40 * densityScale),
-            height: Math.round(40 * densityScale),
-            borderRadius: Math.round(10 * densityScale),
+            minWidth: tier.badgeSize,
+            height: tier.badgeSize,
+            borderRadius: tier.badgeRadius,
             backgroundColor: isActive ? accentColor : `${accentColor}18`,
             display: "flex",
             alignItems: "center",
@@ -222,7 +254,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: Math.round(38 * fScale),
+              fontSize: tier.titleFs,
               fontWeight: 700,
               color: isActive
                 ? theme.brand_primary
@@ -230,13 +262,9 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
                   ? theme.text_on_bg_muted
                   : theme.text_muted,
               lineHeight: 1.35,
-              ...(densityScale < 1
-                ? {
-                    whiteSpace: "nowrap" as const,
-                    overflow: "hidden" as const,
-                    textOverflow: "ellipsis" as const,
-                  }
-                : { wordBreak: "break-word" as const }),
+              whiteSpace: "nowrap" as const,
+              overflow: "hidden" as const,
+              textOverflow: "ellipsis" as const,
             }}
           >
             {bullet.title}
@@ -244,11 +272,11 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: Math.round(29 * fScale),
+              fontSize: tier.detailFs,
               fontWeight: 400,
               color: isActive ? theme.text_secondary : theme.text_muted,
               lineHeight: 1.5,
-              marginTop: Math.round(6 * vScale),
+              marginTop: tier.mt,
               display: "-webkit-box",
               WebkitLineClamp: detailClamp,
               WebkitBoxOrient: "vertical",
@@ -312,9 +340,9 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
             flex: "0 0 auto",
             opacity: titleOpacity,
             transform: `translateY(${titleSlide}px)`,
-            paddingBottom: Math.round(16 * vScale),
+            paddingBottom: titleChromePad,
             borderBottom: `3px solid ${theme.card_border}`,
-            marginBottom: Math.round(24 * vScale),
+            marginBottom: titleChromeMargin,
             display: "flex",
             alignItems: "baseline",
             justifyContent: "space-between",
