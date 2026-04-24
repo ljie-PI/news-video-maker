@@ -475,6 +475,21 @@ def main():
 
     is_portrait = height > width
     segments = _split_bullet_segments(script["segments"], audio_dir, is_portrait=is_portrait)
+
+    # Warn early if the script uses CoverScene but the required static
+    # image is missing. audio_dir is the conventional location for
+    # Remotion's `public/` (the workflow symlinks public/audio -> audio),
+    # so `<audio_dir>/../cover.png` resolves to the project's public dir.
+    cover_templates = {"cover", "cover_title"}
+    if any(s.get("template") in cover_templates for s in segments):
+        cover_path = os.path.normpath(os.path.join(audio_dir, "..", "cover.png"))
+        if not os.path.exists(cover_path):
+            print(
+                f"WARNING: CoverScene is used but {cover_path} not found. "
+                f"Copy remotion-templates/covers/<source>_{width}x{height}.png "
+                f"to this path before rendering."
+            )
+
     sequences = []
     frame_offset = 0
     used_components = set()
