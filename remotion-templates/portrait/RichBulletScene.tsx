@@ -14,7 +14,6 @@ import {
   slideIn,
   staggerDelay,
   underlineSweep,
-  float,
   rotatingGradient,
 } from "./animationHelpers";
 
