@@ -77,7 +77,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
             gap: 12,
             opacity: labelOpacity,
             transform: `translateX(${labelSlide}px)`,
-            marginTop: 48,
+            marginTop: 24,
             paddingBottom: 8,
             borderBottom: `2px solid ${color}`,
             marginBottom: 4,
@@ -136,7 +136,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                   overflow: "hidden",
                   opacity,
                   transform: `translateX(${slideOffset}px)`,
-                  minHeight: Math.round(150 * height / 1920),
+                  minHeight: Math.round(150 * height / 1440),
                 }}
               >
                 {/* Left color accent stripe */}
