@@ -301,6 +301,11 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
                 fontWeight: 700,
                 color: isActive ? theme.text_on_bg : accentColor,
                 letterSpacing: 0.3,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                minWidth: 0,
+                flexShrink: 1,
               }}
             >
               {msg.author}
@@ -319,6 +324,8 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
                   padding: "4px 14px",
                   borderRadius: 12,
                   border: `1px solid ${isActive ? `${accentColor}60` : theme.card_border}`,
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
                 }}
               >
                 {msg.upvotes}
