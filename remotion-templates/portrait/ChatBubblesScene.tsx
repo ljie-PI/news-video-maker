@@ -27,15 +27,17 @@ interface ChatBubblesSceneProps {
   narration?: string;
 }
 
-const WIDE_CHAR_RE = /[^\x00-\x7F]/u;
-
 // Estimate how many wrapped lines the given text will occupy inside a
-// bubble of the given char-per-line capacity. Treats every non-ASCII char
-// as full-width (CJK ideographs/kana/hangul/full-width punctuation/emoji)
-// and ASCII as roughly half-width.
+// bubble of the given char-per-line capacity. Treats ASCII as roughly
+// half-width and every non-ASCII char as full-width (CJK ideographs,
+// kana, hangul, full-width punctuation, emoji). Uses a numeric code-point
+// check instead of a regex to avoid regex engine cost in per-frame loops.
 const estimateLines = (text: string, charsPerLine: number): number => {
   let units = 0;
-  for (const ch of text) units += WIDE_CHAR_RE.test(ch) ? 1 : 1 / 2.2;
+  for (const ch of text) {
+    const cp = ch.codePointAt(0) ?? 0;
+    units += cp <= 0x7f ? 1 / 2.2 : 1;
+  }
   return Math.max(1, Math.ceil(units / Math.max(1, charsPerLine)));
 };
 
@@ -50,115 +52,146 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
   const LEFT_COLOR = theme.brand_primary;
   const RIGHT_COLOR = theme.brand_highlight;
 
-  // --- Timing: spread bubble entrances across first ~35% of segment ---
+  // === Layout constants (also used for entrance timing) ===
   const TITLE_START = 3;
   const BUBBLES_BASE = 15;
-  const count = messages.length;
-  const STAGGER_GAP = Math.max(
-    18,
-    Math.floor((durationInFrames * 0.35) / Math.max(count, 1)),
-  );
-  const entranceDone = BUBBLES_BASE + count * STAGGER_GAP + 15;
-  const activeIdx = activeIndex(frame, entranceDone, durationInFrames, count);
-
-  // --- Background ---
-  const bgAngle = rotatingGradient(frame, durationInFrames, 135, 120);
-
-  // === Layout constants ===
   const PANEL_PAD_X = 80;
   const PANEL_PAD_BOTTOM = 40;
   const BUBBLE_GAP = 40;
   const BUBBLE_PADDING_V = 100; // 50 top + 50 bottom
   const BUBBLE_HEADER_H = 46; // avatar 36 + marginBottom 10
   const BUBBLE_LINE_H = 50; // fontSize 32 × lineHeight ~1.55
-
-  // Title geometry (self-adapting to number of wrap lines)
   const TITLE_TOP = 80;
   const TITLE_FS = 60;
   const TITLE_LINE_H = Math.round(TITLE_FS * 1.3);
   const TITLE_PAD_X = 60;
-  const titleTextWidth = Math.max(1, width - 2 * TITLE_PAD_X);
-  const titleCharsPerLine = Math.max(1, Math.floor(titleTextWidth / TITLE_FS));
-  const titleLines = estimateLines(topic, titleCharsPerLine);
-  const titleHeight = titleLines * TITLE_LINE_H;
-
-  // Bubble area geometry. Clamp bubbleAreaTop so we never starve the
-  // viewport: very long topics could otherwise push the bubble area down to
-  // ~0 px tall and break scroll math.
-  const MIN_VIEWPORT_H = 200;
-  const idealBubbleAreaTop = TITLE_TOP + titleHeight + 40;
-  const bubbleAreaLeft = PANEL_PAD_X;
-  const bubbleAreaRight = PANEL_PAD_X;
-  const bubbleAreaWidth = width - bubbleAreaLeft - bubbleAreaRight;
-  const bubbleAreaBottom = PANEL_PAD_BOTTOM;
-  const maxBubbleAreaTop = Math.max(
-    0,
-    height - bubbleAreaBottom - MIN_VIEWPORT_H,
-  );
-  const bubbleAreaTop = Math.min(idealBubbleAreaTop, maxBubbleAreaTop);
-  const viewportH = Math.max(1, height - bubbleAreaTop - bubbleAreaBottom);
-
-  // Per-bubble real width and text capacity. Each bubble row has 120 px of
-  // side padding (left or right) for the cross-side gutter, so the row's
-  // flex content width is (bubbleAreaWidth - ROW_SIDE_PAD) and the bubble's
-  // 85% maxWidth resolves against that, not against the full area.
   const ROW_SIDE_PAD = 120;
   const BUBBLE_MAX_W_RATIO = 0.85;
   const BUBBLE_PADDING_X = 30; // 30 left + 30 right
-  const rowContentW = Math.max(1, bubbleAreaWidth - ROW_SIDE_PAD);
-  const bubbleMaxW = Math.floor(rowContentW * BUBBLE_MAX_W_RATIO);
-  const bubbleTextW = Math.max(1, bubbleMaxW - 2 * BUBBLE_PADDING_X);
-  const bubbleCharsPerLine = Math.max(1, Math.floor(bubbleTextW / 32));
+  const MIN_VIEWPORT_H = 200;
+  const POST_ENTRANCE_BLEND = 15;
 
-  // Estimated bubble heights. The bubbles themselves render in natural CSS
-  // flow (flex column + gap), so layout cannot drift if the estimate is
-  // imperfect — these heights only feed the scroll math and the typing
-  // indicator's vertical anchor (both of which can tolerate small errors).
-  const bubbleHeights = messages.map(
-    (m) =>
-      BUBBLE_PADDING_V +
-      BUBBLE_HEADER_H +
-      estimateLines(m.text, bubbleCharsPerLine) * BUBBLE_LINE_H,
-  );
-  const cumTop: number[] = [];
-  {
-    let acc = 0;
-    for (let i = 0; i < count; i++) {
-      cumTop.push(acc);
-      acc += bubbleHeights[i] + BUBBLE_GAP;
-    }
-  }
-  const totalH =
-    count > 0 ? cumTop[count - 1] + bubbleHeights[count - 1] : 0;
+  // === Memoized layout (depends only on text/dimensions, not on frame). ===
+  const layout = React.useMemo(() => {
+    const count = messages.length;
+    const STAGGER_GAP = Math.max(
+      18,
+      Math.floor((durationInFrames * 0.35) / Math.max(count, 1)),
+    );
+    const entranceDone = BUBBLES_BASE + count * STAGGER_GAP + 15;
 
-  // Scroll: prefer "active bubble's top at 30% from viewport top" (idealTop),
-  // but if the bubble fits inside the viewport, also enforce that its bottom
-  // stays inside (so a 70% × viewport-tall bubble doesn't get its tail
-  // clipped). For bubbles taller than the viewport, fall back to anchoring
-  // the bubble's top.
-  const computeScroll = (idx: number): number => {
-    if (count === 0 || totalH <= viewportH) return 0;
-    const bubbleH = bubbleHeights[idx];
-    const idealTop = cumTop[idx] - viewportH * 0.3;
-    let target: number;
-    if (bubbleH <= viewportH) {
-      // Window of scrollOffsets that fully contain the bubble:
-      // scrollOffset ∈ [cumTop[idx] + bubbleH - viewportH, cumTop[idx]]
-      const minScroll = cumTop[idx] + bubbleH - viewportH;
-      const maxScroll = cumTop[idx];
-      target = Math.max(minScroll, Math.min(maxScroll, idealTop));
-    } else {
-      target = cumTop[idx];
+    // Title geometry (self-adapting to number of wrap lines)
+    const titleTextWidth = Math.max(1, width - 2 * TITLE_PAD_X);
+    const titleCharsPerLine = Math.max(1, Math.floor(titleTextWidth / TITLE_FS));
+    const titleLines = estimateLines(topic, titleCharsPerLine);
+    const titleHeight = titleLines * TITLE_LINE_H;
+
+    // Bubble area geometry. Clamp bubbleAreaTop so we never starve the
+    // viewport: very long topics could otherwise push the bubble area down
+    // to ~0 px tall and break scroll math.
+    const idealBubbleAreaTop = TITLE_TOP + titleHeight + 40;
+    const bubbleAreaLeft = PANEL_PAD_X;
+    const bubbleAreaRight = PANEL_PAD_X;
+    const bubbleAreaWidth = width - bubbleAreaLeft - bubbleAreaRight;
+    const bubbleAreaBottom = PANEL_PAD_BOTTOM;
+    const maxBubbleAreaTop = Math.max(
+      0,
+      height - bubbleAreaBottom - MIN_VIEWPORT_H,
+    );
+    const bubbleAreaTop = Math.min(idealBubbleAreaTop, maxBubbleAreaTop);
+    const viewportH = Math.max(1, height - bubbleAreaTop - bubbleAreaBottom);
+
+    // Per-bubble width / capacity. Each bubble row has 120 px of side padding
+    // (left or right) as a cross-side gutter, so the row's flex content
+    // width is (bubbleAreaWidth - ROW_SIDE_PAD).
+    const rowContentW = Math.max(1, bubbleAreaWidth - ROW_SIDE_PAD);
+    const bubbleMaxW = Math.floor(rowContentW * BUBBLE_MAX_W_RATIO);
+    const bubbleTextW = Math.max(1, bubbleMaxW - 2 * BUBBLE_PADDING_X);
+    const bubbleCharsPerLine = Math.max(1, Math.floor(bubbleTextW / 32));
+
+    // Estimated bubble heights. The bubbles themselves render in natural
+    // CSS flow (flex column + gap), so layout cannot drift if the estimate
+    // is imperfect — these heights only feed the scroll math and the typing
+    // indicator's vertical anchor (both of which tolerate small errors).
+    const bubbleHeights = messages.map(
+      (m) =>
+        BUBBLE_PADDING_V +
+        BUBBLE_HEADER_H +
+        estimateLines(m.text, bubbleCharsPerLine) * BUBBLE_LINE_H,
+    );
+    const cumTop: number[] = [];
+    {
+      let acc = 0;
+      for (let i = 0; i < count; i++) {
+        cumTop.push(acc);
+        acc += bubbleHeights[i] + BUBBLE_GAP;
+      }
     }
-    return Math.max(0, Math.min(totalH - viewportH, target));
-  };
-  const keyFrames = messages.map((_, i) => BUBBLES_BASE + i * STAGGER_GAP);
-  const scrollTargets = messages.map((_, i) => computeScroll(i));
+    const totalH =
+      count > 0 ? cumTop[count - 1] + bubbleHeights[count - 1] : 0;
+
+    // Scroll: prefer "active bubble's top at 30% from viewport top"
+    // (idealTop), but if the bubble fits inside the viewport, also enforce
+    // that its bottom stays inside (so a 70% × viewport-tall bubble doesn't
+    // get its tail clipped). For bubbles taller than the viewport, fall back
+    // to anchoring the bubble's top.
+    const computeScroll = (idx: number): number => {
+      if (count === 0 || totalH <= viewportH) return 0;
+      const bubbleH = bubbleHeights[idx];
+      const idealTop = cumTop[idx] - viewportH * 0.3;
+      let target: number;
+      if (bubbleH <= viewportH) {
+        const minScroll = cumTop[idx] + bubbleH - viewportH;
+        const maxScroll = cumTop[idx];
+        target = Math.max(minScroll, Math.min(maxScroll, idealTop));
+      } else {
+        target = cumTop[idx];
+      }
+      return Math.max(0, Math.min(totalH - viewportH, target));
+    };
+    const keyFrames = messages.map((_, i) => BUBBLES_BASE + i * STAGGER_GAP);
+    const scrollTargets = messages.map((_, i) => computeScroll(i));
+
+    return {
+      count,
+      STAGGER_GAP,
+      entranceDone,
+      bubbleAreaTop,
+      bubbleAreaLeft,
+      bubbleAreaRight,
+      bubbleAreaBottom,
+      viewportH,
+      totalH,
+      bubbleHeights,
+      cumTop,
+      keyFrames,
+      scrollTargets,
+      computeScroll,
+    };
+  }, [messages, topic, width, height, durationInFrames]);
+
+  const {
+    count,
+    STAGGER_GAP,
+    entranceDone,
+    bubbleAreaTop,
+    bubbleAreaLeft,
+    bubbleAreaRight,
+    bubbleAreaBottom,
+    viewportH,
+    cumTop,
+    keyFrames,
+    scrollTargets,
+    computeScroll,
+  } = layout;
+
+  // --- Frame-dependent state ---
+  const activeIdx = activeIndex(frame, entranceDone, durationInFrames, count);
+  const bgAngle = rotatingGradient(frame, durationInFrames, 135, 120);
 
   let scrollOffset = 0;
   // Smooth-blend window after entranceDone so we don't jolt from
   // scrollTargets[count-1] back to computeScroll(activeIdx=0) in one frame.
-  const POST_ENTRANCE_BLEND = 15;
   if (count > 0) {
     if (frame >= entranceDone + POST_ENTRANCE_BLEND) {
       scrollOffset = computeScroll(activeIdx);
