@@ -31,7 +31,8 @@ interface ChatBubblesSceneProps {
 // bubble of the given char-per-line capacity. Treats ASCII as roughly
 // half-width and every non-ASCII char as full-width (CJK ideographs,
 // kana, hangul, full-width punctuation, emoji). Uses a numeric code-point
-// check instead of a regex to avoid regex engine cost in per-frame loops.
+// check instead of a regex to keep memoized layout recomputation
+// lightweight when inputs change.
 const estimateLines = (text: string, charsPerLine: number): number => {
   let units = 0;
   for (const ch of text) {
@@ -191,16 +192,19 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
 
   let scrollOffset = 0;
   // Smooth-blend window after entranceDone so we don't jolt from
-  // scrollTargets[count-1] back to computeScroll(activeIdx=0) in one frame.
+  // scrollTargets[count-1] back to the narration-driven scroll target.
   if (count > 0) {
     if (frame > entranceDone + POST_ENTRANCE_BLEND) {
       scrollOffset = computeScroll(activeIdx);
     } else if (frame >= entranceDone) {
       // Decaying additive offset so the live target is always
       // computeScroll(activeIdx) (matching post-blend behavior).
-      // This avoids extra discontinuities when activeIdx advances
-      // during the blend window on short segments.
-      const blendOffset = scrollTargets[count - 1] - computeScroll(0);
+      // Anchor the offset to the activeIdx that activeIndex() returns
+      // at frame=entranceDone — usually 0, but count-1 on very short
+      // scenes (entranceDone >= duration-10) — so t=0 lands exactly
+      // on scrollTargets[count-1] regardless.
+      const startActive = activeIndex(entranceDone, entranceDone, durationInFrames, count);
+      const blendOffset = scrollTargets[count - 1] - computeScroll(startActive);
       const t = (frame - entranceDone) / POST_ENTRANCE_BLEND;
       scrollOffset = computeScroll(activeIdx) + blendOffset * (1 - t);
     } else if (count === 1 || frame < keyFrames[0]) {
