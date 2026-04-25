@@ -188,7 +188,7 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
           const textOpacity = isActive ? 1 : isReached ? 0.7 : 0.5;
 
           // Card position offsets
-          const cardTop = isAbove ? timelineY - Math.round(180 * height / 1920) : timelineY + Math.round(40 * height / 1920);
+          const cardTop = isAbove ? timelineY - Math.round(180 * height / 1440) : timelineY + Math.round(40 * height / 1440);
 
           return (
             <React.Fragment key={i}>
@@ -197,9 +197,9 @@ export const TimelineScene: React.FC<TimelineSceneProps> = ({
                 style={{
                   position: "absolute",
                   left: x - 1,
-                  top: isAbove ? timelineY - Math.round(140 * height / 1920) + 10 : timelineY + 10,
+                  top: isAbove ? timelineY - Math.round(140 * height / 1440) + 10 : timelineY + 10,
                   width: 2,
-                  height: isAbove ? Math.round(140 * height / 1920) - 10 : Math.round(40 * height / 1920) - 10,
+                  height: isAbove ? Math.round(140 * height / 1440) - 10 : Math.round(40 * height / 1440) - 10,
                   background: `linear-gradient(${isAbove ? "180deg" : "0deg"}, ${nodeColor}60, transparent)`,
                   opacity: cardOpacity,
                   transformOrigin: isAbove ? "bottom center" : "top center",
