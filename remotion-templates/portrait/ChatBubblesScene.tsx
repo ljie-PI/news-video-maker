@@ -46,6 +46,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
   topic,
   messages,
   audioFile,
+  narration,
 }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames, width, height } = useVideoConfig();
