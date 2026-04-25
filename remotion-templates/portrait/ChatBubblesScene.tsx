@@ -197,10 +197,13 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
     if (frame > entranceDone + POST_ENTRANCE_BLEND) {
       scrollOffset = computeScroll(activeIdx);
     } else if (frame >= entranceDone) {
-      const start = scrollTargets[count - 1];
-      const end = computeScroll(activeIdx);
+      // Decaying additive offset so the live target is always
+      // computeScroll(activeIdx) (matching post-blend behavior).
+      // This avoids extra discontinuities when activeIdx advances
+      // during the blend window on short segments.
+      const blendOffset = scrollTargets[count - 1] - computeScroll(0);
       const t = (frame - entranceDone) / POST_ENTRANCE_BLEND;
-      scrollOffset = start * (1 - t) + end * t;
+      scrollOffset = computeScroll(activeIdx) + blendOffset * (1 - t);
     } else if (count === 1 || frame < keyFrames[0]) {
       scrollOffset = 0;
     } else {
