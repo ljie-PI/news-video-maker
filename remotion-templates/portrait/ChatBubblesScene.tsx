@@ -82,12 +82,20 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
   const titleLines = estimateLines(topic, titleCharsPerLine);
   const titleHeight = titleLines * TITLE_LINE_H;
 
-  // Bubble area geometry
-  const bubbleAreaTop = TITLE_TOP + titleHeight + 40;
+  // Bubble area geometry. Clamp bubbleAreaTop so we never starve the
+  // viewport: very long topics could otherwise push the bubble area down to
+  // ~0 px tall and break scroll math.
+  const MIN_VIEWPORT_H = 200;
+  const idealBubbleAreaTop = TITLE_TOP + titleHeight + 40;
   const bubbleAreaLeft = PANEL_PAD_X;
   const bubbleAreaRight = PANEL_PAD_X;
   const bubbleAreaWidth = width - bubbleAreaLeft - bubbleAreaRight;
   const bubbleAreaBottom = PANEL_PAD_BOTTOM;
+  const maxBubbleAreaTop = Math.max(
+    0,
+    height - bubbleAreaBottom - MIN_VIEWPORT_H,
+  );
+  const bubbleAreaTop = Math.min(idealBubbleAreaTop, maxBubbleAreaTop);
   const viewportH = Math.max(1, height - bubbleAreaTop - bubbleAreaBottom);
 
   // Per-bubble real width and text capacity. Each bubble row has 120 px of
@@ -102,9 +110,10 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
   const bubbleTextW = Math.max(1, bubbleMaxW - 2 * BUBBLE_PADDING_X);
   const bubbleCharsPerLine = Math.max(1, Math.floor(bubbleTextW / 32));
 
-  // Estimated bubble heights (used for scroll geometry only; actual bubble
-  // height is determined by its CSS layout — this estimate only needs to be
-  // close enough to keep the active bubble inside the viewport).
+  // Estimated bubble heights. The bubbles themselves render in natural CSS
+  // flow (flex column + gap), so layout cannot drift if the estimate is
+  // imperfect — these heights only feed the scroll math and the typing
+  // indicator's vertical anchor (both of which can tolerate small errors).
   const bubbleHeights = messages.map(
     (m) =>
       BUBBLE_PADDING_V +
@@ -122,10 +131,25 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
   const totalH =
     count > 0 ? cumTop[count - 1] + bubbleHeights[count - 1] : 0;
 
-  // Scroll: put active bubble at 30% from viewport top.
+  // Scroll: prefer "active bubble's top at 30% from viewport top" (idealTop),
+  // but if the bubble fits inside the viewport, also enforce that its bottom
+  // stays inside (so a 70% × viewport-tall bubble doesn't get its tail
+  // clipped). For bubbles taller than the viewport, fall back to anchoring
+  // the bubble's top.
   const computeScroll = (idx: number): number => {
     if (count === 0 || totalH <= viewportH) return 0;
-    const target = cumTop[idx] - viewportH * 0.3;
+    const bubbleH = bubbleHeights[idx];
+    const idealTop = cumTop[idx] - viewportH * 0.3;
+    let target: number;
+    if (bubbleH <= viewportH) {
+      // Window of scrollOffsets that fully contain the bubble:
+      // scrollOffset ∈ [cumTop[idx] + bubbleH - viewportH, cumTop[idx]]
+      const minScroll = cumTop[idx] + bubbleH - viewportH;
+      const maxScroll = cumTop[idx];
+      target = Math.max(minScroll, Math.min(maxScroll, idealTop));
+    } else {
+      target = cumTop[idx];
+    }
     return Math.max(0, Math.min(totalH - viewportH, target));
   };
   const keyFrames = messages.map((_, i) => BUBBLES_BASE + i * STAGGER_GAP);
@@ -174,11 +198,8 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
       <div
         key={`bubble-${index}`}
         style={{
-          position: "absolute",
-          top: cumTop[index],
-          left: 0,
-          right: 0,
           display: "flex",
+          width: "100%",
           justifyContent: isLeft ? "flex-start" : "flex-end",
           paddingLeft: isLeft ? 0 : 120,
           paddingRight: isLeft ? 120 : 0,
@@ -410,17 +431,28 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
             overflow: "hidden",
           }}
         >
-          {/* Scroll inner: absolutely-positioned children, transform-driven scroll */}
+          {/* Scroll inner: bubbles flow naturally as a flex column (so layout
+              cannot drift if our height estimates are off); typing indicators
+              are absolute overlays anchored by the same estimates, where a
+              small misalignment is purely cosmetic. */}
           <div
             style={{
               position: "relative",
               width: "100%",
-              height: Math.max(totalH, viewportH),
+              minHeight: viewportH,
               transform: `translateY(${-scrollOffset}px)`,
             }}
           >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: BUBBLE_GAP,
+              }}
+            >
+              {messages.map((msg, i) => renderBubble(msg, i))}
+            </div>
             {messages.map((msg, i) => renderTyping(msg, i))}
-            {messages.map((msg, i) => renderBubble(msg, i))}
           </div>
 
           {/* Top fade mask */}
