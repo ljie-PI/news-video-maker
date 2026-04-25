@@ -61,7 +61,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
   const PANEL_PAD_BOTTOM = 40;
   const BUBBLE_GAP = 40;
   const BUBBLE_PADDING_V = 100; // 50 top + 50 bottom
-  const BUBBLE_HEADER_H = 46; // avatar 36 + marginBottom 10
+  const BUBBLE_HEADER_H = 60; // author row (avatar 36, name & upvotes badge up to ~46 with padding) + marginBottom 10, conservative
   const BUBBLE_LINE_H = 50; // fontSize 32 × lineHeight ~1.55
   const TITLE_TOP = 80;
   const TITLE_FS = 60;
@@ -191,6 +191,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
   const activeIdx = activeIndex(frame, entranceDone, durationInFrames, count);
   const bgAngle = rotatingGradient(frame, durationInFrames, 135, 120);
 
+  const maxScroll = Math.max(0, totalH - viewportH);
   let scrollOffset = 0;
   // Smooth-blend window after entranceDone so we don't jolt from
   // scrollTargets[count-1] back to the narration-driven scroll target.
@@ -217,7 +218,9 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
       });
     }
   }
-  const maxScroll = Math.max(0, totalH - viewportH);
+  // Final clamp: the additive blend can transiently push scrollOffset
+  // outside [0, maxScroll] when activeIdx steps mid-blend.
+  scrollOffset = Math.max(0, Math.min(maxScroll, scrollOffset));
 
   const renderBubble = (
     msg: { author: string; text: string; side: "left" | "right"; upvotes?: string },
