@@ -179,6 +179,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
     bubbleAreaRight,
     bubbleAreaBottom,
     viewportH,
+    totalH,
     cumTop,
     keyFrames,
     scrollTargets,
@@ -209,6 +210,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
       });
     }
   }
+  const maxScroll = Math.max(0, totalH - viewportH);
 
   const renderBubble = (
     msg: { author: string; text: string; side: "left" | "right"; upvotes?: string },
@@ -511,6 +513,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
               height: 60,
               background: `linear-gradient(0deg, ${theme.dark_bg_to} 0%, transparent 100%)`,
               pointerEvents: "none",
+              opacity: scrollOffset < maxScroll - 10 ? 1 : 0,
             }}
           />
         </div>
