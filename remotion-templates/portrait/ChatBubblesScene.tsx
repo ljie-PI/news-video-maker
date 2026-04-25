@@ -162,7 +162,6 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
       bubbleAreaBottom,
       viewportH,
       totalH,
-      bubbleHeights,
       cumTop,
       keyFrames,
       scrollTargets,
