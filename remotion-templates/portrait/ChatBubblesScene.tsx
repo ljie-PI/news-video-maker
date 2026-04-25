@@ -193,7 +193,7 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
   // Smooth-blend window after entranceDone so we don't jolt from
   // scrollTargets[count-1] back to computeScroll(activeIdx=0) in one frame.
   if (count > 0) {
-    if (frame >= entranceDone + POST_ENTRANCE_BLEND) {
+    if (frame > entranceDone + POST_ENTRANCE_BLEND) {
       scrollOffset = computeScroll(activeIdx);
     } else if (frame >= entranceDone) {
       const start = scrollTargets[count - 1];
@@ -234,8 +234,8 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
           display: "flex",
           width: "100%",
           justifyContent: isLeft ? "flex-start" : "flex-end",
-          paddingLeft: isLeft ? 0 : 120,
-          paddingRight: isLeft ? 120 : 0,
+          paddingLeft: isLeft ? 0 : ROW_SIDE_PAD,
+          paddingRight: isLeft ? ROW_SIDE_PAD : 0,
           opacity,
           transform: `translateY(${slideY}px) translateX(${slideX}px) scale(${cardScale})`,
           transformOrigin: isLeft ? "left center" : "right center",
@@ -359,8 +359,8 @@ export const ChatBubblesScene: React.FC<ChatBubblesSceneProps> = ({
           right: 0,
           display: "flex",
           justifyContent: isLeft ? "flex-start" : "flex-end",
-          paddingLeft: isLeft ? 0 : 120,
-          paddingRight: isLeft ? 120 : 0,
+          paddingLeft: isLeft ? 0 : ROW_SIDE_PAD,
+          paddingRight: isLeft ? ROW_SIDE_PAD : 0,
           opacity: fadeIn(frame, entrance - 10, 8),
         }}
       >
