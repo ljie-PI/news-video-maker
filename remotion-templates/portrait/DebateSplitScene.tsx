@@ -47,6 +47,21 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
   const POINTS_BASE = 20;
   const STAGGER_GAP = 12;
 
+  // Density-aware sizing. Each side gets ~610 px tall in 1080×1440 portrait;
+  // with 4 messages per side at the default 150 px minHeight + 36 px gap the
+  // points overflow and crash into the next side's label. Scale font,
+  // padding, gap, and minHeight based on the most-loaded side.
+  const maxPoints = Math.max(proSide.points.length, conSide.points.length);
+  const dense = maxPoints >= 4;
+  const moderate = maxPoints === 3;
+  const cardFontSize = dense ? 32 : moderate ? 36 : 40;
+  const cardPaddingV = dense ? 18 : moderate ? 24 : 32;
+  const cardPaddingH = dense ? 28 : moderate ? 32 : 36;
+  const cardGap = dense ? 16 : moderate ? 24 : 36;
+  const cardMinHeight = dense ? 0 : Math.round((moderate ? 110 : 150) * height / 1440);
+  const headerMarginTop = dense ? 12 : 24;
+  const pointsJustify: "center" | "flex-start" = dense ? "flex-start" : "center";
+
   const bgAngle = rotatingGradient(frame, durationInFrames, 135, 60);
 
   const renderSide = (
@@ -77,7 +92,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
             gap: 12,
             opacity: labelOpacity,
             transform: `translateX(${labelSlide}px)`,
-            marginTop: 24,
+            marginTop: headerMarginTop,
             paddingBottom: 8,
             borderBottom: `2px solid ${color}`,
             marginBottom: 4,
@@ -111,8 +126,8 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
             flex: 1,
             display: "flex",
             flexDirection: "column",
-            gap: 36,
-            justifyContent: "center",
+            gap: cardGap,
+            justifyContent: pointsJustify,
             minHeight: 0,
           }}
         >
@@ -136,7 +151,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                   overflow: "hidden",
                   opacity,
                   transform: `translateX(${slideOffset}px)`,
-                  minHeight: Math.round(150 * height / 1440),
+                  minHeight: cardMinHeight,
                 }}
               >
                 {/* Left color accent stripe */}
@@ -150,7 +165,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                 <div
                   style={{
                     flex: 1,
-                    padding: "32px 36px",
+                    padding: `${cardPaddingV}px ${cardPaddingH}px`,
                     display: "flex",
                     alignItems: "center",
                   }}
@@ -158,7 +173,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                   <span
                     style={{
                       fontFamily,
-                      fontSize: 40,
+                      fontSize: cardFontSize,
                       fontWeight: 400,
                       color: theme.text_primary,
                       lineHeight: 1.55,
