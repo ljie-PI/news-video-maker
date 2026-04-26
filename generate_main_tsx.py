@@ -242,7 +242,7 @@ def _load_bullet_durations_frames(audio_dir, seg_id, bullet_count):
     silently treated as the intro pattern. Manifests are always generated
     by this script, so this risk is accepted.
     """
-    if not (audio_dir and seg_id):
+    if not (audio_dir and seg_id) or bullet_count < 1:
         return None
     manifest_path = os.path.join(audio_dir, f"{seg_id}.bullets.json")
     if not os.path.exists(manifest_path):
@@ -257,10 +257,18 @@ def _load_bullet_durations_frames(audio_dir, seg_id, bullet_count):
         return None
     if len(durations_sec) == bullet_count + 1:
         # Intro present: merge intro time into bullet 1.
-        durations_sec = [durations_sec[0] + durations_sec[1]] + list(durations_sec[2:])
+        try:
+            durations_sec = [durations_sec[0] + durations_sec[1]] + list(durations_sec[2:])
+        except TypeError as e:
+            print(f"WARNING: bad intro duration in {manifest_path}: {e}")
+            return None
     elif len(durations_sec) != bullet_count:
         return None
-    return [max(1, math.ceil(float(s) * 30)) for s in durations_sec]
+    try:
+        return [max(1, math.ceil(float(s) * 30)) for s in durations_sec]
+    except (ValueError, TypeError) as e:
+        print(f"WARNING: bad duration value in {manifest_path}: {e}")
+        return None
 
 
 def _rich_bullet_props(data, audio_ref, seq_count=0, audio_dir=None, seg_id=None, **_):
