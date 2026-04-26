@@ -51,6 +51,9 @@ const getDensityConfig = (maxPoints: number, height: number): DensityConfig => {
       cardPaddingV: 12,
       cardPaddingH: 22,
       cardGap: 16,
+      // Explicit 0 (not "auto") because flex items default to
+      // min-height: auto, which would prevent shrinking and neutralize
+      // the cardMaxHeight cap + cardFlexShrink: 1 below.
       cardMinHeight: 0,
       cardMaxHeight: Math.round(DENSE_CARD_MAX_HEIGHT * height / 1440),
       headerMarginTop: 12,
