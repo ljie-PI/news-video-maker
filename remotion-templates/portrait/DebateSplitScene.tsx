@@ -29,7 +29,7 @@ interface DensityConfig {
   cardPaddingV: number;
   cardPaddingH: number;
   cardGap: number;
-  cardMinHeight: number | undefined;
+  cardMinHeight: number;
   cardMaxHeight: number | undefined;
   headerMarginTop: number;
   pointsJustify: "center" | "flex-start";
@@ -51,7 +51,7 @@ const getDensityConfig = (maxPoints: number, height: number): DensityConfig => {
       cardPaddingV: 12,
       cardPaddingH: 22,
       cardGap: 16,
-      cardMinHeight: undefined,
+      cardMinHeight: 0,
       cardMaxHeight: Math.round(DENSE_CARD_MAX_HEIGHT * height / 1440),
       headerMarginTop: 12,
       pointsJustify: "flex-start",
@@ -203,7 +203,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                   overflow: "hidden",
                   opacity,
                   transform: `translateX(${slideOffset}px)`,
-                  minHeight: density.cardMinHeight ?? 0,
+                  minHeight: density.cardMinHeight,
                   maxHeight: density.cardMaxHeight,
                   flexShrink: density.cardFlexShrink,
                 }}
