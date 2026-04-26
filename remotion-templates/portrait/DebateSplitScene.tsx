@@ -203,7 +203,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                   overflow: "hidden",
                   opacity,
                   transform: `translateX(${slideOffset}px)`,
-                  minHeight: density.cardMinHeight,
+                  minHeight: density.cardMinHeight ?? 0,
                   maxHeight: density.cardMaxHeight,
                   flexShrink: density.cardFlexShrink,
                 }}
