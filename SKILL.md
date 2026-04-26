@@ -9,7 +9,7 @@ description: >
 
 # 新闻视频制作工具
 
-基于 GitHub、Hacker News、Reddit、Product Hunt 等平台的热门话题，自动生成带旁白的新闻速递视频。
+基于 GitHub、Hacker News、Reddit、Product Hunt 等平台的热门话题，自动生成带旁白的热点解读视频。
 
 支持平台：GitHub（蓝 #0969da）、Hacker News（橙 #ff6600）、Reddit（橙红 #ff4500）、Product Hunt（珊瑚红 #ff6154）。
 

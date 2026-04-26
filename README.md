@@ -1,6 +1,6 @@
 # news-video-maker
 
-> OpenClaw skill — 把深度调研报告自动转成带 TTS 旁白的 MP4 新闻速递视频。
+> OpenClaw skill — 把深度调研报告自动转成带 TTS 旁白的 MP4 热点解读视频。
 
 基于 GitHub、Hacker News、Reddit、Product Hunt 的深度调研内容（deep_dive 报告），自动生成横屏（1920×1080）和竖屏（1080×1440）两种格式的 MP4 视频。视频使用 [Remotion](https://www.remotion.dev/) + React 渲染，配合 CosyVoice TTS 旁白和平台专属配色，开箱即得评分 ≥9.0/10 的成片。
 
@@ -162,7 +162,7 @@ news-video-maker/
 
 ## 🔗 依赖的其他 Skill
 
-本 skill 仅负责视频制作。完整新闻速递管线还会用到：
+本 skill 仅负责视频制作。完整热点解读管线还会用到：
 
 | Skill | 仓库 | 作用 |
 |---|---|---|
