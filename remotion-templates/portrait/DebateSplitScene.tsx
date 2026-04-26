@@ -33,6 +33,10 @@ interface DensityConfig {
   cardMaxHeight: number | undefined;
   headerMarginTop: number;
   pointsJustify: "center" | "flex-start";
+  // Card content alignment. Anchors to flex-start in dense mode so a clipped
+  // overflow hides the tail of the message rather than chopping both ends off
+  // a vertically-centered block.
+  cardAlignItems: "center" | "flex-start";
   // flexShrink lets dense cards compress below maxHeight when text is short
   // and stack space is tight. Default mode keeps the rigid layout (0).
   cardFlexShrink: 0 | 1;
@@ -51,6 +55,7 @@ const getDensityConfig = (maxPoints: number, height: number): DensityConfig => {
       cardMaxHeight: Math.round(DENSE_CARD_MAX_HEIGHT * height / 1440),
       headerMarginTop: 12,
       pointsJustify: "flex-start",
+      cardAlignItems: "flex-start",
       cardFlexShrink: 1,
     };
   }
@@ -64,6 +69,7 @@ const getDensityConfig = (maxPoints: number, height: number): DensityConfig => {
     cardMaxHeight: undefined,
     headerMarginTop: 24,
     pointsJustify: "center",
+    cardAlignItems: "center",
     cardFlexShrink: 0,
   };
 };
@@ -215,11 +221,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                     flex: 1,
                     padding: `${density.cardPaddingV}px ${density.cardPaddingH}px`,
                     display: "flex",
-                    // When a maxHeight cap is set (dense mode), anchor to the
-                    // top so a clipped overflow hides the tail of the message
-                    // rather than chopping both ends off a vertically-centered
-                    // block.
-                    alignItems: density.cardMaxHeight ? "flex-start" : "center",
+                    alignItems: density.cardAlignItems,
                   }}
                 >
                   <span
