@@ -84,9 +84,6 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   // Title region padding/margins are independent of bullet density (they
   // describe the scene, not the bullets).
   const tier = tierFor(count);
-  // Detail can wrap to 2 lines when there are few bullets (≤ 3) so each
-  // entry can carry a fuller explanation; densely populated scenes (≥ 4)
-  // keep the original single-line clamp to preserve vertical breathing room.
   const detailClamp = count <= 3 ? 2 : 1;
   const hScale = height / 960; // responsive canvas scaling only
 
