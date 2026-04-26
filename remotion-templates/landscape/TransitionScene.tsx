@@ -66,7 +66,7 @@ export const TransitionScene: React.FC<TransitionSceneProps> = ({
           <div
             style={{
               fontFamily,
-              fontSize: 96,
+              fontSize: 80,
               fontWeight: 800,
               color: theme.text_on_bg,
               opacity: textOpacity,
@@ -84,7 +84,7 @@ export const TransitionScene: React.FC<TransitionSceneProps> = ({
             <div
               style={{
                 fontFamily,
-                fontSize: 48,
+                fontSize: 60,
                 fontWeight: 400,
                 color: theme.text_secondary,
                 marginTop: 24,
