@@ -54,11 +54,16 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
   const maxPoints = Math.max(proSide.points.length, conSide.points.length);
   const dense = maxPoints >= 4;
   const moderate = maxPoints === 3;
-  const cardFontSize = dense ? 32 : moderate ? 36 : 40;
-  const cardPaddingV = dense ? 18 : moderate ? 24 : 32;
-  const cardPaddingH = dense ? 28 : moderate ? 32 : 36;
+  const cardFontSize = dense ? 28 : moderate ? 36 : 40;
+  const cardLineHeight = dense ? 1.45 : 1.55;
+  const cardPaddingV = dense ? 12 : moderate ? 24 : 32;
+  const cardPaddingH = dense ? 22 : moderate ? 32 : 36;
   const cardGap = dense ? 16 : moderate ? 24 : 36;
   const cardMinHeight = dense ? 0 : Math.round((moderate ? 110 : 150) * height / 1440);
+  // Hard ceiling for dense cards so a 3+ line runaway message can't push past
+  // its column. Card already sets `overflow: 'hidden'`, so excess text clips
+  // visually rather than overlapping the opposing side.
+  const cardMaxHeight = dense ? Math.round(120 * height / 1440) : undefined;
   const headerMarginTop = dense ? 12 : 24;
   const pointsJustify: "center" | "flex-start" = dense ? "flex-start" : "center";
 
@@ -152,6 +157,8 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                   opacity,
                   transform: `translateX(${slideOffset}px)`,
                   minHeight: cardMinHeight,
+                  maxHeight: cardMaxHeight,
+                  flexShrink: 1,
                 }}
               >
                 {/* Left color accent stripe */}
@@ -176,7 +183,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                       fontSize: cardFontSize,
                       fontWeight: 400,
                       color: theme.text_primary,
-                      lineHeight: 1.55,
+                      lineHeight: cardLineHeight,
                       wordBreak: "break-word" as const,
                     }}
                   >
