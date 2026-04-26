@@ -49,17 +49,17 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
 
   // Density-aware sizing. Each side gets ~610 px tall in 1080×1440 portrait;
   // with 4 messages per side at the default 150 px minHeight + 36 px gap the
-  // points overflow and crash into the next side's label. Scale font,
-  // padding, gap, and minHeight based on the most-loaded side.
+  // points overflow and crash into the next side's label. Switch to a tighter
+  // layout only when ≥ 4 messages on either side; ≤ 3 keeps the original
+  // visual untouched.
   const maxPoints = Math.max(proSide.points.length, conSide.points.length);
   const dense = maxPoints >= 4;
-  const moderate = maxPoints === 3;
-  const cardFontSize = dense ? 28 : moderate ? 36 : 40;
+  const cardFontSize = dense ? 28 : 40;
   const cardLineHeight = dense ? 1.45 : 1.55;
-  const cardPaddingV = dense ? 12 : moderate ? 24 : 32;
-  const cardPaddingH = dense ? 22 : moderate ? 32 : 36;
-  const cardGap = dense ? 16 : moderate ? 24 : 36;
-  const cardMinHeight = dense ? 0 : Math.round((moderate ? 110 : 150) * height / 1440);
+  const cardPaddingV = dense ? 12 : 32;
+  const cardPaddingH = dense ? 22 : 36;
+  const cardGap = dense ? 16 : 36;
+  const cardMinHeight = dense ? undefined : Math.round(150 * height / 1440);
   // Hard ceiling for dense cards so a 3+ line runaway message can't push past
   // its column. Card already sets `overflow: 'hidden'`, so excess text clips
   // visually rather than overlapping the opposing side.
