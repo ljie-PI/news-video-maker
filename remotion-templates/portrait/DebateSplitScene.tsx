@@ -215,7 +215,11 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                     flex: 1,
                     padding: `${density.cardPaddingV}px ${density.cardPaddingH}px`,
                     display: "flex",
-                    alignItems: "center",
+                    // When a maxHeight cap is set (dense mode), anchor to the
+                    // top so a clipped overflow hides the tail of the message
+                    // rather than chopping both ends off a vertically-centered
+                    // block.
+                    alignItems: density.cardMaxHeight ? "flex-start" : "center",
                   }}
                 >
                   <span
