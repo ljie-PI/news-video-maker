@@ -84,7 +84,10 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   // Title region padding/margins are independent of bullet density (they
   // describe the scene, not the bullets).
   const tier = tierFor(count);
-  const detailClamp = 1;
+  // Detail can wrap to 2 lines when there are few bullets (≤ 3) so each
+  // entry can carry a fuller explanation; densely populated scenes (≥ 4)
+  // keep the original single-line clamp to preserve vertical breathing room.
+  const detailClamp = count <= 3 ? 2 : 1;
   const hScale = height / 960; // responsive canvas scaling only
 
   // Title region height (project + sectionTitle + bottom border gap).
@@ -95,7 +98,7 @@ export const RichBulletScene: React.FC<RichBulletSceneProps> = ({
   const titleChromeMargin = Math.round(24 * hScale);
   const titleRegionH = 72 + 48 + 6 + titleChromePad + 3 + titleChromeMargin;
 
-  // Card height for layout reserve (detailClamp=1 line of detail).
+  // Card height for layout reserve (detailClamp lines of detail).
   const estCardH =
     2 * tier.pad +
     tier.titleFs * 1.35 +
