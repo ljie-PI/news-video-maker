@@ -64,14 +64,24 @@ def _split_bullet_segments(segments: list, audio_dir: str, is_portrait: bool = F
         # Split narration by \n\n for rich_bullet
         narration_parts = [p.strip() for p in narration.split("\n\n") if p.strip()] if "\n\n" in narration else []
 
-        # Try to find bulletDurations to split audio precisely
+        # Detect "intro paragraph" pattern: narration paragraphs = bullets + 1.
+        # First paragraph is a generic intro, remaining N map 1:1 to bullets.
+        has_intro = len(narration_parts) == len(bullets) + 1
+        narration_mid = mid + (1 if has_intro else 0)
+
+        # Try to find bulletDurations to split audio precisely. Accept either
+        # length == len(bullets) (no intro) or len(bullets)+1 (intro present);
+        # length must match narration_parts when narration_parts is non-empty.
         manifest_path = os.path.join(audio_dir, f"{seg_id}.bullets.json")
         durations = None
         if os.path.exists(manifest_path):
             try:
                 with open(manifest_path) as f:
                     durations = json.load(f).get("durations", [])
-                if len(durations) != len(bullets):
+                if narration_parts:
+                    if len(durations) != len(narration_parts):
+                        durations = None
+                elif len(durations) != len(bullets):
                     durations = None
             except (ValueError, OSError):
                 durations = None
@@ -84,9 +94,9 @@ def _split_bullet_segments(segments: list, audio_dir: str, is_portrait: bool = F
 
         if os.path.exists(wav_path):
             if durations:
-                split_sec = sum(durations[:mid])
+                split_sec = sum(durations[:narration_mid])
             else:
-                # Fallback: split proportionally
+                # Fallback: split proportionally by bullet count
                 total_sec = subprocess.run(
                     ["ffprobe", "-v", "quiet", "-show_entries", "format=duration",
                      "-of", "csv=p=0", wav_path],
@@ -95,10 +105,17 @@ def _split_bullet_segments(segments: list, audio_dir: str, is_portrait: bool = F
                 split_sec = float(total_sec.stdout.strip()) * mid / len(bullets)
             _split_audio(wav_path, split_sec, wav_a, wav_b)
 
-            # Write split bullets.json manifests
+            # Write split bullets.json manifests. Each manifest's durations
+            # length must equal that segment's bullet count (consumer contract).
+            # If intro is present, merge intro time into seg_a's first bullet
+            # so bullet 1 stays highlighted while intro audio plays.
             if durations:
-                dur_a = durations[:mid]
-                dur_b = durations[mid:]
+                if has_intro:
+                    dur_a = [durations[0] + durations[1]] + list(durations[2:narration_mid])
+                    dur_b = list(durations[narration_mid:])
+                else:
+                    dur_a = list(durations[:mid])
+                    dur_b = list(durations[mid:])
                 for fname, dur_list in [(f"{id_a}.bullets.json", dur_a), (f"{id_b}.bullets.json", dur_b)]:
                     with open(os.path.join(audio_dir, fname), "w") as f:
                         json.dump({"durations": dur_list}, f, ensure_ascii=False, indent=2)
@@ -108,13 +125,13 @@ def _split_bullet_segments(segments: list, audio_dir: str, is_portrait: bool = F
         seg_a = {
             "id": id_a,
             "template": template,
-            "narration": "\n\n".join(narration_parts[:mid]) if narration_parts else narration,
+            "narration": "\n\n".join(narration_parts[:narration_mid]) if narration_parts else narration,
             "data": {**data, "bullets": bullets[:mid], "sectionTitle": title},
         }
         seg_b = {
             "id": id_b,
             "template": template,
-            "narration": "\n\n".join(narration_parts[mid:]) if narration_parts else "",
+            "narration": "\n\n".join(narration_parts[narration_mid:]) if narration_parts else "",
             "data": {**data, "bullets": bullets[mid:], "sectionTitle": f"{title}（续）"},
         }
 
@@ -202,6 +219,35 @@ def _key_insight_props(data, audio_ref, **_):
         props.append(f'narration="{escape(data["narration"])}"')
     return props
 
+def _load_bullet_durations_frames(audio_dir, seg_id, bullet_count):
+    """Load per-bullet durations (in frames) from {seg_id}.bullets.json.
+
+    Accepts either length == bullet_count (no intro) or length == bullet_count+1
+    (intro paragraph present). For the intro case, merge the intro duration
+    into bullet 1 so the highlight stays on bullet 1 while intro audio plays.
+    Returns None if file missing/invalid or length mismatch.
+    """
+    if not (audio_dir and seg_id):
+        return None
+    manifest_path = os.path.join(audio_dir, f"{seg_id}.bullets.json")
+    if not os.path.exists(manifest_path):
+        return None
+    try:
+        with open(manifest_path) as f:
+            durations_sec = json.load(f).get("durations", [])
+    except (ValueError, OSError) as e:
+        print(f"WARNING: failed to read {manifest_path}: {e}")
+        return None
+    if not isinstance(durations_sec, list):
+        return None
+    if len(durations_sec) == bullet_count + 1:
+        # Intro present: merge intro time into bullet 1.
+        durations_sec = [durations_sec[0] + durations_sec[1]] + list(durations_sec[2:])
+    elif len(durations_sec) != bullet_count:
+        return None
+    return [max(1, math.ceil(float(s) * 30)) for s in durations_sec]
+
+
 def _rich_bullet_props(data, audio_ref, seq_count=0, audio_dir=None, seg_id=None, **_):
     raw_bullets = data.get("bullets", [])
     # Normalize: plain strings become {title: str, detail: ""}
@@ -219,17 +265,9 @@ def _rich_bullet_props(data, audio_ref, seq_count=0, audio_dir=None, seg_id=None
         f'audioFile="{audio_ref}"',
     ]
     if audio_dir and seg_id:
-        manifest_path = os.path.join(audio_dir, f"{seg_id}.bullets.json")
-        if os.path.exists(manifest_path):
-            try:
-                with open(manifest_path) as f:
-                    manifest = json.load(f)
-                durations_sec = manifest.get("durations", [])
-                if isinstance(durations_sec, list) and len(durations_sec) == len(bullets):
-                    durations_frames = [max(1, math.ceil(float(s) * 30)) for s in durations_sec]
-                    props.append(f'bulletDurations={{{json_prop(durations_frames)}}}')
-            except (ValueError, OSError) as e:
-                print(f"WARNING: failed to read {manifest_path}: {e}")
+        durations_frames = _load_bullet_durations_frames(audio_dir, seg_id, len(bullets))
+        if durations_frames is not None:
+            props.append(f'bulletDurations={{{json_prop(durations_frames)}}}')
     return props
 
 def _bullet_points_props(data, audio_ref, seq_count=0, audio_dir=None, seg_id=None, **_):
@@ -254,17 +292,9 @@ def _bullet_points_props(data, audio_ref, seq_count=0, audio_dir=None, seg_id=No
         f'audioFile="{audio_ref}"',
     ]
     if audio_dir and seg_id:
-        manifest_path = os.path.join(audio_dir, f"{seg_id}.bullets.json")
-        if os.path.exists(manifest_path):
-            try:
-                with open(manifest_path) as f:
-                    manifest = json.load(f)
-                durations_sec = manifest.get("durations", [])
-                if isinstance(durations_sec, list) and len(durations_sec) == len(bullets):
-                    durations_frames = [max(1, math.ceil(float(s) * 30)) for s in durations_sec]
-                    props.append(f'bulletDurations={{{json_prop(durations_frames)}}}')
-            except (ValueError, OSError) as e:
-                print(f"WARNING: failed to read {manifest_path}: {e}")
+        durations_frames = _load_bullet_durations_frames(audio_dir, seg_id, len(bullets))
+        if durations_frames is not None:
+            props.append(f'bulletDurations={{{json_prop(durations_frames)}}}')
     return props
 
 def _comparison_table_props(data, audio_ref, **_):
