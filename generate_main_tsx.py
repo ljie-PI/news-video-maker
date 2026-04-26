@@ -61,7 +61,7 @@ def _split_bullet_segments(segments: list, audio_dir: str, is_portrait: bool = F
         narration = seg.get("narration", "")
         mid = math.ceil(len(bullets) / 2)
 
-        # Split narration by \n\n for rich_bullet
+        # Split narration by \n\n (applies to rich_bullet and bullet_points)
         narration_parts = [p.strip() for p in narration.split("\n\n") if p.strip()] if "\n\n" in narration else []
 
         # Detect "intro paragraph" pattern: narration paragraphs = bullets + 1.
