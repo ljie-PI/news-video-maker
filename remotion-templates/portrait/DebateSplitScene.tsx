@@ -15,6 +15,68 @@ import {
   rotatingGradient,
 } from "./animationHelpers";
 
+// Reference card minHeight (px) at the 1440-tall portrait baseline. Scaled by
+// `height / 1440` at use sites so other resolutions stay proportional.
+const DEFAULT_CARD_MIN_HEIGHT = 150;
+// Hard maxHeight (px) ceiling applied only in dense mode so a 3+ line runaway
+// message can't push past its column. Cards set `overflow: 'hidden'`, so
+// excess text clips visually rather than overlapping the opposing side.
+const DENSE_CARD_MAX_HEIGHT = 120;
+
+interface DensityConfig {
+  cardFontSize: number;
+  cardLineHeight: number;
+  cardPaddingV: number;
+  cardPaddingH: number;
+  cardGap: number;
+  cardMinHeight: number;
+  cardMaxHeight: number | undefined;
+  headerMarginTop: number;
+  pointsJustify: "center" | "flex-start";
+  // Card content alignment. Anchors to flex-start in dense mode so a clipped
+  // overflow hides the tail of the message rather than chopping both ends off
+  // a vertically-centered block.
+  cardAlignItems: "center" | "flex-start";
+  // flexShrink lets dense cards compress below maxHeight when text is short
+  // and stack space is tight. Default mode keeps the rigid layout (0).
+  cardFlexShrink: 0 | 1;
+}
+
+const getDensityConfig = (maxPoints: number, height: number): DensityConfig => {
+  const dense = maxPoints >= 4;
+  if (dense) {
+    return {
+      cardFontSize: 28,
+      cardLineHeight: 1.45,
+      cardPaddingV: 12,
+      cardPaddingH: 22,
+      cardGap: 16,
+      // Explicit 0 (not "auto") because flex items default to
+      // min-height: auto, which would prevent shrinking and neutralize
+      // the cardMaxHeight cap + cardFlexShrink: 1 below.
+      cardMinHeight: 0,
+      cardMaxHeight: Math.round(DENSE_CARD_MAX_HEIGHT * height / 1440),
+      headerMarginTop: 12,
+      pointsJustify: "flex-start",
+      cardAlignItems: "flex-start",
+      cardFlexShrink: 1,
+    };
+  }
+  return {
+    cardFontSize: 40,
+    cardLineHeight: 1.55,
+    cardPaddingV: 32,
+    cardPaddingH: 36,
+    cardGap: 36,
+    cardMinHeight: Math.round(DEFAULT_CARD_MIN_HEIGHT * height / 1440),
+    cardMaxHeight: undefined,
+    headerMarginTop: 24,
+    pointsJustify: "center",
+    cardAlignItems: "center",
+    cardFlexShrink: 0,
+  };
+};
+
 interface DebateSplitSceneProps {
   topic: string;
   proSide: {
@@ -47,6 +109,14 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
   const POINTS_BASE = 20;
   const STAGGER_GAP = 12;
 
+  // Density-aware sizing. Each side gets ~610 px tall in 1080×1440 portrait;
+  // with 4 messages per side at the default 150 px minHeight + 36 px gap the
+  // points overflow and crash into the next side's label. Switch to a tighter
+  // layout only when ≥ 4 messages on either side; ≤ 3 keeps the original
+  // visual untouched.
+  const maxPoints = Math.max(proSide.points.length, conSide.points.length);
+  const density = getDensityConfig(maxPoints, height);
+
   const bgAngle = rotatingGradient(frame, durationInFrames, 135, 60);
 
   const renderSide = (
@@ -77,7 +147,7 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
             gap: 12,
             opacity: labelOpacity,
             transform: `translateX(${labelSlide}px)`,
-            marginTop: 24,
+            marginTop: density.headerMarginTop,
             paddingBottom: 8,
             borderBottom: `2px solid ${color}`,
             marginBottom: 4,
@@ -111,8 +181,8 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
             flex: 1,
             display: "flex",
             flexDirection: "column",
-            gap: 36,
-            justifyContent: "center",
+            gap: density.cardGap,
+            justifyContent: density.pointsJustify,
             minHeight: 0,
           }}
         >
@@ -136,7 +206,9 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                   overflow: "hidden",
                   opacity,
                   transform: `translateX(${slideOffset}px)`,
-                  minHeight: Math.round(150 * height / 1440),
+                  minHeight: density.cardMinHeight,
+                  maxHeight: density.cardMaxHeight,
+                  flexShrink: density.cardFlexShrink,
                 }}
               >
                 {/* Left color accent stripe */}
@@ -150,18 +222,18 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
                 <div
                   style={{
                     flex: 1,
-                    padding: "32px 36px",
+                    padding: `${density.cardPaddingV}px ${density.cardPaddingH}px`,
                     display: "flex",
-                    alignItems: "center",
+                    alignItems: density.cardAlignItems,
                   }}
                 >
                   <span
                     style={{
                       fontFamily,
-                      fontSize: 40,
+                      fontSize: density.cardFontSize,
                       fontWeight: 400,
                       color: theme.text_primary,
-                      lineHeight: 1.55,
+                      lineHeight: density.cardLineHeight,
                       wordBreak: "break-word" as const,
                     }}
                   >
