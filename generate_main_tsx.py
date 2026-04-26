@@ -69,18 +69,24 @@ def _split_bullet_segments(segments: list, audio_dir: str, is_portrait: bool = F
         has_intro = len(narration_parts) == len(bullets) + 1
         narration_mid = mid + (1 if has_intro else 0)
 
-        # Try to find bulletDurations to split audio precisely. Accept either
-        # length == len(bullets) (no intro) or len(bullets)+1 (intro present);
-        # length must match narration_parts when narration_parts is non-empty.
+        # Try to find bulletDurations to split audio precisely. Two valid
+        # forms when has_intro:
+        #   (a) "unmerged": len == len(bullets) + 1 with d[0] = intro time
+        #       (typical: original manifest produced alongside narration).
+        #   (b) "merged": len == len(bullets) with intro already folded into
+        #       d[0] (typical: a manifest written by a previous split pass —
+        #       relevant for recursive splits when seg_a still has > MAX
+        #       bullets).
+        # Without has_intro, only len == len(bullets) is valid.
         manifest_path = os.path.join(audio_dir, f"{seg_id}.bullets.json")
         durations = None
+        intro_offset = 0  # 1 when manifest is in unmerged form
         if os.path.exists(manifest_path):
             try:
                 with open(manifest_path) as f:
                     durations = json.load(f).get("durations", [])
-                if narration_parts:
-                    if len(durations) != len(narration_parts):
-                        durations = None
+                if has_intro and len(durations) == len(bullets) + 1:
+                    intro_offset = 1
                 elif len(durations) != len(bullets):
                     durations = None
             except (ValueError, OSError):
@@ -94,7 +100,9 @@ def _split_bullet_segments(segments: list, audio_dir: str, is_portrait: bool = F
 
         if os.path.exists(wav_path):
             if durations:
-                split_sec = sum(durations[:narration_mid])
+                # Either form sums to the same audio split point: covers
+                # intro + bullets[:mid] in seg_a.
+                split_sec = sum(durations[:mid + intro_offset])
             else:
                 # Fallback: split proportionally by bullet count
                 total_sec = subprocess.run(
@@ -105,17 +113,19 @@ def _split_bullet_segments(segments: list, audio_dir: str, is_portrait: bool = F
                 split_sec = float(total_sec.stdout.strip()) * mid / len(bullets)
             _split_audio(wav_path, split_sec, wav_a, wav_b)
 
-            # Write split bullets.json manifests. Each manifest's durations
-            # length must equal that segment's bullet count (consumer contract).
-            # If intro is present, merge intro time into seg_a's first bullet
-            # so bullet 1 stays highlighted while intro audio plays.
+            # Write split bullets.json manifests. Always emit in merged form:
+            # length == segment's bullet count. seg_a's first bullet absorbs
+            # the intro time so bullet 1 stays highlighted while intro audio
+            # plays.
             if durations:
-                if has_intro:
-                    dur_a = [durations[0] + durations[1]] + list(durations[2:narration_mid])
-                    dur_b = list(durations[narration_mid:])
+                if intro_offset == 1:
+                    # Unmerged input: d[0]=intro, d[1..]=per-bullet.
+                    dur_a = [durations[0] + durations[1]] + list(durations[2:1 + mid])
                 else:
+                    # Already-merged input (or no intro): d[0] already
+                    # includes any intro time.
                     dur_a = list(durations[:mid])
-                    dur_b = list(durations[mid:])
+                dur_b = list(durations[mid + intro_offset:])
                 for fname, dur_list in [(f"{id_a}.bullets.json", dur_a), (f"{id_b}.bullets.json", dur_b)]:
                     with open(os.path.join(audio_dir, fname), "w") as f:
                         json.dump({"durations": dur_list}, f, ensure_ascii=False, indent=2)
@@ -222,10 +232,15 @@ def _key_insight_props(data, audio_ref, **_):
 def _load_bullet_durations_frames(audio_dir, seg_id, bullet_count):
     """Load per-bullet durations (in frames) from {seg_id}.bullets.json.
 
-    Accepts either length == bullet_count (no intro) or length == bullet_count+1
-    (intro paragraph present). For the intro case, merge the intro duration
-    into bullet 1 so the highlight stays on bullet 1 while intro audio plays.
-    Returns None if file missing/invalid or length mismatch.
+    Accepts either length == bullet_count (no intro, or intro already merged
+    into bullet 1) or length == bullet_count + 1 (intro paragraph present,
+    unmerged). For the unmerged case, the intro duration is merged into
+    bullet 1 so the highlight stays on bullet 1 while intro audio plays.
+    Returns None if the file is missing/invalid or has any other length.
+
+    Note: a manifest authored with a wrong extra duration entry would be
+    silently treated as the intro pattern. Manifests are always generated
+    by this script, so this risk is accepted.
     """
     if not (audio_dir and seg_id):
         return None
