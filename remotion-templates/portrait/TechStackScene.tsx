@@ -102,7 +102,7 @@ function targetRowsPortrait(n: number): number {
 }
 
 // Chip height baseline values (at 1440 canvas height). Smoothly decreases
-// across rows tiers (each step <=15% drop) so chip footprint isn't jumpy.
+// across rows tiers with modest step-downs so chip footprint isn't jumpy.
 const CHIP_H_AT_1440 = [280, 240, 200, 180]; // index = rows - 1
 
 export const TechStackScene: React.FC<TechStackSceneProps> = ({
@@ -142,10 +142,11 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
       Math.min(actualRows, CHIP_H_AT_1440.length) - 1
     ] * designScale,
   );
-  const maxFitH = Math.floor(
-    (gridAvail - (actualRows - 1) * gap) / actualRows,
+  const maxFitH = Math.max(
+    1,
+    Math.floor((gridAvail - (actualRows - 1) * gap) / actualRows),
   );
-  const chipH = Math.min(baseChipH, maxFitH);
+  const chipH = Math.max(1, Math.min(baseChipH, maxFitH));
 
   const BADGE_BASE_DELAY = 5;
   const STAGGER_GAP = Math.max(2, Math.floor(45 / totalCount));

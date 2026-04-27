@@ -109,7 +109,7 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
   audioFile,
 }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, height } = useVideoConfig();
 
   const titleOpacity = fadeIn(frame, 0, 15);
   const titleSlide = slideIn(frame, fps, 0, 80);
@@ -121,15 +121,17 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
   const actualRows = Math.ceil(totalCount / cols);
   const gap = 24;
 
-  // Canvas 1080 - paddingTop 50 - title (52*1.3=68) - marginBottom 48 - paddingBottom 40 = 874
-  const gridAvail = 1080 - 50 - Math.round(52 * 1.3) - 48 - 40;
+  // Live-compute available grid height (canvas - paddings - title block).
+  const titleH = Math.round(52 * 1.3);
+  const gridAvail = height - 50 - titleH - 48 - 40;
 
   const baseChipH =
     CHIP_H_TIERS[Math.min(actualRows, CHIP_H_TIERS.length) - 1];
-  const maxFitH = Math.floor(
-    (gridAvail - (actualRows - 1) * gap) / actualRows,
+  const maxFitH = Math.max(
+    1,
+    Math.floor((gridAvail - (actualRows - 1) * gap) / actualRows),
   );
-  const chipH = Math.min(baseChipH, maxFitH);
+  const chipH = Math.max(1, Math.min(baseChipH, maxFitH));
 
   const BADGE_BASE_DELAY = 5;
   const STAGGER_GAP = Math.max(2, Math.floor(45 / totalCount));
