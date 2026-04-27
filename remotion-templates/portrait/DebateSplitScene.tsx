@@ -38,9 +38,10 @@ interface DensityConfig {
   cardMaxHeight: number | undefined;
   headerMarginTop: number;
   pointsJustify: "center" | "flex-start";
-  // Card content alignment. Anchors to flex-start in dense mode so a clipped
-  // overflow hides the tail of the message rather than chopping both ends off
-  // a vertically-centered block.
+  // Card content alignment. Anchors to flex-start whenever `cardMaxHeight`
+  // is set (moderate + dense modes) so a clipped overflow hides the tail
+  // of the message rather than chopping both ends off a vertically-
+  // centered block.
   cardAlignItems: "center" | "flex-start";
   // flexShrink lets dense cards compress below maxHeight when text is short
   // and stack space is tight. Default mode keeps the rigid layout (0).
@@ -82,7 +83,7 @@ const getDensityConfig = (maxPoints: number, height: number): DensityConfig => {
       cardMaxHeight: Math.round(MODERATE_CARD_MAX_HEIGHT * height / 1440),
       headerMarginTop: 18,
       pointsJustify: "center",
-      cardAlignItems: "center",
+      cardAlignItems: "flex-start",
       cardFlexShrink: 1,
     };
   }
