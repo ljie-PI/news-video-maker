@@ -172,7 +172,7 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
     const entranceScale = interpolate(chipSpring, [0, 1], [0, 1]);
     const entranceOpacity = fadeIn(frame, start, 12);
 
-    const cat = tech.category ?? "";
+    const cat = tech.category?.trim() || "其他";
     const isOrphan = lastRowOrphan && idx === totalCount - 1;
     const orphanCellWidth = `calc((100% - ${(cols - 1) * gap}px) / ${cols})`;
 
@@ -223,24 +223,30 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
               fontWeight: 700,
               lineHeight: 1.2,
               letterSpacing: 0.3,
+              maxWidth: "100%",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}
           >
             {tech.name}
           </div>
-          {cat && (
-            <div
-              style={{
-                fontFamily,
-                fontSize: Math.round(18 * fScale),
-                fontWeight: 500,
-                lineHeight: 1.2,
-                letterSpacing: 0.5,
-                opacity: 0.65,
-              }}
-            >
-              {cat}
-            </div>
-          )}
+          <div
+            style={{
+              fontFamily,
+              fontSize: Math.round(18 * fScale),
+              fontWeight: 500,
+              lineHeight: 1.2,
+              letterSpacing: 0.5,
+              opacity: 0.65,
+              maxWidth: "100%",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {cat}
+          </div>
         </div>
       </div>
     );
