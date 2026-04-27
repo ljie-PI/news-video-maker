@@ -42,6 +42,29 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
     : Math.max(20, Math.floor((height - 400) / (bulletCount + 1) / 2));
   const audioDriven = !!bulletDurations && bulletDurations.length === bulletCount;
 
+  // Per-bullet narration window (start frame + duration). Used for both the
+  // active-bullet selection and the per-bullet underline progress so that
+  // the underline tracks the actual bullet window without resetting.
+  const bulletStarts: number[] = new Array(bulletCount);
+  const bulletWindowDur: number[] = new Array(bulletCount);
+  if (audioDriven) {
+    let acc = 0;
+    for (let i = 0; i < bulletCount; i++) {
+      bulletStarts[i] = acc;
+      bulletWindowDur[i] = bulletDurations![i];
+      acc += bulletDurations![i];
+    }
+  } else {
+    const slot = Math.max(
+      1,
+      (durationInFrames - 10 - entranceDone) / bulletCount,
+    );
+    for (let i = 0; i < bulletCount; i++) {
+      bulletStarts[i] = entranceDone + i * slot;
+      bulletWindowDur[i] = slot;
+    }
+  }
+
   let activeBullet = bulletCount - 1;
   if (audioDriven) {
     let acc = 0;
@@ -165,8 +188,8 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
 
             const underlineWidth = isActive
               ? interpolate(
-                  (frame - entranceDone) % (durationInFrames / bulletCount),
-                  [0, (durationInFrames - entranceDone) / bulletCount],
+                  frame - bulletStarts[i],
+                  [0, bulletWindowDur[i]],
                   [0, 100],
                   { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
                 )
