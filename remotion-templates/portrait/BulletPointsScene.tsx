@@ -42,10 +42,11 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
     : Math.max(20, Math.floor((height - 400) / (bulletCount + 1) / 2));
   const audioDriven = !!bulletDurations && bulletDurations.length === bulletCount;
 
-  // Per-bullet narration window starts. Audio-driven uses prefix sum of
-  // bulletDurations; otherwise equal slots starting at entranceDone. The
-  // underline progress and (audio-driven) active-bullet selection both read
-  // from this array so they stay in sync and never reset.
+  // Per-bullet narration window starts. Audio-driven uses a prefix sum of
+  // bulletDurations; otherwise bullets are assigned equal slots starting at
+  // entranceDone. Underline progress and (audio-driven) active-bullet
+  // selection both read from this array so timing stays consistent within
+  // each bullet's window and never resets.
   const bulletStarts: number[] = new Array(bulletCount);
   let timeSlot = 0;
   if (audioDriven) {
@@ -186,10 +187,19 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
             const activeScale = isActive ? 1.02 : (isNarrated ? 1.0 : 0.95);
             const activeOpacity = isActive ? 1 : (isNarrated ? 0.7 : 0.5);
 
+            // Clamp the bullet window to the visible region [entranceDone,∞)
+            // so the underline always starts at 0 the moment it becomes
+            // visible (audio-driven mode otherwise has bullet 0 anchored at
+            // frame 0, which would render it partially filled at entranceDone).
+            const visStart = Math.max(bulletStarts[i], entranceDone);
+            const visDur = Math.max(
+              1,
+              bulletStarts[i] + bulletDurAt(i) - visStart,
+            );
             const underlineWidth = isActive
               ? interpolate(
-                  frame - bulletStarts[i],
-                  [0, bulletDurAt(i)],
+                  frame - visStart,
+                  [0, visDur],
                   [0, 100],
                   { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
                 )
