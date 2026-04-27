@@ -9,15 +9,7 @@ import {
   useVideoConfig,
 } from "remotion";
 import { theme, fontFamily } from "./theme";
-import {
-  fadeIn,
-  slideIn,
-  staggerDelay,
-  activeIndex,
-  breathe,
-  float,
-  rotatingGradient,
-} from "./animationHelpers";
+import { fadeIn, slideIn, staggerDelay } from "./animationHelpers";
 
 interface TechStackSceneProps {
   project: string;
@@ -30,36 +22,93 @@ interface TechStackSceneProps {
   narration?: string;
 }
 
-const CATEGORY_COLORS: Record<string, { bg: string; glow: string }> = {
-  语言: { bg: "#2563eb", glow: "#3b82f6" },
-  框架: { bg: "#7c3aed", glow: "#8b5cf6" },
-  工具: { bg: "#059669", glow: "#10b981" },
-  数据库: { bg: "#d97706", glow: "#f59e0b" },
-  平台: { bg: "#dc2626", glow: "#ef4444" },
-  测试: { bg: "#0891b2", glow: "#06b6d4" },
+// Inline line-style category icons (24x24 viewBox, stroke=currentColor).
+const CategoryIcon: React.FC<{ category: string; size: number }> = ({
+  category,
+  size,
+}) => {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 2,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
+  switch (category) {
+    case "语言":
+      // </>
+      return (
+        <svg {...common}>
+          <polyline points="8 7 3 12 8 17" />
+          <polyline points="16 7 21 12 16 17" />
+          <line x1="14" y1="5" x2="10" y2="19" />
+        </svg>
+      );
+    case "框架":
+      // 2x2 grid
+      return (
+        <svg {...common}>
+          <rect x="3" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="3" width="7" height="7" rx="1" />
+          <rect x="3" y="14" width="7" height="7" rx="1" />
+          <rect x="14" y="14" width="7" height="7" rx="1" />
+        </svg>
+      );
+    case "工具":
+      // wrench
+      return (
+        <svg {...common}>
+          <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-2.4 2.6-2.6Z" />
+        </svg>
+      );
+    case "数据库":
+      // cylinder
+      return (
+        <svg {...common}>
+          <ellipse cx="12" cy="5" rx="8" ry="2.5" />
+          <path d="M4 5v6c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5V5" />
+          <path d="M4 11v6c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5v-6" />
+        </svg>
+      );
+    case "平台":
+      // cloud
+      return (
+        <svg {...common}>
+          <path d="M7 18a4 4 0 0 1-.9-7.9 5 5 0 0 1 9.7-1.4A4.5 4.5 0 0 1 17.5 18H7Z" />
+        </svg>
+      );
+    case "测试":
+      // test tube + check
+      return (
+        <svg {...common}>
+          <path d="M9 3h6" />
+          <path d="M10 3v9.5a4 4 0 1 0 4 0V3" />
+          <path d="M10 13h4" />
+        </svg>
+      );
+    default:
+      // sparkle
+      return (
+        <svg {...common}>
+          <path d="M12 3v6M12 15v6M3 12h6M15 12h6" />
+        </svg>
+      );
+  }
 };
-
-const DEFAULT_COLOR = { bg: "#475569", glow: "#64748b" };
-
-function colorForCategory(cat?: string): { bg: string; glow: string } {
-  if (!cat) return DEFAULT_COLOR;
-  return CATEGORY_COLORS[cat] ?? DEFAULT_COLOR;
-}
 
 export const TechStackScene: React.FC<TechStackSceneProps> = ({
   project,
   title = "技术栈",
   techs,
   audioFile,
-  narration,
 }) => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames, height } = useVideoConfig();
+  const { fps, height } = useVideoConfig();
   const vScale = height / 960;
   const fScale = 1.25;
-
-  // --- Background ---
-  const gradAngle = rotatingGradient(frame, durationInFrames, 135, 80);
 
   // --- Title animation ---
   const titleOpacity = fadeIn(frame, 0, 15);
@@ -67,7 +116,6 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
 
   // --- Group techs by category ---
   const hasCategories = techs.some((t) => t.category);
-
   type Group = { category: string | null; items: typeof techs };
   const groups: Group[] = [];
   if (hasCategories) {
@@ -85,35 +133,28 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
     groups.push({ category: null, items: techs });
   }
 
-  // Flatten for global indexing (stagger + active)
-  let globalIdx = 0;
-  const indexed: { tech: typeof techs[number]; gIdx: number }[] = [];
-  for (const g of groups) {
-    for (const t of g.items) {
-      indexed.push({ tech: t, gIdx: globalIdx++ });
-    }
-  }
-  const totalCount = indexed.length;
+  const totalCount = techs.length;
 
-  // Entrance timing — fast stagger, all visible within ~1.5s
+  // Entrance stagger
   const BADGE_BASE_DELAY = 5;
   const STAGGER_GAP = Math.max(2, Math.floor(45 / Math.max(totalCount, 1)));
-  const entranceDone = BADGE_BASE_DELAY + totalCount * STAGGER_GAP + 10;
-  const active = activeIndex(frame, entranceDone, durationInFrames, totalCount);
 
   const circles = [0, 1, 2].map((i) => ({
-    x: [300, 1600, 960][i],
-    y: [200, 700, 450][i],
+    x: [200, 800, 480][i],
+    y: [300, 1100, 700][i],
     size: 140 + i * 60,
     opacity: 0.10,
   }));
 
-  // Render a single badge
-  function renderBadge(
-    tech: typeof techs[number],
-    gIdx: number,
-    isActive: boolean,
-  ) {
+  // Per-group column count: count>1 forces ≥2 rows; max 3 cols on portrait.
+  const MAX_COLS = 3;
+  const colsForCount = (n: number) =>
+    n <= 1 ? 1 : Math.min(MAX_COLS, Math.ceil(n / 2));
+
+  const BADGE_MAX_W = 480;
+
+  // Render a single badge (no active highlight cycle).
+  function renderBadge(tech: typeof techs[number], gIdx: number) {
     const start = staggerDelay(BADGE_BASE_DELAY, gIdx, STAGGER_GAP);
     const badgeSpring = spring({
       frame: Math.max(0, frame - start),
@@ -123,42 +164,32 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
     const entranceScale = interpolate(badgeSpring, [0, 1], [0, 1]);
     const entranceOpacity = fadeIn(frame, start, 12);
 
-    const floatY = float(frame, 16 + (gIdx % 7) * 2, 22, gIdx * 1.3);
-    const floatX = float(frame, 20 + (gIdx % 5) * 3, 12, gIdx * 0.7 + 5);
-    const activeScale = isActive ? breathe(frame, 12, 0.15) : 1;
-
-    const { bg, glow } = colorForCategory(tech.category);
-    const glowIntensity = isActive
-      ? 14
-      : 0;
-
     return (
       <div
         key={`${tech.name}-${gIdx}`}
         style={{
-          display: "inline-flex",
+          display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          padding: `${Math.round(12 * vScale)}px ${Math.round(24 * fScale)}px`,
-          borderRadius: 999,
-          backgroundColor: isActive ? bg : `${bg}cc`,
-          border: `2px solid ${isActive ? glow : `${glow}60`}`,
+          width: "100%",
+          maxWidth: BADGE_MAX_W,
+          justifySelf: "center",
+          padding: `${Math.round(20 * vScale)}px ${Math.round(32 * fScale)}px`,
+          minHeight: Math.round(88 * vScale),
+          borderRadius: 10,
+          backgroundColor: theme.brand_primary,
+          border: `1px solid ${theme.brand_highlight}`,
           fontFamily,
           fontSize: Math.round(29 * fScale),
           fontWeight: 600,
           color: "#ffffff",
-          opacity: entranceOpacity,
-          transform: [
-            `scale(${entranceScale * activeScale})`,
-            `translateY(${floatY}px)`,
-            `translateX(${floatX}px)`,
-          ].join(" "),
-          boxShadow: isActive
-            ? `0 0 ${glowIntensity}px ${glow}90, 0 4px 20px ${bg}50`
-            : `0 2px 8px ${bg}30`,
+          textAlign: "center",
+          lineHeight: 1.4,
           letterSpacing: 0.3,
-          whiteSpace: "nowrap",
-          transition: "box-shadow 0.1s",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+          opacity: entranceOpacity,
+          transform: `scale(${entranceScale})`,
+          boxSizing: "border-box",
         }}
       >
         {tech.name}
@@ -166,7 +197,6 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
     );
   }
 
-  // Track which global index we've rendered to
   let runningIdx = 0;
 
   return (
@@ -175,7 +205,7 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
 
       <AbsoluteFill
         style={{
-          background: `linear-gradient(${gradAngle}deg, ${theme.dark_bg_from} 0%, ${theme.dark_bg_mid} 50%, ${theme.dark_bg_to} 100%)`,
+          background: `linear-gradient(135deg, ${theme.dark_bg_from} 0%, ${theme.dark_bg_mid} 50%, ${theme.dark_bg_to} 100%)`,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -185,19 +215,20 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
           overflow: "hidden",
         }}
       >
-
         {/* Card panel */}
-        <div style={{
-          position: "absolute",
-          top: 30,
-          left: 40,
-          right: 40,
-          bottom: 30,
-          borderRadius: 24,
-          background: theme.card_bg,
-          border: `1px solid ${theme.card_border}`,
-          pointerEvents: "none",
-        }} />
+        <div
+          style={{
+            position: "absolute",
+            top: 30,
+            left: 40,
+            right: 40,
+            bottom: 30,
+            borderRadius: 24,
+            background: theme.card_bg,
+            border: `1px solid ${theme.card_border}`,
+            pointerEvents: "none",
+          }}
+        />
         {/* Ambient circles */}
         {circles.map((c, i) => (
           <div
@@ -238,44 +269,41 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
           <span>{title}</span>
         </div>
 
-        {/* Badge grid area */}
+        {/* Group stack */}
         <div
           style={{
             flex: 1,
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
+            alignItems: "stretch",
             justifyContent: "center",
             gap: Math.round(32 * vScale),
             width: "100%",
-            maxWidth: 1800,
           }}
         >
           {groups.map((group) => {
             const startIdx = runningIdx;
-            const nodes = group.items.map((tech, i) => {
-              const gIdx = startIdx + i;
-              const isActive = gIdx === active;
-              return renderBadge(tech, gIdx, isActive);
-            });
-            runningIdx = startIdx + group.items.length;
+            const cols = colsForCount(group.items.length);
 
-            // Category header + its badges
             const headerStart = staggerDelay(
               BADGE_BASE_DELAY,
               startIdx,
               STAGGER_GAP,
             );
-            const headerOpacity = fadeIn(frame, Math.max(0, headerStart - 4), 12);
+            const headerOpacity = fadeIn(
+              frame,
+              Math.max(0, headerStart - 4),
+              12,
+            );
 
-            return (
+            const node = (
               <div
                 key={group.category ?? "__all"}
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  alignItems: "center",
-                  gap: Math.round(16 * vScale),
+                  alignItems: "stretch",
+                  gap: Math.round(18 * vScale),
                   width: "100%",
                 }}
               >
@@ -283,33 +311,46 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
                   <div
                     style={{
                       fontFamily,
-                      fontSize: Math.round(26 * fScale),
+                      fontSize: Math.round(24 * fScale),
                       fontWeight: 600,
-                      color: colorForCategory(group.category).glow,
+                      color: theme.brand_highlight,
                       opacity: headerOpacity,
                       letterSpacing: 2,
                       textTransform: "uppercase",
                       marginBottom: 4,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 12,
                     }}
                   >
-                    {group.category}
+                    <CategoryIcon
+                      category={group.category}
+                      size={Math.round(28 * fScale)}
+                    />
+                    <span>{group.category}</span>
                   </div>
                 )}
                 <div
                   style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    justifyContent: "center",
-                    gap: Math.round(16 * vScale),
+                    display: "grid",
+                    gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                    gap: 14,
+                    width: "100%",
+                    justifyItems: "center",
                   }}
                 >
-                  {nodes}
+                  {group.items.map((tech, i) =>
+                    renderBadge(tech, startIdx + i),
+                  )}
                 </div>
               </div>
             );
+
+            runningIdx = startIdx + group.items.length;
+            return node;
           })}
         </div>
-
       </AbsoluteFill>
     </AbsoluteFill>
   );

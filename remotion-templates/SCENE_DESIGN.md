@@ -237,19 +237,26 @@ cp remotion-templates/covers/{source}_{W}x{H}.png public/cover.png
 
 ---
 
-## 12. `tech_stack` — TechStackScene（技术栈徽章列表）
+## 12. `tech_stack` — TechStackScene（技术栈卡片网格）
 
 ```typescript
 {
   project: string;
   techs: {
     name: string;                  // "TypeScript"
-    category?: string;             // "语言" / "框架" / "工具"
+    category?: string;             // "语言" / "框架" / "工具" / "数据库" / "平台" / "测试"
   }[];
   title?: string;                  // 默认 "技术栈"
 }
 ```
 **必填**：`project`、`techs`。
+
+**视觉**
+- 圆角矩形 chip（`borderRadius: 10`），单一主题色填充（`brand_primary`）+ `brand_highlight` 描边
+- 按 `category` 分组；每组上方显示分类标题 + 对应 line-style SVG 图标
+  （内置：语言 `</>` / 框架 网格 / 工具 扳手 / 数据库 圆柱 / 平台 云 / 测试 试管 / 其他 默认）
+- 列数随每组数量自适应：count>1 时强制分成 ≥2 行（横屏最多 5 列、竖屏最多 3 列）
+- 入场 spring stagger，无运行时高亮循环
 
 ---
 
