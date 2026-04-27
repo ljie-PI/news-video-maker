@@ -103,7 +103,7 @@ function targetRowsPortrait(n: number): number {
 
 // Chip height baseline values (at 1440 canvas height). Smoothly decreases
 // across rows tiers (each step <=15% drop) so chip footprint isn't jumpy.
-const CHIP_H_AT_1440 = [350, 300, 270, 250]; // index = rows - 1
+const CHIP_H_AT_1440 = [280, 240, 200, 180]; // index = rows - 1
 
 export const TechStackScene: React.FC<TechStackSceneProps> = ({
   project,
@@ -127,7 +127,7 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
   const cols = Math.min(MAX_COLS, Math.ceil(totalCount / targetRows));
   // Actual rows after MAX_COLS clamp; may exceed targetRows when n > 12.
   const actualRows = Math.ceil(totalCount / cols);
-  const gap = Math.round(24 * designScale);
+  const gap = Math.round(36 * designScale);
 
   // Live-compute available grid height (canvas - paddings - title block).
   const titleFontPx = Math.round(48 * fScale);
@@ -150,6 +150,10 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
   const BADGE_BASE_DELAY = 5;
   const STAGGER_GAP = Math.max(2, Math.floor(45 / totalCount));
 
+  // Centering rule: when last row contains exactly 1 chip and cols > 1,
+  // span it across all columns and justify-self center with single-cell width.
+  const lastRowOrphan = cols > 1 && totalCount % cols === 1;
+
   const circles = [0, 1, 2].map((i) => ({
     x: [200, 800, 480][i],
     y: [300, 1100, 700][i],
@@ -168,6 +172,8 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
     const entranceOpacity = fadeIn(frame, start, 12);
 
     const cat = tech.category ?? "";
+    const isOrphan = lastRowOrphan && idx === totalCount - 1;
+    const orphanCellWidth = `calc((100% - ${(cols - 1) * gap}px) / ${cols})`;
 
     return (
       <div
@@ -177,7 +183,7 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
           alignItems: "center",
           justifyContent: "center",
           gap: Math.round(20 * fScale),
-          width: "100%",
+          width: isOrphan ? orphanCellWidth : "100%",
           height: chipH,
           padding: `0 ${Math.round(28 * fScale)}px`,
           borderRadius: 14,
@@ -188,6 +194,9 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
           opacity: entranceOpacity,
           transform: `scale(${entranceScale})`,
           boxSizing: "border-box",
+          ...(isOrphan
+            ? { gridColumn: "1 / -1", justifySelf: "center" as const }
+            : {}),
         }}
       >
         <div style={{ display: "flex", flexShrink: 0 }}>
@@ -319,7 +328,7 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: `repeat(${cols}, 1fr)`,
+              gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
               gridAutoRows: `${chipH}px`,
               gap,
               width: "100%",
