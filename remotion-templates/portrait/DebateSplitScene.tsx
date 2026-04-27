@@ -18,10 +18,15 @@ import {
 // Reference card minHeight (px) at the 1440-tall portrait baseline. Scaled by
 // `height / 1440` at use sites so other resolutions stay proportional.
 const DEFAULT_CARD_MIN_HEIGHT = 150;
+// Moderate (count=3) tier caps. minHeight is lower so flexShrink can reclaim
+// space when most cards happen to be 1-line; maxHeight bounds 2-line cards
+// so 3 × 2-line stacks (~492 px) still fit the ~498 px points area.
+const MODERATE_CARD_MIN_HEIGHT = 100;
+const MODERATE_CARD_MAX_HEIGHT = 160;
 // Hard maxHeight (px) ceiling applied only in dense mode so a 3+ line runaway
 // message can't push past its column. Cards set `overflow: 'hidden'`, so
 // excess text clips visually rather than overlapping the opposing side.
-const DENSE_CARD_MAX_HEIGHT = 120;
+const DENSE_CARD_MAX_HEIGHT = 130;
 
 interface DensityConfig {
   cardFontSize: number;
@@ -43,10 +48,14 @@ interface DensityConfig {
 }
 
 const getDensityConfig = (maxPoints: number, height: number): DensityConfig => {
-  const dense = maxPoints >= 4;
-  if (dense) {
+  // Three font tiers, all within the Body typography band (32–40):
+  // ≤2 → 40 (upper Body), =3 → 36 (mid Body), ≥4 → 32 (lower Body).
+  // count=3 sits in its own "moderate" tier so multi-line cards stop
+  // overflowing into the opposing side's label, while count≥4 stays the
+  // densest option.
+  if (maxPoints >= 4) {
     return {
-      cardFontSize: 28,
+      cardFontSize: 32,
       cardLineHeight: 1.45,
       cardPaddingV: 12,
       cardPaddingH: 22,
@@ -59,6 +68,21 @@ const getDensityConfig = (maxPoints: number, height: number): DensityConfig => {
       headerMarginTop: 12,
       pointsJustify: "flex-start",
       cardAlignItems: "flex-start",
+      cardFlexShrink: 1,
+    };
+  }
+  if (maxPoints === 3) {
+    return {
+      cardFontSize: 36,
+      cardLineHeight: 1.5,
+      cardPaddingV: 20,
+      cardPaddingH: 30,
+      cardGap: 24,
+      cardMinHeight: Math.round(MODERATE_CARD_MIN_HEIGHT * height / 1440),
+      cardMaxHeight: Math.round(MODERATE_CARD_MAX_HEIGHT * height / 1440),
+      headerMarginTop: 18,
+      pointsJustify: "center",
+      cardAlignItems: "center",
       cardFlexShrink: 1,
     };
   }
@@ -109,11 +133,13 @@ export const DebateSplitScene: React.FC<DebateSplitSceneProps> = ({
   const POINTS_BASE = 20;
   const STAGGER_GAP = 12;
 
-  // Density-aware sizing. Each side gets ~610 px tall in 1080×1440 portrait;
-  // with 4 messages per side at the default 150 px minHeight + 36 px gap the
-  // points overflow and crash into the next side's label. Switch to a tighter
-  // layout only when ≥ 4 messages on either side; ≤ 3 keeps the original
-  // visual untouched.
+  // Density-aware sizing. Each side gets ~600 px tall in 1080×1440 portrait;
+  // with the original two-tier layout, count=3 + multi-line messages spilled
+  // into the opposing side's label, while count≥4 dropped to 28 px (Caption
+  // tier) and felt undersized. Three tiers anchored within Body (32–40):
+  //   ≤2  → 40 default, generous breathing room
+  //   =3  → 36 moderate, smaller padding/gap and bounded card heights
+  //   ≥4  → 32 dense, tight padding and lowest card cap
   const maxPoints = Math.max(proSide.points.length, conSide.points.length);
   const density = getDensityConfig(maxPoints, height);
 
