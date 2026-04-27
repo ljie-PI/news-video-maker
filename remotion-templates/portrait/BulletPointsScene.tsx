@@ -42,15 +42,39 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
     : Math.max(20, Math.floor((height - 400) / (bulletCount + 1) / 2));
   const audioDriven = !!bulletDurations && bulletDurations.length === bulletCount;
 
-  let activeBullet = bulletCount - 1;
+  // Per-bullet narration window starts. Audio-driven uses a prefix sum of
+  // bulletDurations; otherwise bullets are assigned equal slots starting at
+  // entranceDone. Underline progress and (audio-driven) active-bullet
+  // selection both read from this array so timing stays consistent within
+  // each bullet's window and never resets.
+  const bulletStarts: number[] = new Array(bulletCount);
+  let timeSlot = 0;
   if (audioDriven) {
     let acc = 0;
-    let computed = 0;
     for (let i = 0; i < bulletCount; i++) {
-      if (frame >= acc) computed = i;
+      bulletStarts[i] = acc;
       acc += bulletDurations![i];
     }
-    activeBullet = frame >= acc ? bulletCount : computed;
+  } else {
+    timeSlot = Math.max(
+      1,
+      (durationInFrames - 10 - entranceDone) / bulletCount,
+    );
+    for (let i = 0; i < bulletCount; i++) {
+      bulletStarts[i] = entranceDone + i * timeSlot;
+    }
+  }
+  const bulletDurAt = (i: number): number =>
+    audioDriven ? bulletDurations![i] : timeSlot;
+
+  let activeBullet = bulletCount - 1;
+  if (audioDriven) {
+    let computed = 0;
+    for (let i = 0; i < bulletCount; i++) {
+      if (frame >= bulletStarts[i]) computed = i;
+    }
+    const totalEnd = bulletStarts[bulletCount - 1] + bulletDurations![bulletCount - 1];
+    activeBullet = frame >= totalEnd ? bulletCount : computed;
   } else {
     const activeBulletRaw = entranceDone >= durationInFrames - 10
       ? bulletCount - 0.01
@@ -163,10 +187,19 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
             const activeScale = isActive ? 1.02 : (isNarrated ? 1.0 : 0.95);
             const activeOpacity = isActive ? 1 : (isNarrated ? 0.7 : 0.5);
 
+            // Clamp the bullet window to the visible region [entranceDone,∞)
+            // so the underline always starts at 0 the moment it becomes
+            // visible (audio-driven mode otherwise has bullet 0 anchored at
+            // frame 0, which would render it partially filled at entranceDone).
+            const visStart = Math.max(bulletStarts[i], entranceDone);
+            const visDur = Math.max(
+              1,
+              bulletStarts[i] + bulletDurAt(i) - visStart,
+            );
             const underlineWidth = isActive
               ? interpolate(
-                  (frame - entranceDone) % (durationInFrames / bulletCount),
-                  [0, (durationInFrames - entranceDone) / bulletCount],
+                  frame - visStart,
+                  [0, visDur],
                   [0, 100],
                   { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
                 )

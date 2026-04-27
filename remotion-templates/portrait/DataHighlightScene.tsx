@@ -359,7 +359,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: "42%",
+            top: "38%",
             left: "50%",
             width: Math.round(700 * height / 1440),
             height: Math.round(700 * height / 1440),
@@ -374,7 +374,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: "42%",
+            top: "38%",
             left: "50%",
             transform: "translate(-50%, -55%)",
           }}
@@ -422,7 +422,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
           <div
             style={{
               position: "absolute",
-              top: "42%",
+              top: "38%",
               left: "50%",
               transform: "translate(-50%, -55%)",
               pointerEvents: "none",
@@ -457,7 +457,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
         <div
           style={{
             position: "absolute",
-            top: "42%",
+            top: "38%",
             left: "50%",
             transform: "translate(-50%, -50%)",
             display: "flex",
@@ -500,34 +500,7 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
           </div>
         </div>
 
-        {/* ── Secondary stat cards row ───────────────────────── */}
-        {secondaryStats.length > 0 && (
-          <div
-            style={{
-              position: "absolute",
-              bottom: Math.round(130 * vScale),
-              left: 0,
-              right: 0,
-              display: "flex",
-              justifyContent: "center",
-              gap: Math.round(40 * vScale),
-            }}
-          >
-            {secondaryStats.slice(0, 3).map((stat, i) => (
-              <StatCard
-                key={i}
-                label={stat.label}
-                value={stat.value}
-                index={i}
-                frame={frame}
-                fps={fps}
-                baseDelay={COUNTER_END + 5}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* ── Context text bar ──────────────────────── */}
+        {/* ── Bottom stack: stats above context, anchored to bottom ── */}
         <div
           style={{
             position: "absolute",
@@ -535,11 +508,33 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
             left: 0,
             right: 0,
             display: "flex",
-            justifyContent: "center",
-            opacity: contextOpacity,
-            transform: `translateY(${contextY}px)`,
+            flexDirection: "column",
+            alignItems: "center",
+            gap: Math.round(40 * vScale),
           }}
         >
+          {secondaryStats.length > 0 && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: Math.round(40 * vScale),
+              }}
+            >
+              {secondaryStats.slice(0, 3).map((stat, i) => (
+                <StatCard
+                  key={i}
+                  label={stat.label}
+                  value={stat.value}
+                  index={i}
+                  frame={frame}
+                  fps={fps}
+                  baseDelay={COUNTER_END + 5}
+                />
+              ))}
+            </div>
+          )}
+
           <div
             style={{
               fontFamily,
@@ -553,6 +548,8 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
               maxWidth: 1400,
               textAlign: "center",
               lineHeight: 1.5,
+              opacity: contextOpacity,
+              transform: `translateY(${contextY}px)`,
             }}
           >
             {context}
