@@ -91,6 +91,17 @@ const CategoryIcon: React.FC<{ category: string; size: number }> = ({
   }
 };
 
+// Target rows for n chips on landscape (max 3 rows). Designed so v-util grows
+// monotonically as n increases.
+function targetRowsLandscape(n: number): number {
+  if (n <= 1) return 1;
+  if (n <= 6) return 2;
+  return 3;
+}
+
+// Chip height tiers: rows 1, 2, 3. Smoothly decreasing across tiers.
+const CHIP_H_TIERS = [300, 260, 230];
+
 export const TechStackScene: React.FC<TechStackSceneProps> = ({
   project,
   title = "技术栈",
@@ -103,86 +114,108 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
   const titleOpacity = fadeIn(frame, 0, 15);
   const titleSlide = slideIn(frame, fps, 0, 80);
 
-  const hasCategories = techs.some((t) => t.category);
-  type Group = { category: string | null; items: typeof techs };
-  const groups: Group[] = [];
-  if (hasCategories) {
-    const catMap = new Map<string, typeof techs>();
-    for (const t of techs) {
-      const key = t.category ?? "其他";
-      const arr = catMap.get(key) ?? [];
-      arr.push(t);
-      catMap.set(key, arr);
-    }
-    for (const [cat, items] of catMap) {
-      groups.push({ category: cat, items });
-    }
-  } else {
-    groups.push({ category: null, items: techs });
-  }
+  const totalCount = Math.max(techs.length, 1);
+  const MAX_COLS = 5;
+  const targetRows = targetRowsLandscape(totalCount);
+  const cols = Math.min(MAX_COLS, Math.ceil(totalCount / targetRows));
+  const actualRows = Math.ceil(totalCount / cols);
+  const gap = 20;
 
-  const totalCount = techs.length;
+  // Canvas 1080 - paddingTop 50 - title (52*1.3=68) - marginBottom 48 - paddingBottom 40 = 874
+  const gridAvail = 1080 - 50 - Math.round(52 * 1.3) - 48 - 40;
+
+  const baseChipH =
+    CHIP_H_TIERS[Math.min(actualRows, CHIP_H_TIERS.length) - 1];
+  const maxFitH = Math.floor(
+    (gridAvail - (actualRows - 1) * gap) / actualRows,
+  );
+  const chipH = Math.min(baseChipH, maxFitH);
+
   const BADGE_BASE_DELAY = 5;
-  const STAGGER_GAP = Math.max(2, Math.floor(45 / Math.max(totalCount, 1)));
+  const STAGGER_GAP = Math.max(2, Math.floor(45 / totalCount));
 
   const circles = [0, 1, 2].map((i) => ({
     x: [300, 1600, 960][i],
     y: [200, 700, 450][i],
     size: 140 + i * 60,
-    opacity: 0.10,
+    opacity: 0.1,
   }));
 
-  // Per-group column count: count>1 forces ≥2 rows; max 5 cols on landscape.
-  const MAX_COLS = 5;
-  const colsForCount = (n: number) =>
-    n <= 1 ? 1 : Math.min(MAX_COLS, Math.ceil(n / 2));
-
-  const BADGE_MAX_W = 560;
-
-  function renderBadge(tech: typeof techs[number], gIdx: number) {
-    const start = staggerDelay(BADGE_BASE_DELAY, gIdx, STAGGER_GAP);
-    const badgeSpring = spring({
+  function renderChip(tech: typeof techs[number], idx: number) {
+    const start = staggerDelay(BADGE_BASE_DELAY, idx, STAGGER_GAP);
+    const chipSpring = spring({
       frame: Math.max(0, frame - start),
       fps,
       config: { damping: 12, mass: 0.6, stiffness: 120 },
     });
-    const entranceScale = interpolate(badgeSpring, [0, 1], [0, 1]);
+    const entranceScale = interpolate(chipSpring, [0, 1], [0, 1]);
     const entranceOpacity = fadeIn(frame, start, 12);
+
+    const cat = tech.category ?? "";
 
     return (
       <div
-        key={`${tech.name}-${gIdx}`}
+        key={`${tech.name}-${idx}`}
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          gap: 18,
           width: "100%",
-          maxWidth: BADGE_MAX_W,
-          justifySelf: "center",
-          padding: "16px 28px",
-          minHeight: 76,
-          borderRadius: 10,
+          height: chipH,
+          padding: "0 28px",
+          borderRadius: 14,
           backgroundColor: theme.card_bg,
           border: `2px solid ${theme.brand_primary}`,
-          fontFamily,
-          fontSize: 32,
-          fontWeight: 600,
           color: theme.brand_primary,
-          textAlign: "center",
-          lineHeight: 1.4,
-          letterSpacing: 0.3,
           boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
           opacity: entranceOpacity,
           transform: `scale(${entranceScale})`,
           boxSizing: "border-box",
         }}
       >
-        {tech.name}
+        <div style={{ display: "flex", flexShrink: 0 }}>
+          <CategoryIcon category={cat} size={26} />
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            justifyContent: "center",
+            gap: 4,
+            minWidth: 0,
+          }}
+        >
+          <div
+            style={{
+              fontFamily,
+              fontSize: 30,
+              fontWeight: 700,
+              lineHeight: 1.2,
+              letterSpacing: 0.3,
+            }}
+          >
+            {tech.name}
+          </div>
+          {cat && (
+            <div
+              style={{
+                fontFamily,
+                fontSize: 18,
+                fontWeight: 500,
+                lineHeight: 1.2,
+                letterSpacing: 0.5,
+                opacity: 0.65,
+              }}
+            >
+              {cat}
+            </div>
+          )}
+        </div>
       </div>
     );
   }
-
-  let runningIdx = 0;
 
   return (
     <AbsoluteFill>
@@ -255,79 +288,22 @@ export const TechStackScene: React.FC<TechStackSceneProps> = ({
           style={{
             flex: 1,
             display: "flex",
-            flexDirection: "column",
-            alignItems: "stretch",
+            alignItems: "center",
             justifyContent: "center",
-            gap: 32,
             width: "100%",
           }}
         >
-          {groups.map((group) => {
-            const startIdx = runningIdx;
-            const cols = colsForCount(group.items.length);
-
-            const headerStart = staggerDelay(
-              BADGE_BASE_DELAY,
-              startIdx,
-              STAGGER_GAP,
-            );
-            const headerOpacity = fadeIn(
-              frame,
-              Math.max(0, headerStart - 4),
-              12,
-            );
-
-            const node = (
-              <div
-                key={group.category ?? "__all"}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "stretch",
-                  gap: 18,
-                  width: "100%",
-                }}
-              >
-                {group.category && (
-                  <div
-                    style={{
-                      fontFamily,
-                      fontSize: 22,
-                      fontWeight: 600,
-                      color: theme.brand_highlight,
-                      opacity: headerOpacity,
-                      letterSpacing: 2,
-                      textTransform: "uppercase",
-                      marginBottom: 4,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 12,
-                    }}
-                  >
-                    <CategoryIcon category={group.category} size={26} />
-                    <span>{group.category}</span>
-                  </div>
-                )}
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: `repeat(${cols}, 1fr)`,
-                    gap: 14,
-                    width: "100%",
-                    justifyItems: "center",
-                  }}
-                >
-                  {group.items.map((tech, i) =>
-                    renderBadge(tech, startIdx + i),
-                  )}
-                </div>
-              </div>
-            );
-
-            runningIdx = startIdx + group.items.length;
-            return node;
-          })}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: `repeat(${cols}, 1fr)`,
+              gridAutoRows: `${chipH}px`,
+              gap,
+              width: "100%",
+            }}
+          >
+            {techs.map((tech, i) => renderChip(tech, i))}
+          </div>
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
