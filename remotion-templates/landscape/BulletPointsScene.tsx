@@ -45,38 +45,38 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
     : Math.max(12, Math.floor((height - 300) / (bulletCount + 1) / 2));
   const audioDriven = !!bulletDurations && bulletDurations.length === bulletCount;
 
-  // Per-bullet narration window (start frame + duration). Used for both the
-  // active-bullet selection and the per-bullet underline progress so that
-  // the underline tracks the actual bullet window without resetting.
+  // Per-bullet narration window starts. Audio-driven uses prefix sum of
+  // bulletDurations; otherwise equal slots starting at entranceDone. The
+  // underline progress and (audio-driven) active-bullet selection both read
+  // from this array so they stay in sync and never reset.
   const bulletStarts: number[] = new Array(bulletCount);
-  const bulletWindowDur: number[] = new Array(bulletCount);
+  let timeSlot = 0;
   if (audioDriven) {
     let acc = 0;
     for (let i = 0; i < bulletCount; i++) {
       bulletStarts[i] = acc;
-      bulletWindowDur[i] = bulletDurations![i];
       acc += bulletDurations![i];
     }
   } else {
-    const slot = Math.max(
+    timeSlot = Math.max(
       1,
       (durationInFrames - 10 - entranceDone) / bulletCount,
     );
     for (let i = 0; i < bulletCount; i++) {
-      bulletStarts[i] = entranceDone + i * slot;
-      bulletWindowDur[i] = slot;
+      bulletStarts[i] = entranceDone + i * timeSlot;
     }
   }
+  const bulletDurAt = (i: number): number =>
+    audioDriven ? bulletDurations![i] : timeSlot;
 
   let activeBullet = bulletCount - 1;
   if (audioDriven) {
-    let acc = 0;
     let computed = 0;
     for (let i = 0; i < bulletCount; i++) {
-      if (frame >= acc) computed = i;
-      acc += bulletDurations![i];
+      if (frame >= bulletStarts[i]) computed = i;
     }
-    activeBullet = frame >= acc ? bulletCount : computed;
+    const totalEnd = bulletStarts[bulletCount - 1] + bulletDurations![bulletCount - 1];
+    activeBullet = frame >= totalEnd ? bulletCount : computed;
   } else {
     const activeBulletRaw = entranceDone >= durationInFrames - 10
       ? bulletCount - 0.01
@@ -204,7 +204,7 @@ export const BulletPointsScene: React.FC<BulletPointsSceneProps> = ({
             const underlineWidth = isActive
               ? interpolate(
                   frame - bulletStarts[i],
-                  [0, bulletWindowDur[i]],
+                  [0, bulletDurAt(i)],
                   [0, 100],
                   { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
                 )

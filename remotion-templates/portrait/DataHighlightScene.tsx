@@ -537,27 +537,22 @@ export const DataHighlightScene: React.FC<DataHighlightSceneProps> = ({
 
           <div
             style={{
+              fontFamily,
+              fontSize: Math.round(32 * fScale),
+              fontWeight: 400,
+              color: theme.text_muted,
+              background: theme.overlay_subtle,
+              border: `1px solid ${theme.card_border}`,
+              borderRadius: 12,
+              padding: `${Math.round(14 * vScale)}px 48px`,
+              maxWidth: 1400,
+              textAlign: "center",
+              lineHeight: 1.5,
               opacity: contextOpacity,
               transform: `translateY(${contextY}px)`,
             }}
           >
-            <div
-              style={{
-                fontFamily,
-                fontSize: Math.round(32 * fScale),
-                fontWeight: 400,
-                color: theme.text_muted,
-                background: theme.overlay_subtle,
-                border: `1px solid ${theme.card_border}`,
-                borderRadius: 12,
-                padding: `${Math.round(14 * vScale)}px 48px`,
-                maxWidth: 1400,
-                textAlign: "center",
-                lineHeight: 1.5,
-              }}
-            >
-              {context}
-            </div>
+            {context}
           </div>
         </div>
 
