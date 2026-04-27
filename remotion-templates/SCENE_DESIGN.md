@@ -237,19 +237,29 @@ cp remotion-templates/covers/{source}_{W}x{H}.png public/cover.png
 
 ---
 
-## 12. `tech_stack` — TechStackScene（技术栈徽章列表）
+## 12. `tech_stack` — TechStackScene（技术栈卡片网格）
 
 ```typescript
 {
   project: string;
   techs: {
     name: string;                  // "TypeScript"
-    category?: string;             // "语言" / "框架" / "工具"
+    category?: string;             // "语言" / "框架" / "工具" / "数据库" / "平台" / "测试"
   }[];
   title?: string;                  // 默认 "技术栈"
 }
 ```
 **必填**：`project`、`techs`。
+
+**视觉**
+- 圆角矩形 chip（`borderRadius: 14`），描边式样式：`card_bg` 浅色填充 + 2px `brand_primary` 描边 + `brand_primary` 文字
+- 单个 flat grid（不按 category 分组），每个 chip 内部 = 左侧分类 SVG 图标 + 右侧 `name`（主，大号粗体）/ `category`（副，小号 0.65 透明）双行
+  （内置图标：语言 `</>` / 框架 网格 / 工具 扳手 / 数据库 圆柱 / 平台 云 / 测试 试管 / 其他 默认 十字）
+- 列数与 chip 高度按 chip 总数自适应（v-util 单调递增、chip_h 缓变）：
+  - portrait（max 3 列）：n=1→1×1 ‧ 2-4→2 行 ‧ 5-9→3 行 ‧ 10-12→4 行；chip_h 350/300/270/250
+  - landscape（max 5 列）：n=1→1×1 ‧ 2-6→2 行 ‧ 7-12→3 行；chip_h 300/260/230
+  - n>12 时 chip_h 自动缩到 grid 可用区内（兜底）
+- 入场 spring stagger，无运行时高亮循环
 
 ---
 
