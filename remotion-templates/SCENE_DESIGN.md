@@ -252,7 +252,7 @@ cp remotion-templates/covers/{source}_{W}x{H}.png public/cover.png
 **必填**：`project`、`techs`。
 
 **视觉**
-- 圆角矩形 chip（`borderRadius: 10`），单一主题色填充（`brand_primary`）+ `brand_highlight` 描边
+- 圆角矩形 chip（`borderRadius: 10`），描边式样式：`card_bg` 浅色填充 + `brand_primary` 描边 + `brand_primary` 文字
 - 按 `category` 分组；每组上方显示分类标题 + 对应 line-style SVG 图标
   （内置：语言 `</>` / 框架 网格 / 工具 扳手 / 数据库 圆柱 / 平台 云 / 测试 试管 / 其他 默认）
 - 列数随每组数量自适应：count>1 时强制分成 ≥2 行（横屏最多 5 列、竖屏最多 3 列）
