@@ -177,8 +177,7 @@ videos/yyyy-mm-dd_HH/
 2. 为每个 item 规划 5-10 个分镜：先决定每个分镜要讲什么内容（结合二.6 旁白深度要求），再选合适模板
 3. 第 1 分镜固定 `cover`，第 2 分镜固定 `rich_bullet`（总览预告，列出**所有** items）
 4. 撰写每个分镜的 `narration`（中文，遵循二.7/8 与 1.2 的语言规则）
-5. 写入 `script.json`：顶层是 `{"segments": [...]}`，每个 segment 包含 `id`（唯一标识，用于 audio 文件名）、`template`（取 1.1 表中 17 个模板 ID 之一）、`narration`（旁白文本）、`data`（模板需要的字段，字段集随模板不同而不同；详见 `remotion-templates/SCENE_DESIGN.md` 中各 Scene 的 Props 定义）。`script.json` 格式为带缩进的 json string。
-   
+5. 写入 `script.json`：顶层是 `{"segments": [...]}`，每个 segment 包含 `id`（唯一标识，用于 audio 文件名）、`template`（取 1.1 表中 17 个模板 ID 之一）、`narration`（旁白文本）、`data`（模板需要的字段，字段集随模板不同而不同；详见 `remotion-templates/SCENE_DESIGN.md` 中各 Scene 的 Props 定义）。文件本身是带缩进的 JSON 对象（不是被引号包起来的字符串字面量）。
 
 #### 1.4 关键字段约束
 
