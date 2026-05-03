@@ -27,7 +27,7 @@ source ~/.openclaw/workspace/.env
 ### 1.2 前置依赖
 - 系统：Node.js 18+、ffmpeg、Python 3.10+
 - TTS 引擎：CosyVoice（位于 `~/.openclaw/workspace/CosyVoice`）
-- **本 skill 仅负责视频制作**。深度调研由其他 skill 完成，本 skill 直接读取 `~/.openclaw/workspace/news-monitor/deep_dive/<run_dir>/{github,hackernews,producthunt,reddit}/` 目录下已生成的报告作为输入；`<run_dir>` 取 `yyyy-mm-dd_HH`（daily）或 `yyyy-mm-dd_HH_weekly`（weekly），具体见 §1.4 时间窗口。
+- **本 skill 仅负责视频制作**。深度调研由其他 skill 完成，本 skill 直接读取 `~/.openclaw/workspace/news-monitor/deep_dive/<run_dir>/{github,hackernews,producthunt,reddit}/` 目录下已生成的报告作为输入；`<run_dir>` 取 `yyyy-mm-dd_HH`（daily）或 `yyyy-mm-dd_HH_weekly`（weekly），具体见 §一.1.4「时间窗口（daily / weekly）」。
 
 ### 1.3 来源选择
 用户可在请求中指定只生成某些来源的视频（如"只做 github 的"、"github 和 hn"、"除了 reddit 都做"）。
@@ -279,7 +279,7 @@ python3 generate_main_tsx.py script.json \
 ```bash
 cd remotion-{source}-{orientation} && \
   npx remotion render src/index.ts Main \
-    --output /path/to/videos/<run_dir>/{1920x1080|1080x1440}/{source}.mp4 \
+    --output ~/.openclaw/workspace/news-monitor/videos/<run_dir>/{1920x1080|1080x1440}/{source}.mp4 \
     --fps=30 --codec=h264 --concurrency=4
 ```
 
