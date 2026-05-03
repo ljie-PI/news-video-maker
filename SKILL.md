@@ -222,7 +222,7 @@ cp remotion-templates/tsconfig.json remotion-{source}-{orientation}/
 (cd remotion-{source}-{orientation} && npm install)
 
 # 2. 复制对应方向的组件
-cp remotion-templates/{landscape|portrait}/*.tsx remotion-{source}-{orientation}/src/
+cp remotion-templates/{landscape|portrait}/*.{ts,tsx} remotion-{source}-{orientation}/src/
 
 # 3. 复制入口与主题
 cp remotion-templates/index.ts remotion-templates/index.css remotion-{source}-{orientation}/src/
