@@ -27,7 +27,7 @@ source ~/.openclaw/workspace/.env
 ### 1.2 前置依赖
 - 系统：Node.js 18+、ffmpeg、Python 3.10+
 - TTS 引擎：CosyVoice（位于 `~/.openclaw/workspace/CosyVoice`）
-- **本 skill 仅负责视频制作**。深度调研由其他 skill 完成，本 skill 直接读取 `~/.openclaw/workspace/news-monitor/deep_dive/yyyy-mm-dd_HH/{github,hackernews,producthunt,reddit}/` 目录下已生成的报告作为输入。
+- **本 skill 仅负责视频制作**。深度调研由其他 skill 完成，本 skill 直接读取 `~/.openclaw/workspace/news-monitor/deep_dive/<run_dir>/{github,hackernews,producthunt,reddit}/` 目录下已生成的报告作为输入；`<run_dir>` 取 `yyyy-mm-dd_HH`（daily）或 `yyyy-mm-dd_HH_weekly`（weekly），具体见 §一.1.4「时间窗口（daily / weekly）」。
 
 ### 1.3 来源选择
 用户可在请求中指定只生成某些来源的视频（如"只做 github 的"、"github 和 hn"、"除了 reddit 都做"）。
@@ -37,15 +37,30 @@ source ~/.openclaw/workspace/.env
 - 仅对被选中的来源读入 deep_dive、生成 script.json、调用 TTS、渲染视频；其它来源完全跳过（不读文件、不输出）
 
 请求示例：
-- "做今天的视频" → 4 个来源全做
+- "做今天的视频" → 4 个来源全做（daily 模式）
+- "做本周的 GitHub 视频" → 仅 `github`，weekly 模式
 - "只做 GitHub 和 Hacker News" → `github` + `hackernews`
 - "做 ph 的视频" → 仅 `producthunt`
 - "除了 reddit 都做" → `github` + `hackernews` + `producthunt`
 
-### 1.4 工作目录与日志
-所有视频产物落地到 `~/.openclaw/workspace/news-monitor/videos/yyyy-mm-dd_HH/`，包含：
+### 1.4 时间窗口（daily / weekly）
+用户请求里出现 weekly 类关键词时切到 weekly 模式，否则走 daily（默认）。
+- daily 关键词：`今日` / `今天` / `today` / `daily`，或不带任何周相关词
+- weekly 关键词：`本周` / `这周` / `this week` / `weekly`
+
+两种模式的 deep_dive 输入和 videos 输出都以一个 `<run_dir>` 占位符表示，下方所有路径模板都按这个占位符理解：
+
+| 模式 | `<run_dir>` 取值 | deep_dive 输入 | videos 输出根 |
+| --- | --- | --- | --- |
+| daily（默认） | `yyyy-mm-dd_HH` | `deep_dive/yyyy-mm-dd_HH/{source}/` | `videos/yyyy-mm-dd_HH/` |
+| weekly | `yyyy-mm-dd_HH_weekly` | `deep_dive/yyyy-mm-dd_HH_weekly/{source}/` | `videos/yyyy-mm-dd_HH_weekly/` |
+
+`yyyy-mm-dd_HH` 部分都取该模式下最新存在的目录；daily 与 weekly 走完全独立的 `<run_dir>`，互不覆盖。
+
+### 1.5 工作目录与日志
+所有视频产物落地到 `~/.openclaw/workspace/news-monitor/videos/<run_dir>/`，包含：
 ```
-videos/yyyy-mm-dd_HH/
+videos/<run_dir>/
 ├── 1920x1080/                # 横屏成片 {source}.mp4
 ├── 1080x1440/                # 竖屏成片 {source}.mp4
 ├── {source}/                 # 每来源工作区
@@ -110,9 +125,9 @@ videos/yyyy-mm-dd_HH/
 
 ### 步骤 1：生成分镜（旁白 + 模板选择）
 
-**输入**：`~/.openclaw/workspace/news-monitor/deep_dive/yyyy-mm-dd_HH/{source}/` 下的深度调研报告
+**输入**：`~/.openclaw/workspace/news-monitor/deep_dive/<run_dir>/{source}/` 下的深度调研报告
 
-**输出**：`videos/yyyy-mm-dd_HH/{source}/script.json`
+**输出**：`videos/<run_dir>/{source}/script.json`
 
 #### 1.1 可用模板（17 个，字段 schema 见 `remotion-templates/SCENE_DESIGN.md`）
 
@@ -193,13 +208,13 @@ videos/yyyy-mm-dd_HH/
 
 **输入**：步骤 1 的 `script.json`
 
-**输出**：`videos/yyyy-mm-dd_HH/{source}/audio/{seg_id}.wav`
+**输出**：`videos/<run_dir>/{source}/audio/{seg_id}.wav`
 
 **命令**：
 ```bash
 python tts_batch.py \
-  videos/yyyy-mm-dd_HH/{source}/script.json \
-  videos/yyyy-mm-dd_HH/{source}/audio \
+  videos/<run_dir>/{source}/script.json \
+  videos/<run_dir>/{source}/audio \
   --speed 1.5
 ```
 
@@ -257,14 +272,14 @@ python3 generate_main_tsx.py script.json \
 **输入**：步骤 3 的 Remotion 项目
 
 **输出**：
-- `videos/yyyy-mm-dd_HH/1920x1080/{source}.mp4`
-- `videos/yyyy-mm-dd_HH/1080x1440/{source}.mp4`
+- `videos/<run_dir>/1920x1080/{source}.mp4`
+- `videos/<run_dir>/1080x1440/{source}.mp4`
 
 **渲染命令**：
 ```bash
 cd remotion-{source}-{orientation} && \
   npx remotion render src/index.ts Main \
-    --output /path/to/videos/{date_h}/{wxh}/{source}.mp4 \
+    --output ~/.openclaw/workspace/news-monitor/videos/<run_dir>/{1920x1080|1080x1440}/{source}.mp4 \
     --fps=30 --codec=h264 --concurrency=4
 ```
 
