@@ -96,13 +96,16 @@ export const ProjectHeroScene: React.FC<ProjectHeroSceneProps> = ({
   // --- Stats badge ---
   const badgeOpacity = fadeIn(frame, 30, 15);
   const badgeFloat = 0;
-  const statsNum = parseInt(stats.replace(/[^0-9]/g, ""), 10) || 0;
-  // Detect the prefix part (e.g. "+") and suffix part (e.g. " ⭐")
+  // Counter-animate only when stats has a single numeric group (e.g. "+814 ⭐").
+  // Multi-number strings (e.g. "480 points | 306 comments") render verbatim.
+  const numericGroups = stats.match(/\d+/g) || [];
+  const hasSingleNumber = numericGroups.length === 1;
+  const statsNum = hasSingleNumber ? parseInt(numericGroups[0], 10) : numericGroups.length;
   const matchPrefix = stats.match(/^([^0-9]*)/);
   const matchSuffix = stats.match(/[0-9]([^0-9]*)$/);
   const numPrefix = matchPrefix ? matchPrefix[1] : "";
   const numSuffix = matchSuffix ? matchSuffix[1] : "";
-  const displayedStats = counterValue(frame, 45, 90, statsNum);
+  const displayedStats = counterValue(frame, 45, 90, hasSingleNumber ? statsNum : 0);
   const badgePulse = breathe(frame, 18, 0.05);
 
   // --- Source tag ---
@@ -315,9 +318,15 @@ export const ProjectHeroScene: React.FC<ProjectHeroSceneProps> = ({
                     letterSpacing: 0.5,
                   }}
                 >
-                  {numPrefix}
-                  {displayedStats}
-                  {numSuffix}
+                  {hasSingleNumber ? (
+                    <>
+                      {numPrefix}
+                      {displayedStats}
+                      {numSuffix}
+                    </>
+                  ) : (
+                    stats
+                  )}
                 </div>
               </div>
             )}
