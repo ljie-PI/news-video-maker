@@ -279,7 +279,7 @@ python3 generate_main_tsx.py script.json \
 ```bash
 cd remotion-{source}-{orientation} && \
   npx remotion render src/index.ts Main \
-    --output /path/to/videos/<run_dir>/{wxh}/{source}.mp4 \
+    --output /path/to/videos/<run_dir>/{1920x1080|1080x1440}/{source}.mp4 \
     --fps=30 --codec=h264 --concurrency=4
 ```
 
